@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      actions_activities: {
+        Row: {
+          category: string
+          chapter: string | null
+          chapter_id: string | null
+          complexity: string | null
+          created_at: string
+          description: string | null
+          difficulty: string | null
+          duration: string | null
+          id: string
+          participants: string | null
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          chapter?: string | null
+          chapter_id?: string | null
+          complexity?: string | null
+          created_at?: string
+          description?: string | null
+          difficulty?: string | null
+          duration?: string | null
+          id?: string
+          participants?: string | null
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          chapter?: string | null
+          chapter_id?: string | null
+          complexity?: string | null
+          created_at?: string
+          description?: string | null
+          difficulty?: string | null
+          duration?: string | null
+          id?: string
+          participants?: string | null
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       classes: {
         Row: {
           created_at: string
