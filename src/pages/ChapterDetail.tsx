@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -341,6 +341,7 @@ const ChapterDetail = () => {
   ];
 
   const [activeSectionId, setActiveSectionId] = useState<string>(sectionAnchors[0]?.id ?? "opening");
+  const [showBackToTop, setShowBackToTop] = useState(false);
 
   useEffect(() => {
     const sections = sectionAnchors
@@ -371,6 +372,19 @@ const ChapterDetail = () => {
       observer.disconnect();
     };
   }, [chapterId]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowBackToTop(window.scrollY > 300);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -647,6 +661,18 @@ const ChapterDetail = () => {
           </aside>
         </div>
       </main>
+
+      {/* Back to Top Button */}
+      <Button
+        onClick={scrollToTop}
+        size="icon"
+        className={`fixed bottom-8 right-8 rounded-full shadow-lg transition-all duration-300 z-50 ${
+          showBackToTop ? "opacity-100 translate-y-0" : "opacity-0 translate-y-16 pointer-events-none"
+        }`}
+        aria-label="Back to top"
+      >
+        <ArrowUp className="h-5 w-5" />
+      </Button>
     </div>
   );
 };
