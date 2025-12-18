@@ -15,6 +15,7 @@ const Actions = () => {
       description: "Brainstorming δραστηριότητα για γρήγορη παραγωγή ιδεών",
       duration: "5 λεπτά",
       chapter: "Chapter 2",
+      chapterId: "2",
       difficulty: "Εύκολο",
     },
     {
@@ -22,6 +23,7 @@ const Actions = () => {
       description: "Εντοπίστε προβλήματα και προτείνετε λύσεις",
       duration: "10 λεπτά",
       chapter: "Chapter 1",
+      chapterId: "1",
       difficulty: "Μέτριο",
     },
     {
@@ -29,6 +31,7 @@ const Actions = () => {
       description: "Παρουσιάστε μια ιδέα με σαφήνεια και ταχύτητα",
       duration: "15 λεπτά",
       chapter: "Chapter 5",
+      chapterId: "5",
       difficulty: "Προχωρημένο",
     },
   ];
@@ -39,6 +42,7 @@ const Actions = () => {
       description: "Ομαδική δραστηριότητα για κατανόηση ηγεσίας",
       duration: "30 λεπτά",
       chapter: "Chapter 4",
+      chapterId: "4",
       participants: "4-6 μαθητές",
     },
     {
@@ -46,6 +50,7 @@ const Actions = () => {
       description: "Δημιουργήστε μια επιχειρηματική ιδέα ως ομάδα",
       duration: "45 λεπτά",
       chapter: "Chapter 3",
+      chapterId: "3",
       participants: "Όλη η τάξη",
     },
   ];
@@ -56,6 +61,7 @@ const Actions = () => {
       description: "Πλήρες επιχειρηματικό σχέδιο για παιδιά",
       duration: "3-5 μέρες",
       chapter: "Chapters 3-5",
+      chapterId: "3",
       complexity: "Υψηλό",
     },
     {
@@ -63,6 +69,7 @@ const Actions = () => {
       description: "Τελική παρουσίαση επιχειρηματικής ιδέας",
       duration: "2-3 μέρες",
       chapter: "Chapter 5",
+      chapterId: "5",
       complexity: "Μέτριο",
     },
   ];
@@ -118,7 +125,9 @@ const Actions = () => {
                         </div>
                         <Badge variant="outline">{challenge.difficulty}</Badge>
                       </div>
-                      <Button className="w-full">Ξεκινήστε το Challenge</Button>
+                      <Link to={`/chapters/${challenge.chapterId}`}>
+                        <Button className="w-full">Ξεκινήστε το Challenge</Button>
+                      </Link>
                     </CardContent>
                   </Card>
                 ))}
@@ -155,9 +164,11 @@ const Actions = () => {
                           {activity.participants}
                         </div>
                       </div>
-                      <Button variant="secondary" className="w-full">
-                        Δείτε τη δραστηριότητα
-                      </Button>
+                      <Link to={`/chapters/${activity.chapterId}`}>
+                        <Button variant="secondary" className="w-full">
+                          Δείτε τη δραστηριότητα
+                        </Button>
+                      </Link>
                     </CardContent>
                   </Card>
                 ))}
@@ -191,9 +202,11 @@ const Actions = () => {
                         </div>
                         <Badge variant="outline">Πολυπλοκότητα: {project.complexity}</Badge>
                       </div>
-                      <Button variant="default" className="w-full">
-                        Ξεκινήστε το Project
-                      </Button>
+                      <Link to={`/chapters/${project.chapterId}`}>
+                        <Button variant="default" className="w-full">
+                          Ξεκινήστε το Project
+                        </Button>
+                      </Link>
                     </CardContent>
                   </Card>
                 ))}
