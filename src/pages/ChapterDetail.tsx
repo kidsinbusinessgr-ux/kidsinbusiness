@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -339,6 +340,38 @@ const ChapterDetail = () => {
     { id: "reflection", label: "Chapter Reflection" },
   ];
 
+  const [activeSectionId, setActiveSectionId] = useState<string>(sectionAnchors[0]?.id ?? "opening");
+
+  useEffect(() => {
+    const sections = sectionAnchors
+      .map((s) => document.getElementById(s.id))
+      .filter((el): el is HTMLElement => Boolean(el));
+
+    if (!sections.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveSectionId(entry.target.id);
+          }
+        });
+      },
+      {
+        root: null,
+        threshold: 0.4,
+        rootMargin: "0px 0px -40% 0px",
+      }
+    );
+
+    sections.forEach((section) => observer.observe(section));
+
+    return () => {
+      sections.forEach((section) => observer.unobserve(section));
+      observer.disconnect();
+    };
+  }, [chapterId]);
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -372,20 +405,35 @@ const ChapterDetail = () => {
           className="mb-8 rounded-xl border border-border bg-card/60 backdrop-blur-sm px-4 py-3 shadow-sm"
         >
           <div className="flex items-center justify-between gap-3 overflow-x-auto">
-            {sectionAnchors.map((section, index) => (
-              <a
-                key={section.id}
-                href={`#${section.id}`}
-                className="group flex flex-1 min-w-[3rem] flex-col items-center gap-1 text-center hover-scale"
-              >
-                <span className="relative flex h-3 w-3 items-center justify-center">
-                  <span className="h-2.5 w-2.5 rounded-full bg-muted group-hover:bg-primary transition-colors" />
-                </span>
-                <span className="hidden text-[11px] font-medium text-muted-foreground group-hover:text-primary md:block">
-                  {index + 1}. {section.label}
-                </span>
-              </a>
-            ))}
+            {sectionAnchors.map((section, index) => {
+              const isActive = activeSectionId === section.id;
+
+              return (
+                <a
+                  key={section.id}
+                  href={`#${section.id}`}
+                  className="group flex flex-1 min-w-[3rem] flex-col items-center gap-1 text-center hover-scale"
+                >
+                  <span className="relative flex h-3 w-3 items-center justify-center">
+                    <span
+                      className={`h-2.5 w-2.5 rounded-full transition-colors ${
+                        isActive ? "bg-primary" : "bg-muted"
+                      }`}
+                    />
+                    {isActive && (
+                      <span className="absolute -inset-1 rounded-full border border-primary/60" />
+                    )}
+                  </span>
+                  <span
+                    className={`hidden text-[11px] font-medium md:block transition-colors ${
+                      isActive ? "text-primary" : "text-muted-foreground"
+                    }`}
+                  >
+                    {index + 1}. {section.label}
+                  </span>
+                </a>
+              );
+            })}
           </div>
         </nav>
 
