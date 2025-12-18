@@ -7,6 +7,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { useState } from "react";
+import logo from "@/assets/kids-in-business-logo.png";
 
 const Navigation = () => {
   const location = useLocation();
@@ -25,11 +26,12 @@ const Navigation = () => {
     <nav className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <Link to="/" className="flex items-center gap-2 font-bold text-xl">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground">
-              K
-            </div>
-            <span className="hidden sm:inline">Kids in Business</span>
+          <Link to="/" className="flex items-center gap-3">
+            <img 
+              src={logo} 
+              alt="Kids in Business" 
+              className="h-10 w-auto"
+            />
           </Link>
 
           {/* Desktop Navigation */}
