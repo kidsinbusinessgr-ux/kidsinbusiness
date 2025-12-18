@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Zap, Target, Rocket, Clock, Users, CheckCircle2, Circle } from "lucide-react";
+import confetti from "canvas-confetti";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -20,13 +21,49 @@ const Actions = () => {
     }
   }, []);
 
+  const triggerConfetti = () => {
+    const duration = 2000;
+    const animationEnd = Date.now() + duration;
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+    const randomInRange = (min: number, max: number) => {
+      return Math.random() * (max - min) + min;
+    };
+
+    const interval = window.setInterval(() => {
+      const timeLeft = animationEnd - Date.now();
+
+      if (timeLeft <= 0) {
+        return clearInterval(interval);
+      }
+
+      const particleCount = 50 * (timeLeft / duration);
+      
+      confetti({
+        ...defaults,
+        particleCount,
+        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+      });
+      confetti({
+        ...defaults,
+        particleCount,
+        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+      });
+    }, 250);
+  };
+
   const toggleChallenge = (id: string) => {
     const newCompleted = new Set(completedChallenges);
-    if (newCompleted.has(id)) {
+    const wasCompleted = newCompleted.has(id);
+    
+    if (wasCompleted) {
       newCompleted.delete(id);
     } else {
       newCompleted.add(id);
+      // Trigger confetti only when completing (not uncompleting)
+      triggerConfetti();
     }
+    
     setCompletedChallenges(newCompleted);
     localStorage.setItem('completedChallenges', JSON.stringify(Array.from(newCompleted)));
   };
@@ -213,13 +250,13 @@ const Actions = () => {
                         </div>
                         <button
                           onClick={() => toggleChallenge(challenge.id)}
-                          className="ml-2 p-2 rounded-full hover:bg-muted transition-colors"
+                          className="ml-2 p-2 rounded-full hover:bg-muted transition-all duration-200 hover:scale-110 active:scale-95"
                           aria-label={isCompleted(challenge.id) ? "Mark as incomplete" : "Mark as complete"}
                         >
                           {isCompleted(challenge.id) ? (
-                            <CheckCircle2 className="w-6 h-6 text-primary" />
+                            <CheckCircle2 className="w-6 h-6 text-primary animate-in zoom-in duration-300" />
                           ) : (
-                            <Circle className="w-6 h-6 text-muted-foreground" />
+                            <Circle className="w-6 h-6 text-muted-foreground hover:text-primary transition-colors" />
                           )}
                         </button>
                       </div>
@@ -268,13 +305,13 @@ const Actions = () => {
                         </div>
                         <button
                           onClick={() => toggleChallenge(activity.id)}
-                          className="ml-2 p-2 rounded-full hover:bg-muted transition-colors"
+                          className="ml-2 p-2 rounded-full hover:bg-muted transition-all duration-200 hover:scale-110 active:scale-95"
                           aria-label={isCompleted(activity.id) ? "Mark as incomplete" : "Mark as complete"}
                         >
                           {isCompleted(activity.id) ? (
-                            <CheckCircle2 className="w-6 h-6 text-primary" />
+                            <CheckCircle2 className="w-6 h-6 text-primary animate-in zoom-in duration-300" />
                           ) : (
-                            <Circle className="w-6 h-6 text-muted-foreground" />
+                            <Circle className="w-6 h-6 text-muted-foreground hover:text-primary transition-colors" />
                           )}
                         </button>
                       </div>
@@ -328,13 +365,13 @@ const Actions = () => {
                         </div>
                         <button
                           onClick={() => toggleChallenge(project.id)}
-                          className="ml-2 p-2 rounded-full hover:bg-muted transition-colors"
+                          className="ml-2 p-2 rounded-full hover:bg-muted transition-all duration-200 hover:scale-110 active:scale-95"
                           aria-label={isCompleted(project.id) ? "Mark as incomplete" : "Mark as complete"}
                         >
                           {isCompleted(project.id) ? (
-                            <CheckCircle2 className="w-6 h-6 text-primary" />
+                            <CheckCircle2 className="w-6 h-6 text-primary animate-in zoom-in duration-300" />
                           ) : (
-                            <Circle className="w-6 h-6 text-muted-foreground" />
+                            <Circle className="w-6 h-6 text-muted-foreground hover:text-primary transition-colors" />
                           )}
                         </button>
                       </div>
