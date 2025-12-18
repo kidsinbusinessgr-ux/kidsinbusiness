@@ -25,14 +25,31 @@ import {
 } from "@/components/ui/alert-dialog";
 
 const CLASS_OPTIONS = [
-  { id: "class-a", label: "Τμήμα Α" },
-  { id: "class-b", label: "Τμήμα Β" },
-  { id: "class-c", label: "Τμήμα Γ" },
+  { id: "class-a", defaultLabel: "Τμήμα Α" },
+  { id: "class-b", defaultLabel: "Τμήμα Β" },
+  { id: "class-c", defaultLabel: "Τμήμα Γ" },
 ] as const;
+
+type ClassId = (typeof CLASS_OPTIONS)[number]["id"];
+
+const getDefaultClassLabel = (id: ClassId) =>
+  CLASS_OPTIONS.find((c) => c.id === id)?.defaultLabel ?? id;
+
+const getStoredClassLabel = (id: ClassId): string => {
+  if (typeof window === "undefined") return getDefaultClassLabel(id);
+  try {
+    const raw = localStorage.getItem("classNames");
+    if (!raw) return getDefaultClassLabel(id);
+    const parsed = JSON.parse(raw) as Record<string, string>;
+    return parsed[id] || getDefaultClassLabel(id);
+  } catch {
+    return getDefaultClassLabel(id);
+  }
+};
 
 const Actions = () => {
   const { toast } = useToast();
-  const [currentClassId, setCurrentClassId] = useState<(typeof CLASS_OPTIONS)[number]["id"]>("class-a");
+  const [currentClassId, setCurrentClassId] = useState<ClassId>("class-a");
   const [completedChallenges, setCompletedChallenges] = useState<Set<string>>(new Set());
   const [statusFilter, setStatusFilter] = useState<"all" | "completed" | "incomplete">("all");
 
@@ -401,7 +418,7 @@ const Actions = () => {
                           localStorage.setItem("currentClassId", cls.id);
                         }}
                       >
-                        {cls.label}
+                        {getStoredClassLabel(cls.id)}
                       </Button>
                     ))}
                   </div>

@@ -4,6 +4,7 @@ import { ArrowRight, BookOpen, Zap, TrendingUp, Star, CheckCircle2, Circle, User
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import Navigation from "@/components/Navigation";
 import GlobalTip from "@/components/GlobalTip";
 
@@ -13,21 +14,35 @@ const PROJECT_IDS = ["project-1", "project-2"] as const;
 const ALL_IDS = [...MINI_IDS, ...CLASS_IDS, ...PROJECT_IDS];
 
 const CLASS_OPTIONS = [
-  { id: "class-a", label: "Τμήμα Α" },
-  { id: "class-b", label: "Τμήμα Β" },
-  { id: "class-c", label: "Τμήμα Γ" },
+  { id: "class-a", defaultLabel: "Τμήμα Α" },
+  { id: "class-b", defaultLabel: "Τμήμα Β" },
+  { id: "class-c", defaultLabel: "Τμήμα Γ" },
 ] as const;
 
+type ClassId = (typeof CLASS_OPTIONS)[number]["id"];
+
+const getDefaultClassLabel = (id: ClassId) =>
+  CLASS_OPTIONS.find((c) => c.id === id)?.defaultLabel ?? id;
+
 const Dashboard = () => {
-  const [currentClassId, setCurrentClassId] = useState<(typeof CLASS_OPTIONS)[number]["id"]>("class-a");
+  const [currentClassId, setCurrentClassId] = useState<ClassId>("class-a");
+  const [classNames, setClassNames] = useState<Record<string, string>>({});
   const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
   const [recentCompleted, setRecentCompleted] = useState<string[]>([]);
 
-  // Load last selected class on mount
+  // Load last selected class & class names on mount
   useEffect(() => {
     const savedClass = localStorage.getItem("currentClassId");
     if (savedClass && CLASS_OPTIONS.some((c) => c.id === savedClass)) {
-      setCurrentClassId(savedClass as (typeof CLASS_OPTIONS)[number]["id"]);
+      setCurrentClassId(savedClass as ClassId);
+    }
+    const rawNames = localStorage.getItem("classNames");
+    if (rawNames) {
+      try {
+        setClassNames(JSON.parse(rawNames) as Record<string, string>);
+      } catch {
+        setClassNames({});
+      }
     }
   }, []);
 
@@ -134,7 +149,11 @@ const Dashboard = () => {
   const unlockedAchievements = achievements.filter((a) => a.unlocked);
   const overallPercent = totalChallenges ? Math.round((completedCount / totalChallenges) * 100) : 0;
 
-  const getClassStats = (classId: (typeof CLASS_OPTIONS)[number]["id"]) => {
+  const getClassLabel = (id: ClassId): string => {
+    return classNames[id] || getDefaultClassLabel(id);
+  };
+
+  const getClassStats = (classId: ClassId) => {
     const key = `completedChallenges_${classId}`;
     const legacy = localStorage.getItem("completedChallenges");
     const saved = typeof window !== "undefined" ? localStorage.getItem(key) ?? legacy : null;
@@ -166,22 +185,50 @@ const Dashboard = () => {
             </p>
           </div>
           {/* Class selector */}
-          <div className="inline-flex items-center gap-1 rounded-full border border-border bg-card/80 p-1 text-xs md:text-sm">
-            {CLASS_OPTIONS.map((cls) => (
-              <Button
-                key={cls.id}
-                type="button"
-                variant={currentClassId === cls.id ? "default" : "ghost"}
-                size="sm"
-                className="rounded-full px-3 py-1 h-8"
-                onClick={() => {
-                  setCurrentClassId(cls.id);
-                  localStorage.setItem("currentClassId", cls.id);
-                }}
-              >
-                {cls.label}
-              </Button>
-            ))}
+          <div className="flex flex-col items-end gap-2">
+            <div className="inline-flex items-center gap-1 rounded-full border border-border bg-card/80 p-1 text-xs md:text-sm">
+              {CLASS_OPTIONS.map((cls) => (
+                <Button
+                  key={cls.id}
+                  type="button"
+                  variant={currentClassId === cls.id ? "default" : "ghost"}
+                  size="sm"
+                  className="rounded-full px-3 py-1 h-8"
+                  onClick={() => {
+                    setCurrentClassId(cls.id);
+                    localStorage.setItem("currentClassId", cls.id);
+                  }}
+                >
+                  {getClassLabel(cls.id)}
+                </Button>
+              ))}
+            </div>
+
+            {/* Rename classes inline */}
+            <Card className="w-full max-w-xs border-dashed">
+              <CardHeader className="py-2">
+                <CardTitle className="text-xs font-medium">Μετονομασία τμημάτων</CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-2 py-2">
+                {CLASS_OPTIONS.map((cls) => (
+                  <div key={cls.id} className="flex items-center gap-2">
+                    <span className="text-[11px] text-muted-foreground w-14">
+                      {getDefaultClassLabel(cls.id)}
+                    </span>
+                    <Input
+                      value={classNames[cls.id] ?? ""}
+                      placeholder={getDefaultClassLabel(cls.id)}
+                      className="h-7 text-xs"
+                      onChange={(e) => {
+                        const next = { ...classNames, [cls.id]: e.target.value };
+                        setClassNames(next);
+                        localStorage.setItem("classNames", JSON.stringify(next));
+                      }}
+                    />
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
           </div>
         </div>
 
@@ -296,7 +343,7 @@ const Dashboard = () => {
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium text-sm">{cls.label}</span>
+                      <span className="font-medium text-sm">{getClassLabel(cls.id)}</span>
                       <span className="text-xs text-muted-foreground">
                         {stats.completed}/{totalChallenges} challenges
                       </span>
