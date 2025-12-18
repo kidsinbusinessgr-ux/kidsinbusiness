@@ -12,6 +12,7 @@ import Navigation from "@/components/Navigation";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import GlobalTip from "@/components/GlobalTip";
 import { Toaster } from "@/components/ui/toaster";
+import { Input } from "@/components/ui/input";
 import { useAuthAndClasses } from "@/hooks/useAuthAndClasses";
 import { supabase } from "@/integrations/supabase/client";
 import { miniChallenges as seedMini, classActivities as seedClass, projects as seedProjects } from "@/config/actionsConfig";
@@ -51,6 +52,7 @@ const Actions = () => {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [activitiesLoading, setActivitiesLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [editDraft, setEditDraft] = useState<Partial<Activity> | null>(null);
   const { toast } = useToast();
 
   const motivationalMessages = [
@@ -379,28 +381,65 @@ const Actions = () => {
     });
   };
 
-  const handleEditActivity = async (id: string) => {
+  const handleEditActivity = (id: string) => {
+    const activity = activities.find((a) => a.id === id);
+    if (!activity) return;
+
+    setEditingId(id);
+    setEditDraft({
+      title: activity.title ?? "",
+      description: activity.description ?? "",
+      duration: activity.duration ?? "",
+      chapter: activity.chapter ?? "",
+      chapterId: activity.chapterId ?? "",
+      difficulty: activity.difficulty ?? "",
+      participants: activity.participants ?? "",
+      complexity: activity.complexity ?? "",
+    });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setEditDraft(null);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingId || !editDraft) return;
+
     if (!isAuthenticated) {
       toast({
         title: "Απαιτείται σύνδεση",
-        description: "Συνδεθείτε ως εκπαιδευτικός για να επεξεργαστείτε δράσεις.",
+        description: "Συνδεθείτε ως εκπαιδευτικός για να αποθηκεύσετε αλλαγές.",
         variant: "destructive",
       });
       return;
     }
 
-    const activity = activities.find((a) => a.id === id);
-    if (!activity) return;
-
-    const newTitle = window.prompt("Νέος τίτλος για τη δράση", activity.title || "");
-    if (!newTitle || newTitle.trim() === activity.title) {
+    const titleTrim = (editDraft.title ?? "").trim();
+    if (!titleTrim) {
+      toast({
+        title: "Τίτλος απαιτείται",
+        description: "Ο τίτλος της δράσης δεν μπορεί να είναι κενός.",
+        variant: "destructive",
+      });
       return;
     }
 
+    const payload = {
+      title: titleTrim,
+      description: (editDraft.description ?? "").trim() || null,
+      duration: (editDraft.duration ?? "").trim() || null,
+      chapter: (editDraft.chapter ?? "").trim() || null,
+      chapter_id: (editDraft.chapterId ?? "").trim() || null,
+      difficulty: (editDraft.difficulty ?? "").trim() || null,
+      participants: (editDraft.participants ?? "").trim() || null,
+      complexity: (editDraft.complexity ?? "").trim() || null,
+    };
+
     const { error } = await supabase
       .from("actions_activities")
-      .update({ title: newTitle.trim() })
-      .eq("id", id);
+      .update(payload)
+      .eq("id", editingId);
 
     if (error) {
       toast({
@@ -412,16 +451,31 @@ const Actions = () => {
     }
 
     setActivities((prev) =>
-      prev.map((a) => (a.id === id ? { ...a, title: newTitle.trim() } : a))
+      prev.map((a) =>
+        a.id === editingId
+          ? {
+              ...a,
+              title: titleTrim,
+              description: payload.description,
+              duration: payload.duration,
+              chapter: payload.chapter,
+              chapterId: payload.chapter_id ?? null,
+              difficulty: payload.difficulty,
+              participants: payload.participants,
+              complexity: payload.complexity,
+            }
+          : a
+      )
     );
 
+    setEditingId(null);
+    setEditDraft(null);
+
     toast({
-      title: "Ο τίτλος ενημερώθηκε",
-      description: "Η δράση ενημερώθηκε με τον νέο τίτλο.",
+      title: "Η δράση ενημερώθηκε",
+      description: "Οι αλλαγές αποθηκεύτηκαν με επιτυχία.",
     });
   };
-
-  const handleCreateActivity = async (category: ActivityCategory) => {
     if (!isAuthenticated) {
       toast({
         title: "Απαιτείται σύνδεση",
@@ -715,7 +769,9 @@ const Actions = () => {
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
                             <Zap className="w-5 h-5 text-primary" />
-                            <Badge variant="secondary">{challenge.chapter}</Badge>
+                            {challenge.chapter && (
+                              <Badge variant="secondary">{challenge.chapter}</Badge>
+                            )}
                             {isCompleted(challenge.id) && (
                               <Badge className="bg-primary/20 text-primary border-primary/30">
                                 <CheckCircle2 className="w-3 h-3 mr-1" />
@@ -724,34 +780,131 @@ const Actions = () => {
                             )}
                           </div>
                           <CardTitle>{challenge.title}</CardTitle>
-                          <CardDescription className="mt-2">
-                            {challenge.description}
-                          </CardDescription>
-                        </div>
-                        <button
-                          onClick={() => toggleChallenge(challenge.id)}
-                          className="ml-2 p-2 rounded-full hover:bg-muted transition-all duration-200 hover:scale-110 active:scale-95"
-                          aria-label={isCompleted(challenge.id) ? "Mark as incomplete" : "Mark as complete"}
-                        >
-                          {isCompleted(challenge.id) ? (
-                            <CheckCircle2 className="w-6 h-6 text-primary animate-in zoom-in duration-300" />
-                          ) : (
-                            <Circle className="w-6 h-6 text-muted-foreground hover:text-primary transition-colors" />
+                          {editingId === challenge.id ? null : (
+                            <CardDescription className="mt-2">
+                              {challenge.description}
+                            </CardDescription>
                           )}
-                        </button>
+                        </div>
+                        <div className="flex flex-col items-end gap-2">
+                          <button
+                            onClick={() => toggleChallenge(challenge.id)}
+                            className="p-2 rounded-full hover:bg-muted transition-all duration-200 hover:scale-110 active:scale-95"
+                            aria-label={
+                              isCompleted(challenge.id)
+                                ? "Mark as incomplete"
+                                : "Mark as complete"
+                            }
+                          >
+                            {isCompleted(challenge.id) ? (
+                              <CheckCircle2 className="w-6 h-6 text-primary animate-in zoom-in duration-300" />
+                            ) : (
+                              <Circle className="w-6 h-6 text-muted-foreground hover:text-primary transition-colors" />
+                            )}
+                          </button>
+                          {isAuthenticated && (
+                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7"
+                                onClick={() => handleEditActivity(challenge.id)}
+                              >
+                                <Edit2 className="w-3 h-3" />
+                              </Button>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <div className="flex items-center gap-4 mb-4 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <Clock className="w-4 h-4" />
-                          {challenge.duration}
+                      {editingId === challenge.id ? (
+                        <div className="space-y-2 text-sm">
+                          <Input
+                            value={editDraft?.title ?? ""}
+                            placeholder="Τίτλος"
+                            className="h-8 text-xs"
+                            onChange={(e) =>
+                              setEditDraft((prev) => ({ ...prev, title: e.target.value }))
+                            }
+                          />
+                          <Input
+                            value={editDraft?.description ?? ""}
+                            placeholder="Περιγραφή"
+                            className="h-8 text-xs"
+                            onChange={(e) =>
+                              setEditDraft((prev) => ({ ...prev, description: e.target.value }))
+                            }
+                          />
+                          <div className="flex gap-2">
+                            <Input
+                              value={editDraft?.duration ?? ""}
+                              placeholder="Διάρκεια"
+                              className="h-8 text-xs flex-1"
+                              onChange={(e) =>
+                                setEditDraft((prev) => ({ ...prev, duration: e.target.value }))
+                              }
+                            />
+                            <Input
+                              value={editDraft?.difficulty ?? ""}
+                              placeholder="Δυσκολία"
+                              className="h-8 text-xs flex-1"
+                              onChange={(e) =>
+                                setEditDraft((prev) => ({ ...prev, difficulty: e.target.value }))
+                              }
+                            />
+                          </div>
+                          <div className="flex gap-2">
+                            <Input
+                              value={editDraft?.chapter ?? ""}
+                              placeholder="Chapter label (π.χ. Chapter 5)"
+                              className="h-8 text-xs flex-1"
+                              onChange={(e) =>
+                                setEditDraft((prev) => ({ ...prev, chapter: e.target.value }))
+                              }
+                            />
+                            <Input
+                              value={editDraft?.chapterId ?? ""}
+                              placeholder="Chapter ID (π.χ. 5)"
+                              className="h-8 text-xs flex-1"
+                              onChange={(e) =>
+                                setEditDraft((prev) => ({ ...prev, chapterId: e.target.value }))
+                              }
+                            />
+                          </div>
+                          <div className="flex justify-end gap-2 pt-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={handleCancelEdit}
+                            >
+                              Άκυρο
+                            </Button>
+                            <Button size="sm" onClick={handleSaveEdit}>
+                              Αποθήκευση
+                            </Button>
+                          </div>
                         </div>
-                        <Badge variant="outline">{challenge.difficulty}</Badge>
-                      </div>
-                      <Link to={`/chapters/${challenge.chapterId}`}>
-                        <Button className="w-full">Ξεκινήστε το Challenge</Button>
-                      </Link>
+                      ) : (
+                        <>
+                          <div className="flex items-center gap-4 mb-4 text-sm text-muted-foreground">
+                            {challenge.duration && (
+                              <div className="flex items-center gap-1">
+                                <Clock className="w-4 h-4" />
+                                {challenge.duration}
+                              </div>
+                            )}
+                            {challenge.difficulty && (
+                              <Badge variant="outline">{challenge.difficulty}</Badge>
+                            )}
+                          </div>
+                          {challenge.chapterId && (
+                            <Link to={`/chapters/${challenge.chapterId}`}>
+                              <Button className="w-full">Ξεκινήστε το Challenge</Button>
+                            </Link>
+                          )}
+                        </>
+                      )}
                     </CardContent>
                   </Card>
                 ))}
@@ -781,10 +934,12 @@ const Actions = () => {
                             )}
                           </div>
                           <CardTitle>{activity.title}</CardTitle>
-                          {activity.description && (
-                            <CardDescription className="mt-2">
-                              {activity.description}
-                            </CardDescription>
+                          {editingId === activity.id ? null : (
+                            activity.description && (
+                              <CardDescription className="mt-2">
+                                {activity.description}
+                              </CardDescription>
+                            )
                           )}
                         </div>
                         <div className="flex flex-col items-end gap-2">
@@ -850,26 +1005,97 @@ const Actions = () => {
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <div className="flex items-center gap-4 mb-4 text-sm text-muted-foreground">
-                        {activity.duration && (
-                          <div className="flex items-center gap-1">
-                            <Clock className="w-4 h-4" />
-                            {activity.duration}
+                      {editingId === activity.id ? (
+                        <div className="space-y-2 text-sm">
+                          <Input
+                            value={editDraft?.title ?? ""}
+                            placeholder="Τίτλος"
+                            className="h-8 text-xs"
+                            onChange={(e) =>
+                              setEditDraft((prev) => ({ ...prev, title: e.target.value }))
+                            }
+                          />
+                          <Input
+                            value={editDraft?.description ?? ""}
+                            placeholder="Περιγραφή"
+                            className="h-8 text-xs"
+                            onChange={(e) =>
+                              setEditDraft((prev) => ({ ...prev, description: e.target.value }))
+                            }
+                          />
+                          <div className="flex gap-2">
+                            <Input
+                              value={editDraft?.duration ?? ""}
+                              placeholder="Διάρκεια"
+                              className="h-8 text-xs flex-1"
+                              onChange={(e) =>
+                                setEditDraft((prev) => ({ ...prev, duration: e.target.value }))
+                              }
+                            />
+                            <Input
+                              value={editDraft?.participants ?? ""}
+                              placeholder="Συμμετέχοντες (π.χ. 4-6 μαθητές)"
+                              className="h-8 text-xs flex-1"
+                              onChange={(e) =>
+                                setEditDraft((prev) => ({ ...prev, participants: e.target.value }))
+                              }
+                            />
                           </div>
-                        )}
-                        {activity.participants && (
-                          <div className="flex items-center gap-1">
-                            <Users className="w-4 h-4" />
-                            {activity.participants}
+                          <div className="flex gap-2">
+                            <Input
+                              value={editDraft?.chapter ?? ""}
+                              placeholder="Chapter label (π.χ. Chapter 4)"
+                              className="h-8 text-xs flex-1"
+                              onChange={(e) =>
+                                setEditDraft((prev) => ({ ...prev, chapter: e.target.value }))
+                              }
+                            />
+                            <Input
+                              value={editDraft?.chapterId ?? ""}
+                              placeholder="Chapter ID (π.χ. 4)"
+                              className="h-8 text-xs flex-1"
+                              onChange={(e) =>
+                                setEditDraft((prev) => ({ ...prev, chapterId: e.target.value }))
+                              }
+                            />
                           </div>
-                        )}
-                      </div>
-                      {activity.chapterId && (
-                        <Link to={`/chapters/${activity.chapterId}`}>
-                          <Button variant="secondary" className="w-full">
-                            Δείτε τη δραστηριότητα
-                          </Button>
-                        </Link>
+                          <div className="flex justify-end gap-2 pt-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={handleCancelEdit}
+                            >
+                              Άκυρο
+                            </Button>
+                            <Button size="sm" onClick={handleSaveEdit}>
+                              Αποθήκευση
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="flex items-center gap-4 mb-4 text-sm text-muted-foreground">
+                            {activity.duration && (
+                              <div className="flex items-center gap-1">
+                                <Clock className="w-4 h-4" />
+                                {activity.duration}
+                              </div>
+                            )}
+                            {activity.participants && (
+                              <div className="flex items-center gap-1">
+                                <Users className="w-4 h-4" />
+                                {activity.participants}
+                              </div>
+                            )}
+                          </div>
+                          {activity.chapterId && (
+                            <Link to={`/chapters/${activity.chapterId}`}>
+                              <Button variant="secondary" className="w-full">
+                                Δείτε τη δραστηριότητα
+                              </Button>
+                            </Link>
+                          )}
+                        </>
                       )}
                     </CardContent>
                   </Card>
