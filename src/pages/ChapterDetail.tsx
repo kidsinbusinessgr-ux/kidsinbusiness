@@ -352,7 +352,7 @@ const ChapterDetail = () => {
         />
 
         {/* Page Header */}
-        <header className="mb-8 flex items-start gap-4">
+        <header className="mb-6 flex items-start gap-4">
           <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-3xl font-bold text-primary-foreground flex-shrink-0">
             {chapterId}
           </div>
@@ -365,6 +365,29 @@ const ChapterDetail = () => {
             </h1>
           </div>
         </header>
+
+        {/* Small visual chapter index */}
+        <nav
+          aria-label="Chapter section index"
+          className="mb-8 rounded-xl border border-border bg-card/60 backdrop-blur-sm px-4 py-3 shadow-sm"
+        >
+          <div className="flex items-center justify-between gap-3 overflow-x-auto">
+            {sectionAnchors.map((section, index) => (
+              <a
+                key={section.id}
+                href={`#${section.id}`}
+                className="group flex flex-1 min-w-[3rem] flex-col items-center gap-1 text-center hover-scale"
+              >
+                <span className="relative flex h-3 w-3 items-center justify-center">
+                  <span className="h-2.5 w-2.5 rounded-full bg-muted group-hover:bg-primary transition-colors" />
+                </span>
+                <span className="hidden text-[11px] font-medium text-muted-foreground group-hover:text-primary md:block">
+                  {index + 1}. {section.label}
+                </span>
+              </a>
+            ))}
+          </div>
+        </nav>
 
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Main Content */}
