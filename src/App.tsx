@@ -9,6 +9,7 @@ import ChapterDetail from "./pages/ChapterDetail";
 import Actions from "./pages/Actions";
 import Teachers from "./pages/Teachers";
 import Community from "./pages/Community";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/actions" element={<Actions />} />
           <Route path="/teachers" element={<Teachers />} />
           <Route path="/community" element={<Community />} />
+          <Route path="/auth" element={<Auth />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

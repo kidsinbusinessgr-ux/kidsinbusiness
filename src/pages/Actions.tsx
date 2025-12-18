@@ -12,6 +12,7 @@ import Navigation from "@/components/Navigation";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import GlobalTip from "@/components/GlobalTip";
 import { Toaster } from "@/components/ui/toaster";
+import { useAuthAndClasses } from "@/hooks/useAuthAndClasses";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,32 +25,10 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-const CLASS_OPTIONS = [
-  { id: "class-a", defaultLabel: "Τμήμα Α" },
-  { id: "class-b", defaultLabel: "Τμήμα Β" },
-  { id: "class-c", defaultLabel: "Τμήμα Γ" },
-] as const;
-
-type ClassId = (typeof CLASS_OPTIONS)[number]["id"];
-
-const getDefaultClassLabel = (id: ClassId) =>
-  CLASS_OPTIONS.find((c) => c.id === id)?.defaultLabel ?? id;
-
-const getStoredClassLabel = (id: ClassId): string => {
-  if (typeof window === "undefined") return getDefaultClassLabel(id);
-  try {
-    const raw = localStorage.getItem("classNames");
-    if (!raw) return getDefaultClassLabel(id);
-    const parsed = JSON.parse(raw) as Record<string, string>;
-    return parsed[id] || getDefaultClassLabel(id);
-  } catch {
-    return getDefaultClassLabel(id);
-  }
-};
-
 const Actions = () => {
   const { toast } = useToast();
-  const [currentClassId, setCurrentClassId] = useState<ClassId>("class-a");
+  const { classes, loading } = useAuthAndClasses();
+  const [currentClassId, setCurrentClassId] = useState<string>("");
   const [completedChallenges, setCompletedChallenges] = useState<Set<string>>(new Set());
   const [statusFilter, setStatusFilter] = useState<"all" | "completed" | "incomplete">("all");
 
@@ -64,12 +43,21 @@ const Actions = () => {
     "Μεγάλη επιτυχία! Είσαι σε καλό δρόμο! 🏆",
   ];
 
+  // Initialize currentClassId once classes are loaded
   useEffect(() => {
-    const savedClass = localStorage.getItem("currentClassId");
-    if (savedClass && CLASS_OPTIONS.some((c) => c.id === savedClass)) {
-      setCurrentClassId(savedClass as (typeof CLASS_OPTIONS)[number]["id"]);
+    if (classes.length > 0 && !currentClassId) {
+      const savedClass = localStorage.getItem("currentClassId");
+      const validClass = classes.find((c) => c.id === savedClass);
+      setCurrentClassId(validClass ? validClass.id : classes[0].id);
     }
-  }, []);
+  }, [classes, currentClassId]);
+
+  // Save selected class
+  useEffect(() => {
+    if (currentClassId) {
+      localStorage.setItem("currentClassId", currentClassId);
+    }
+  }, [currentClassId]);
 
   useEffect(() => {
     const key = `completedChallenges_${currentClassId}`;
@@ -176,7 +164,7 @@ const Actions = () => {
 
   const resetProgress = () => {
     setCompletedChallenges(new Set());
-    CLASS_OPTIONS.forEach((cls) => {
+    classes.forEach((cls) => {
       localStorage.removeItem(`completedChallenges_${cls.id}`);
       localStorage.removeItem(`completedChallengesHistory_${cls.id}`);
     });
@@ -406,7 +394,7 @@ const Actions = () => {
                 <div className="flex flex-col gap-2 items-stretch sm:flex-row sm:items-center sm:gap-3">
                   {/* Class Selector */}
                   <div className="inline-flex items-center gap-1 rounded-full border border-border bg-card/80 p-1 text-xs md:text-sm">
-                    {CLASS_OPTIONS.map((cls) => (
+                    {classes.map((cls) => (
                       <Button
                         key={cls.id}
                         type="button"
@@ -415,10 +403,9 @@ const Actions = () => {
                         className="rounded-full px-3 py-1 h-8"
                         onClick={() => {
                           setCurrentClassId(cls.id);
-                          localStorage.setItem("currentClassId", cls.id);
                         }}
                       >
-                        {getStoredClassLabel(cls.id)}
+                        {cls.name}
                       </Button>
                     ))}
                   </div>

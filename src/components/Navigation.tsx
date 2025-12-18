@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
-import { BookOpen, Zap, GraduationCap, Users, Menu } from "lucide-react";
+import { BookOpen, Zap, GraduationCap, Users, Menu, LogIn, LogOut } from "lucide-react";
+import { useAuthAndClasses } from "@/hooks/useAuthAndClasses";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -12,6 +13,7 @@ import logo from "@/assets/kids-in-business-logo.png";
 const Navigation = () => {
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const { isAuthenticated, signOut } = useAuthAndClasses();
 
   const navItems = [
     { path: "/chapters", label: "Μαθήματα", icon: BookOpen },
@@ -50,6 +52,19 @@ const Navigation = () => {
                 </Link>
               );
             })}
+            {isAuthenticated ? (
+              <Button variant="ghost" className="gap-2" onClick={signOut}>
+                <LogOut className="w-4 h-4" />
+                Αποσύνδεση
+              </Button>
+            ) : (
+              <Link to="/auth">
+                <Button variant="ghost" className="gap-2">
+                  <LogIn className="w-4 h-4" />
+                  Σύνδεση
+                </Button>
+              </Link>
+            )}
           </div>
 
           {/* Mobile Navigation */}
@@ -79,6 +94,26 @@ const Navigation = () => {
                     </Link>
                   );
                 })}
+                {isAuthenticated ? (
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start gap-2"
+                    onClick={() => {
+                      signOut();
+                      setOpen(false);
+                    }}
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Αποσύνδεση
+                  </Button>
+                ) : (
+                  <Link to="/auth" onClick={() => setOpen(false)}>
+                    <Button variant="ghost" className="w-full justify-start gap-2">
+                      <LogIn className="w-4 h-4" />
+                      Σύνδεση
+                    </Button>
+                  </Link>
+                )}
               </div>
             </SheetContent>
           </Sheet>
