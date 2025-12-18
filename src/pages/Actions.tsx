@@ -48,6 +48,13 @@ const Actions = () => {
   ];
 
   useEffect(() => {
+    const savedClass = localStorage.getItem("currentClassId");
+    if (savedClass && CLASS_OPTIONS.some((c) => c.id === savedClass)) {
+      setCurrentClassId(savedClass as (typeof CLASS_OPTIONS)[number]["id"]);
+    }
+  }, []);
+
+  useEffect(() => {
     const key = `completedChallenges_${currentClassId}`;
     const legacy = localStorage.getItem("completedChallenges");
     const saved = localStorage.getItem(key) ?? legacy;
@@ -389,7 +396,10 @@ const Actions = () => {
                         variant={currentClassId === cls.id ? "default" : "ghost"}
                         size="sm"
                         className="rounded-full px-3 py-1 h-8"
-                        onClick={() => setCurrentClassId(cls.id)}
+                        onClick={() => {
+                          setCurrentClassId(cls.id);
+                          localStorage.setItem("currentClassId", cls.id);
+                        }}
                       >
                         {cls.label}
                       </Button>

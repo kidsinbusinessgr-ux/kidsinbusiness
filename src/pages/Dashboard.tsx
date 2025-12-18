@@ -12,25 +12,47 @@ const CLASS_IDS = ["class-1", "class-2"] as const;
 const PROJECT_IDS = ["project-1", "project-2"] as const;
 const ALL_IDS = [...MINI_IDS, ...CLASS_IDS, ...PROJECT_IDS];
 
-const Dashboard = () => {
-  const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
+const CLASS_OPTIONS = [
+  { id: "class-a", label: "Τμήμα Α" },
+  { id: "class-b", label: "Τμήμα Β" },
+  { id: "class-c", label: "Τμήμα Γ" },
+] as const;
 
+const Dashboard = () => {
+  const [currentClassId, setCurrentClassId] = useState<(typeof CLASS_OPTIONS)[number]["id"]>("class-a");
+  const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
+  const [recentCompleted, setRecentCompleted] = useState<string[]>([]);
+
+  // Load last selected class on mount
   useEffect(() => {
-    const saved = localStorage.getItem("completedChallenges");
+    const savedClass = localStorage.getItem("currentClassId");
+    if (savedClass && CLASS_OPTIONS.some((c) => c.id === savedClass)) {
+      setCurrentClassId(savedClass as (typeof CLASS_OPTIONS)[number]["id"]);
+    }
+  }, []);
+
+  // Load completed challenges for current class
+  useEffect(() => {
+    const key = `completedChallenges_${currentClassId}`;
+    const legacy = localStorage.getItem("completedChallenges");
+    const saved = localStorage.getItem(key) ?? legacy;
     if (saved) {
       try {
         const parsed = JSON.parse(saved) as string[];
         setCompletedIds(new Set(parsed.filter((id) => ALL_IDS.includes(id as any))));
       } catch {
         // ignore parse errors
+        setCompletedIds(new Set());
       }
+    } else {
+      setCompletedIds(new Set());
     }
-  }, []);
+  }, [currentClassId]);
 
-  const [recentCompleted, setRecentCompleted] = useState<string[]>([]);
-
+  // Load recent completion history per class
   useEffect(() => {
-    const historyRaw = localStorage.getItem("completedChallengesHistory");
+    const historyKey = `completedChallengesHistory_${currentClassId}`;
+    const historyRaw = localStorage.getItem(historyKey);
     if (historyRaw) {
       try {
         const parsed = JSON.parse(historyRaw) as string[];
@@ -48,9 +70,12 @@ const Dashboard = () => {
         setRecentCompleted(uniqueRecent);
       } catch {
         // ignore parse errors
+        setRecentCompleted([]);
       }
+    } else {
+      setRecentCompleted([]);
     }
-  }, []);
+  }, [currentClassId]);
 
   const completedCount = completedIds.size;
   const totalChallenges = ALL_IDS.length;
@@ -115,11 +140,31 @@ const Dashboard = () => {
       
       <main className="container mx-auto px-4 py-8">
         {/* Welcome Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Καλώς ήρθατε στο Kids in Business</h1>
-          <p className="text-muted-foreground text-lg">
-            Εμπνεύστε τους μαθητές σας να γίνουν οι επιχειρηματίες του αύριο
-          </p>
+        <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+          <div>
+            <h1 className="text-4xl font-bold mb-2">Καλώς ήρθατε στο Kids in Business</h1>
+            <p className="text-muted-foreground text-lg">
+              Εμπνεύστε τους μαθητές σας να γίνουν οι επιχειρηματίες του αύριο
+            </p>
+          </div>
+          {/* Class selector */}
+          <div className="inline-flex items-center gap-1 rounded-full border border-border bg-card/80 p-1 text-xs md:text-sm">
+            {CLASS_OPTIONS.map((cls) => (
+              <Button
+                key={cls.id}
+                type="button"
+                variant={currentClassId === cls.id ? "default" : "ghost"}
+                size="sm"
+                className="rounded-full px-3 py-1 h-8"
+                onClick={() => {
+                  setCurrentClassId(cls.id);
+                  localStorage.setItem("currentClassId", cls.id);
+                }}
+              >
+                {cls.label}
+              </Button>
+            ))}
+          </div>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6 mb-8">
