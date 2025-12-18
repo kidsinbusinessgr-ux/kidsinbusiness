@@ -73,6 +73,7 @@ const Dashboard = () => {
   ];
 
   const unlockedAchievements = achievements.filter((a) => a.unlocked);
+  const overallPercent = totalChallenges ? Math.round((completedCount / totalChallenges) * 100) : 0;
 
   return (
     <div className="min-h-screen bg-background">
@@ -93,9 +94,9 @@ const Dashboard = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BookOpen className="w-5 h-5 text-primary" />
-                Συνέχισε το μάθημα
+                Πρόοδος στις δράσεις & challenges
               </CardTitle>
-              <CardDescription>Επιστροφή στο Chapter 1 - Lesson 1.2</CardDescription>
+              <CardDescription>Συνολική εικόνα προόδου από τη σελίδα Δράσεις.</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -104,11 +105,14 @@ const Dashboard = () => {
                     <BookOpen className="w-8 h-8 text-primary-foreground" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold mb-1">Τι είναι η Επιχειρηματικότητα;</h3>
-                    <div className="w-full bg-muted rounded-full h-2 mb-2">
-                      <div className="bg-primary rounded-full h-2" style={{ width: "40%" }}></div>
+                    <h3 className="font-semibold mb-1">Πρόοδος Challenges</h3>
+                    <div className="w-full bg-muted rounded-full h-2 mb-2 overflow-hidden">
+                      <div
+                        className="bg-primary rounded-full h-2 transition-all duration-500"
+                        style={{ width: `${overallPercent}%` }}
+                      ></div>
                     </div>
-                    <p className="text-sm text-muted-foreground">40% ολοκληρωμένο</p>
+                    <p className="text-sm text-muted-foreground">{overallPercent}% ολοκληρωμένο</p>
                   </div>
                 </div>
                 <Link to="/chapter/1">
