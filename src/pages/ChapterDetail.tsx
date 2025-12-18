@@ -441,7 +441,7 @@ const ChapterDetail = () => {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {/* SECTION 1 – Opening / Brand Intro */}
-            <section id="opening">
+            <section id="opening" className="scroll-mt-24">
               <Card className="bg-gradient-to-r from-primary/10 to-accent/10 border-primary/30">
                 <CardHeader>
                   <CardTitle>Καλωσήρθες στο Kids in Business</CardTitle>
@@ -455,7 +455,7 @@ const ChapterDetail = () => {
             </section>
 
             {/* SECTION 2 – Lesson 1.1 | Story */}
-            <section id="lesson-1-1" className="space-y-4">
+            <section id="lesson-1-1" className="space-y-4 scroll-mt-24">
               <h2 className="text-2xl font-bold">{content.lesson1Title}</h2>
 
               <Card>
@@ -479,7 +479,7 @@ const ChapterDetail = () => {
             </section>
 
             {/* SECTION 3 – Τι είναι η επιχειρηματικότητα; */}
-            <section id="what-is-entrepreneurship" className="space-y-4">
+            <section id="what-is-entrepreneurship" className="space-y-4 scroll-mt-24">
               <h2 className="text-2xl font-bold">Τι είναι η επιχειρηματικότητα;</h2>
 
               <div className="grid md:grid-cols-2 gap-4">
@@ -504,7 +504,7 @@ const ChapterDetail = () => {
             </section>
 
             {/* SECTION 4 – Lesson 1.2 | Πρόβλημα & Λύση */}
-            <section id="lesson-1-2" className="space-y-4">
+            <section id="lesson-1-2" className="space-y-4 scroll-mt-24">
               <h2 className="text-2xl font-bold">{content.lesson2Title}</h2>
 
               <Card>
@@ -539,7 +539,7 @@ const ChapterDetail = () => {
             </section>
 
             {/* SECTION 5 – Lesson 1.3 | Ποιον βοηθά η ιδέα μου; */}
-            <section id="lesson-1-3" className="space-y-4">
+            <section id="lesson-1-3" className="space-y-4 scroll-mt-24">
               <h2 className="text-2xl font-bold">{content.lesson3Title}</h2>
 
               <Card>
@@ -556,7 +556,7 @@ const ChapterDetail = () => {
             </section>
 
             {/* SECTION 6 – Mini Challenge */}
-            <section id="mini-challenge" className="space-y-4">
+            <section id="mini-challenge" className="space-y-4 scroll-mt-24">
               <h2 className="text-2xl font-bold">{content.miniChallengeTitle}</h2>
 
               <Card className="bg-accent/10 border-accent/40">
@@ -579,7 +579,7 @@ const ChapterDetail = () => {
             </section>
 
             {/* SECTION 7 – Closing Ritual */}
-            <section id="closing-ritual" className="space-y-4">
+            <section id="closing-ritual" className="space-y-4 scroll-mt-24">
               <h2 className="text-2xl font-bold">{content.closingTitle}</h2>
 
               <Card className="bg-primary/5 border-primary/40">
@@ -590,7 +590,7 @@ const ChapterDetail = () => {
             </section>
 
             {/* SECTION 8 – Chapter Reflection */}
-            <section id="reflection" className="space-y-4 mb-4">
+            <section id="reflection" className="space-y-4 mb-4 scroll-mt-24">
               <h2 className="text-2xl font-bold">{content.reflectionTitle}</h2>
 
               <Card>
