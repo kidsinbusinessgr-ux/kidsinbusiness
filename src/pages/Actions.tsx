@@ -109,6 +109,7 @@ const activityEditSchema = z
     category: z.enum(["mini", "class", "project"]).optional(),
   })
   .superRefine((data, ctx) => {
+    // Chapter ID πρέπει να είναι από τις διαθέσιμες επιλογές
     if (data.chapterId && !VALID_CHAPTER_IDS.includes(data.chapterId as (typeof VALID_CHAPTER_IDS)[number])) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -117,6 +118,38 @@ const activityEditSchema = z
       });
     }
 
+    // Business κανόνας: chapter και chapterId πρέπει να συμβαδίζουν
+    const hasChapterId = !!data.chapterId && data.chapterId.trim() !== "";
+    const hasChapterLabel = !!data.chapter && data.chapter.trim() !== "";
+
+    if (hasChapterId && !hasChapterLabel) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["chapter"],
+        message: "Όταν υπάρχει chapter ID, πρέπει να υπάρχει και ετικέτα κεφαλαίου.",
+      });
+    }
+
+    if (hasChapterLabel && !hasChapterId) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["chapterId"],
+        message: "Όταν υπάρχει ετικέτα κεφαλαίου, πρέπει να οριστεί και chapter ID.",
+      });
+    }
+
+    // Business κανόνας: για mini & class η διάρκεια είναι υποχρεωτική
+    const requiresDuration = data.category === "mini" || data.category === "class";
+    if (requiresDuration && (!data.duration || data.duration.trim() === "")) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["duration"],
+        message: "Η διάρκεια είναι υποχρεωτική για αυτό τον τύπο δράσης.",
+      });
+      return; // δεν συνεχίζουμε με περαιτέρω ελέγχους διάρκειας
+    }
+
+    // Semantic έλεγχος διάρκειας ανά κατηγορία (επιλογές από presets)
     if (data.duration) {
       const allowedDurations: string[] =
         data.category === "mini" ? MINI_DURATIONS : data.category === "class" ? CLASS_DURATIONS : ALL_DURATIONS;
@@ -124,7 +157,7 @@ const activityEditSchema = z
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["duration"],
-          message: "Η διάρκεια πρέπει να είναι μία από τις διαθέσιμες επιλογές.",
+          message: "Η διάρκεια πρέπει να είναι μία από τις διαθέσιμες επιλογές για αυτό τον τύπο δράσης.",
         });
       }
     }
@@ -519,7 +552,16 @@ const Actions = () => {
     });
 
     if (!parsed.success) {
-      const firstError = parsed.error.errors[0];
+      const fieldErrors: typeof editErrors = {};
+      for (const issue of parsed.error.issues) {
+        const field = issue.path[0] as keyof typeof fieldErrors;
+        if (field && !fieldErrors[field]) {
+          fieldErrors[field] = issue.message;
+        }
+      }
+      setEditErrors(fieldErrors);
+
+      const firstError = parsed.error.issues[0];
       toast({
         title: "Μη έγκυρα στοιχεία δράσης",
         description: firstError?.message ?? "Ελέγξτε τα πεδία της φόρμας και δοκιμάστε ξανά.",
@@ -527,6 +569,8 @@ const Actions = () => {
       });
       return;
     }
+
+    setEditErrors({});
 
     const data = parsed.data;
 
