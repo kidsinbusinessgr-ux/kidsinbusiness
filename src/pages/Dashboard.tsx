@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, BookOpen, Zap, TrendingUp, Star, CheckCircle2, Circle } from "lucide-react";
+import { ArrowRight, BookOpen, Zap, TrendingUp, Star, CheckCircle2, Circle, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -134,6 +134,24 @@ const Dashboard = () => {
   const unlockedAchievements = achievements.filter((a) => a.unlocked);
   const overallPercent = totalChallenges ? Math.round((completedCount / totalChallenges) * 100) : 0;
 
+  const getClassStats = (classId: (typeof CLASS_OPTIONS)[number]["id"]) => {
+    const key = `completedChallenges_${classId}`;
+    const legacy = localStorage.getItem("completedChallenges");
+    const saved = typeof window !== "undefined" ? localStorage.getItem(key) ?? legacy : null;
+    if (!saved) {
+      return { completed: 0, percent: 0 };
+    }
+    try {
+      const parsed = JSON.parse(saved) as string[];
+      const set = new Set(parsed.filter((id) => ALL_IDS.includes(id as any)));
+      const completed = set.size;
+      const percent = totalChallenges ? Math.round((completed / totalChallenges) * 100) : 0;
+      return { completed, percent };
+    } catch {
+      return { completed: 0, percent: 0 };
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -253,6 +271,50 @@ const Dashboard = () => {
                 })}
               </div>
             </CardContent>
+        </Card>
+
+        {/* Per-class summary */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="w-5 h-5 text-secondary" />
+              Πρόοδος ανά Τμήμα
+            </CardTitle>
+            <CardDescription>
+              Σύγκριση της προόδου challenges μεταξύ των τάξεων.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 md:grid-cols-3">
+              {CLASS_OPTIONS.map((cls) => {
+                const stats = getClassStats(cls.id);
+                return (
+                  <div
+                    key={cls.id}
+                    className={`rounded-lg border px-4 py-3 ${
+                      currentClassId === cls.id ? "border-primary bg-primary/5" : "bg-card/80"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-medium text-sm">{cls.label}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {stats.completed}/{totalChallenges} challenges
+                      </span>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+                      <div
+                        className="bg-secondary rounded-full h-2 transition-all duration-500"
+                        style={{ width: `${stats.percent}%` }}
+                      ></div>
+                    </div>
+                    <p className="mt-1 text-xs text-muted-foreground text-right">
+                      {stats.percent}% ολοκληρωμένο
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
         </Card>
 
         {/* Unlocked Achievement Badges */}
