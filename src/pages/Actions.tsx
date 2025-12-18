@@ -16,6 +16,7 @@ import { Toaster } from "@/components/ui/toaster";
 const Actions = () => {
   const { toast } = useToast();
   const [completedChallenges, setCompletedChallenges] = useState<Set<string>>(new Set());
+  const [statusFilter, setStatusFilter] = useState<"all" | "completed" | "incomplete">("all");
 
   const motivationalMessages = [
     "Συγχαρητήρια! Ένα βήμα πιο κοντά στο στόχο σου! 🎉",
@@ -29,7 +30,7 @@ const Actions = () => {
   ];
 
   useEffect(() => {
-    const saved = localStorage.getItem('completedChallenges');
+    const saved = localStorage.getItem("completedChallenges");
     if (saved) {
       setCompletedChallenges(new Set(JSON.parse(saved)));
     }
@@ -69,14 +70,14 @@ const Actions = () => {
   const toggleChallenge = (id: string) => {
     const newCompleted = new Set(completedChallenges);
     const wasCompleted = newCompleted.has(id);
-    
+
     if (wasCompleted) {
       newCompleted.delete(id);
     } else {
       newCompleted.add(id);
       // Trigger confetti only when completing (not uncompleting)
       triggerConfetti();
-      
+
       // Show motivational toast
       const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
       toast({
@@ -85,12 +86,22 @@ const Actions = () => {
         duration: 3000,
       });
     }
-    
+
     setCompletedChallenges(newCompleted);
-    localStorage.setItem('completedChallenges', JSON.stringify(Array.from(newCompleted)));
+    localStorage.setItem("completedChallenges", JSON.stringify(Array.from(newCompleted)));
   };
 
   const isCompleted = (id: string) => completedChallenges.has(id);
+
+  const filterByStatus = <T extends { id: string }>(items: T[]): T[] => {
+    if (statusFilter === "completed") {
+      return items.filter((item) => isCompleted(item.id));
+    }
+    if (statusFilter === "incomplete") {
+      return items.filter((item) => !isCompleted(item.id));
+    }
+    return items;
+  };
   const miniChallenges = [
     {
       id: "mini-1",
@@ -238,18 +249,51 @@ const Actions = () => {
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <Tabs defaultValue="mini" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="mini">Mini Challenges</TabsTrigger>
-                <TabsTrigger value="class">Δραστηριότητες Τάξης</TabsTrigger>
-                <TabsTrigger value="projects">Projects</TabsTrigger>
-              </TabsList>
+              <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <TabsList className="grid w-full md:w-auto grid-cols-3">
+                  <TabsTrigger value="mini">Mini Challenges</TabsTrigger>
+                  <TabsTrigger value="class">Δραστηριότητες Τάξης</TabsTrigger>
+                  <TabsTrigger value="projects">Projects</TabsTrigger>
+                </TabsList>
+
+                {/* Status Filter Buttons */}
+                <div className="inline-flex items-center gap-1 rounded-full border border-border bg-card/80 p-1 text-xs md:text-sm">
+                  <Button
+                    type="button"
+                    variant={statusFilter === "all" ? "default" : "ghost"}
+                    size="sm"
+                    className="rounded-full px-3 py-1 h-8"
+                    onClick={() => setStatusFilter("all")}
+                  >
+                    Όλα
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={statusFilter === "completed" ? "default" : "ghost"}
+                    size="sm"
+                    className="rounded-full px-3 py-1 h-8"
+                    onClick={() => setStatusFilter("completed")}
+                  >
+                    Ολοκληρωμένα
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={statusFilter === "incomplete" ? "default" : "ghost"}
+                    size="sm"
+                    className="rounded-full px-3 py-1 h-8"
+                    onClick={() => setStatusFilter("incomplete")}
+                  >
+                    Μη ολοκληρωμένα
+                  </Button>
+                </div>
+              </div>
 
               <TabsContent value="mini" className="space-y-4">
-                {miniChallenges.map((challenge) => (
+                {filterByStatus(miniChallenges).map((challenge) => (
                   <Card
                     key={challenge.id}
                     className={`hover:shadow-lg transition-all duration-300 group relative ${
-                      isCompleted(challenge.id) ? 'bg-primary/5 border-primary/30' : ''
+                      isCompleted(challenge.id) ? "bg-primary/5 border-primary/30" : ""
                     }`}
                   >
                     <CardHeader>
@@ -300,11 +344,11 @@ const Actions = () => {
               </TabsContent>
 
               <TabsContent value="class" className="space-y-4">
-                {classActivities.map((activity) => (
+                {filterByStatus(classActivities).map((activity) => (
                   <Card
                     key={activity.id}
                     className={`hover:shadow-lg transition-all duration-300 group relative ${
-                      isCompleted(activity.id) ? 'bg-primary/5 border-primary/30' : ''
+                      isCompleted(activity.id) ? "bg-primary/5 border-primary/30" : ""
                     }`}
                   >
                     <CardHeader>
@@ -360,11 +404,11 @@ const Actions = () => {
               </TabsContent>
 
               <TabsContent value="projects" className="space-y-4">
-                {projects.map((project) => (
+                {filterByStatus(projects).map((project) => (
                   <Card
                     key={project.id}
                     className={`hover:shadow-lg transition-all duration-300 group relative ${
-                      isCompleted(project.id) ? 'bg-primary/5 border-primary/30' : ''
+                      isCompleted(project.id) ? "bg-primary/5 border-primary/30" : ""
                     }`}
                   >
                     <CardHeader>
