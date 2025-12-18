@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
 import Navigation from "@/components/Navigation";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import GlobalTip from "@/components/GlobalTip";
@@ -126,9 +127,18 @@ const Actions = () => {
               </Badge>
             </div>
           </div>
-          <p className="text-muted-foreground text-lg">
+          <p className="text-muted-foreground text-lg mb-4">
             Πρακτικές δραστηριότητες για εφαρμογή της γνώσης
           </p>
+          
+          {/* Progress Bar */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="font-medium text-foreground">Συνολική Πρόοδος</span>
+              <span className="text-muted-foreground">{completedCount} από {totalChallenges} δράσεις</span>
+            </div>
+            <Progress value={completionPercentage} className="h-3" />
+          </div>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6">
