@@ -1,12 +1,79 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, BookOpen, Zap, TrendingUp, Star } from "lucide-react";
+import { ArrowRight, BookOpen, Zap, TrendingUp, Star, CheckCircle2, Circle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Navigation from "@/components/Navigation";
 import GlobalTip from "@/components/GlobalTip";
 
+const MINI_IDS = ["mini-1", "mini-2", "mini-3"] as const;
+const CLASS_IDS = ["class-1", "class-2"] as const;
+const PROJECT_IDS = ["project-1", "project-2"] as const;
+const ALL_IDS = [...MINI_IDS, ...CLASS_IDS, ...PROJECT_IDS];
+
 const Dashboard = () => {
+  const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    const saved = localStorage.getItem("completedChallenges");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved) as string[];
+        setCompletedIds(new Set(parsed.filter((id) => ALL_IDS.includes(id as any))));
+      } catch {
+        // ignore parse errors
+      }
+    }
+  }, []);
+
+  const completedCount = completedIds.size;
+  const totalChallenges = ALL_IDS.length;
+  const miniCompleted = MINI_IDS.filter((id) => completedIds.has(id)).length;
+  const classCompleted = CLASS_IDS.filter((id) => completedIds.has(id)).length;
+  const projectsCompleted = PROJECT_IDS.filter((id) => completedIds.has(id)).length;
+
+  const achievements = [
+    {
+      id: "first-challenge",
+      title: "Πρώτο Challenge",
+      description: "Ολοκλήρωσε το πρώτο σου challenge.",
+      unlocked: completedCount >= 1,
+    },
+    {
+      id: "three-challenges",
+      title: "3 Challenges",
+      description: "Ολοκλήρωσε 3 challenges συνολικά.",
+      unlocked: completedCount >= 3,
+    },
+    {
+      id: "all-mini",
+      title: "Όλα τα Mini Challenges",
+      description: "Ολοκλήρωσε όλα τα Mini Challenges.",
+      unlocked: miniCompleted === MINI_IDS.length && MINI_IDS.length > 0,
+    },
+    {
+      id: "all-class",
+      title: "Όλες οι Δραστηριότητες Τάξης",
+      description: "Ολοκλήρωσε όλες τις Δραστηριότητες Τάξης.",
+      unlocked: classCompleted === CLASS_IDS.length && CLASS_IDS.length > 0,
+    },
+    {
+      id: "all-projects",
+      title: "Όλα τα Projects",
+      description: "Ολοκλήρωσε όλα τα Projects.",
+      unlocked: projectsCompleted === PROJECT_IDS.length && PROJECT_IDS.length > 0,
+    },
+    {
+      id: "all-challenges",
+      title: "Master of Challenges",
+      description: "Ολοκλήρωσε όλα τα διαθέσιμα challenges.",
+      unlocked: completedCount === totalChallenges && totalChallenges > 0,
+    },
+  ];
+
+  const unlockedAchievements = achievements.filter((a) => a.unlocked);
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -98,6 +165,37 @@ const Dashboard = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Unlocked Achievement Badges */}
+        {unlockedAchievements.length > 0 && (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Star className="w-5 h-5 text-primary" />
+                Badges Επιτυχίας Μαθητών
+              </CardTitle>
+              <CardDescription>
+                Πρόσφατα επιτεύγματα από τις δραστηριότητες challenges.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-3 md:grid-cols-2">
+              {unlockedAchievements.map((ach) => (
+                <div
+                  key={ach.id}
+                  className="flex items-start gap-3 rounded-lg border bg-card/80 px-3 py-2 shadow-sm"
+                >
+                  <div className="mt-0.5">
+                    <CheckCircle2 className="w-6 h-6 text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-sm">{ach.title}</p>
+                    <p className="text-xs text-muted-foreground">{ach.description}</p>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Recommended Chapter */}
         <Card className="bg-gradient-to-br from-primary/10 via-secondary/5 to-accent/10 border-primary/20">
