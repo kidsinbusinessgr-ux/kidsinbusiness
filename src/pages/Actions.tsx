@@ -1,5 +1,6 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Zap, Target, Rocket, Clock, Users } from "lucide-react";
+import { Zap, Target, Rocket, Clock, Users, CheckCircle2, Circle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,8 +10,30 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import GlobalTip from "@/components/GlobalTip";
 
 const Actions = () => {
+  const [completedChallenges, setCompletedChallenges] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    const saved = localStorage.getItem('completedChallenges');
+    if (saved) {
+      setCompletedChallenges(new Set(JSON.parse(saved)));
+    }
+  }, []);
+
+  const toggleChallenge = (id: string) => {
+    const newCompleted = new Set(completedChallenges);
+    if (newCompleted.has(id)) {
+      newCompleted.delete(id);
+    } else {
+      newCompleted.add(id);
+    }
+    setCompletedChallenges(newCompleted);
+    localStorage.setItem('completedChallenges', JSON.stringify(Array.from(newCompleted)));
+  };
+
+  const isCompleted = (id: string) => completedChallenges.has(id);
   const miniChallenges = [
     {
+      id: "mini-1",
       title: "Ιδέα σε 5 λεπτά",
       description: "Brainstorming δραστηριότητα για γρήγορη παραγωγή ιδεών",
       duration: "5 λεπτά",
@@ -19,6 +42,7 @@ const Actions = () => {
       difficulty: "Εύκολο",
     },
     {
+      id: "mini-2",
       title: "Λύσε το πρόβλημα",
       description: "Εντοπίστε προβλήματα και προτείνετε λύσεις",
       duration: "10 λεπτά",
@@ -27,6 +51,7 @@ const Actions = () => {
       difficulty: "Μέτριο",
     },
     {
+      id: "mini-3",
       title: "Pitch σε 30 δευτερόλεπτα",
       description: "Παρουσιάστε μια ιδέα με σαφήνεια και ταχύτητα",
       duration: "15 λεπτά",
@@ -38,6 +63,7 @@ const Actions = () => {
 
   const classActivities = [
     {
+      id: "class-1",
       title: "Ο ρόλος του ηγέτη",
       description: "Ομαδική δραστηριότητα για κατανόηση ηγεσίας",
       duration: "30 λεπτά",
@@ -46,6 +72,7 @@ const Actions = () => {
       participants: "4-6 μαθητές",
     },
     {
+      id: "class-2",
       title: "Η επιχείρησή μου",
       description: "Δημιουργήστε μια επιχειρηματική ιδέα ως ομάδα",
       duration: "45 λεπτά",
@@ -57,6 +84,7 @@ const Actions = () => {
 
   const projects = [
     {
+      id: "project-1",
       title: "Business Plan Junior",
       description: "Πλήρες επιχειρηματικό σχέδιο για παιδιά",
       duration: "3-5 μέρες",
@@ -65,6 +93,7 @@ const Actions = () => {
       complexity: "Υψηλό",
     },
     {
+      id: "project-2",
       title: "Παρουσίαση ομάδας",
       description: "Τελική παρουσίαση επιχειρηματικής ιδέας",
       duration: "2-3 μέρες",
@@ -74,6 +103,10 @@ const Actions = () => {
     },
   ];
 
+  const totalChallenges = miniChallenges.length + classActivities.length + projects.length;
+  const completedCount = completedChallenges.size;
+  const completionPercentage = Math.round((completedCount / totalChallenges) * 100);
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -82,7 +115,17 @@ const Actions = () => {
         <Breadcrumbs items={[{ label: "Δράσεις" }]} />
         
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Δράσεις & Challenges</h1>
+          <div className="flex items-center justify-between mb-2">
+            <h1 className="text-4xl font-bold">Δράσεις & Challenges</h1>
+            <div className="flex items-center gap-3">
+              <Badge variant="secondary" className="text-base px-4 py-2">
+                {completedCount}/{totalChallenges} ολοκληρώθηκε
+              </Badge>
+              <Badge variant="outline" className="text-base px-4 py-2">
+                {completionPercentage}%
+              </Badge>
+            </div>
+          </div>
           <p className="text-muted-foreground text-lg">
             Πρακτικές δραστηριότητες για εφαρμογή της γνώσης
           </p>
@@ -98,23 +141,42 @@ const Actions = () => {
               </TabsList>
 
               <TabsContent value="mini" className="space-y-4">
-                {miniChallenges.map((challenge, idx) => (
+                {miniChallenges.map((challenge) => (
                   <Card
-                    key={idx}
-                    className="hover:shadow-lg transition-all duration-300 group"
+                    key={challenge.id}
+                    className={`hover:shadow-lg transition-all duration-300 group relative ${
+                      isCompleted(challenge.id) ? 'bg-primary/5 border-primary/30' : ''
+                    }`}
                   >
                     <CardHeader>
                       <div className="flex items-start justify-between">
-                        <div>
+                        <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
                             <Zap className="w-5 h-5 text-primary" />
                             <Badge variant="secondary">{challenge.chapter}</Badge>
+                            {isCompleted(challenge.id) && (
+                              <Badge className="bg-primary/20 text-primary border-primary/30">
+                                <CheckCircle2 className="w-3 h-3 mr-1" />
+                                Ολοκληρώθηκε
+                              </Badge>
+                            )}
                           </div>
                           <CardTitle>{challenge.title}</CardTitle>
                           <CardDescription className="mt-2">
                             {challenge.description}
                           </CardDescription>
                         </div>
+                        <button
+                          onClick={() => toggleChallenge(challenge.id)}
+                          className="ml-2 p-2 rounded-full hover:bg-muted transition-colors"
+                          aria-label={isCompleted(challenge.id) ? "Mark as incomplete" : "Mark as complete"}
+                        >
+                          {isCompleted(challenge.id) ? (
+                            <CheckCircle2 className="w-6 h-6 text-primary" />
+                          ) : (
+                            <Circle className="w-6 h-6 text-muted-foreground" />
+                          )}
+                        </button>
                       </div>
                     </CardHeader>
                     <CardContent>
@@ -134,23 +196,42 @@ const Actions = () => {
               </TabsContent>
 
               <TabsContent value="class" className="space-y-4">
-                {classActivities.map((activity, idx) => (
+                {classActivities.map((activity) => (
                   <Card
-                    key={idx}
-                    className="hover:shadow-lg transition-all duration-300 group"
+                    key={activity.id}
+                    className={`hover:shadow-lg transition-all duration-300 group relative ${
+                      isCompleted(activity.id) ? 'bg-primary/5 border-primary/30' : ''
+                    }`}
                   >
                     <CardHeader>
                       <div className="flex items-start justify-between">
-                        <div>
+                        <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
                             <Target className="w-5 h-5 text-secondary" />
                             <Badge variant="secondary">{activity.chapter}</Badge>
+                            {isCompleted(activity.id) && (
+                              <Badge className="bg-primary/20 text-primary border-primary/30">
+                                <CheckCircle2 className="w-3 h-3 mr-1" />
+                                Ολοκληρώθηκε
+                              </Badge>
+                            )}
                           </div>
                           <CardTitle>{activity.title}</CardTitle>
                           <CardDescription className="mt-2">
                             {activity.description}
                           </CardDescription>
                         </div>
+                        <button
+                          onClick={() => toggleChallenge(activity.id)}
+                          className="ml-2 p-2 rounded-full hover:bg-muted transition-colors"
+                          aria-label={isCompleted(activity.id) ? "Mark as incomplete" : "Mark as complete"}
+                        >
+                          {isCompleted(activity.id) ? (
+                            <CheckCircle2 className="w-6 h-6 text-primary" />
+                          ) : (
+                            <Circle className="w-6 h-6 text-muted-foreground" />
+                          )}
+                        </button>
                       </div>
                     </CardHeader>
                     <CardContent>
@@ -175,23 +256,42 @@ const Actions = () => {
               </TabsContent>
 
               <TabsContent value="projects" className="space-y-4">
-                {projects.map((project, idx) => (
+                {projects.map((project) => (
                   <Card
-                    key={idx}
-                    className="hover:shadow-lg transition-all duration-300 group"
+                    key={project.id}
+                    className={`hover:shadow-lg transition-all duration-300 group relative ${
+                      isCompleted(project.id) ? 'bg-primary/5 border-primary/30' : ''
+                    }`}
                   >
                     <CardHeader>
                       <div className="flex items-start justify-between">
-                        <div>
+                        <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
                             <Rocket className="w-5 h-5 text-accent" />
                             <Badge variant="secondary">{project.chapter}</Badge>
+                            {isCompleted(project.id) && (
+                              <Badge className="bg-primary/20 text-primary border-primary/30">
+                                <CheckCircle2 className="w-3 h-3 mr-1" />
+                                Ολοκληρώθηκε
+                              </Badge>
+                            )}
                           </div>
                           <CardTitle>{project.title}</CardTitle>
                           <CardDescription className="mt-2">
                             {project.description}
                           </CardDescription>
                         </div>
+                        <button
+                          onClick={() => toggleChallenge(project.id)}
+                          className="ml-2 p-2 rounded-full hover:bg-muted transition-colors"
+                          aria-label={isCompleted(project.id) ? "Mark as incomplete" : "Mark as complete"}
+                        >
+                          {isCompleted(project.id) ? (
+                            <CheckCircle2 className="w-6 h-6 text-primary" />
+                          ) : (
+                            <Circle className="w-6 h-6 text-muted-foreground" />
+                          )}
+                        </button>
                       </div>
                     </CardHeader>
                     <CardContent>
