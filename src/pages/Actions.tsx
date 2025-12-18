@@ -108,6 +108,41 @@ const Actions = () => {
   const completedCount = completedChallenges.size;
   const completionPercentage = Math.round((completedCount / totalChallenges) * 100);
 
+  // Calculate stats by category
+  const miniCompleted = miniChallenges.filter(c => isCompleted(c.id)).length;
+  const classCompleted = classActivities.filter(c => isCompleted(c.id)).length;
+  const projectsCompleted = projects.filter(c => isCompleted(c.id)).length;
+
+  const stats = [
+    {
+      type: "Mini Challenges",
+      icon: Zap,
+      color: "text-primary",
+      bgColor: "bg-primary/10",
+      completed: miniCompleted,
+      total: miniChallenges.length,
+      percentage: Math.round((miniCompleted / miniChallenges.length) * 100),
+    },
+    {
+      type: "Δραστηριότητες Τάξης",
+      icon: Target,
+      color: "text-secondary",
+      bgColor: "bg-secondary/10",
+      completed: classCompleted,
+      total: classActivities.length,
+      percentage: Math.round((classCompleted / classActivities.length) * 100),
+    },
+    {
+      type: "Projects",
+      icon: Rocket,
+      color: "text-accent",
+      bgColor: "bg-accent/10",
+      completed: projectsCompleted,
+      total: projects.length,
+      percentage: Math.round((projectsCompleted / projects.length) * 100),
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -326,6 +361,39 @@ const Actions = () => {
 
           <div className="space-y-6">
             <GlobalTip tip="Οι Mini Challenges είναι ιδανικά για warm-up ή για γεμίσματα χρόνου. Τα Projects απαιτούν προγραμματισμό και συνέχεια." />
+
+            {/* Statistics Card */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Στατιστικά Προόδου</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {stats.map((stat) => {
+                  const Icon = stat.icon;
+                  return (
+                    <div key={stat.type} className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className={`p-2 rounded-lg ${stat.bgColor}`}>
+                            <Icon className={`w-4 h-4 ${stat.color}`} />
+                          </div>
+                          <span className="text-sm font-medium">{stat.type}</span>
+                        </div>
+                        <span className="text-sm text-muted-foreground">
+                          {stat.completed}/{stat.total}
+                        </span>
+                      </div>
+                      <div className="space-y-1">
+                        <Progress value={stat.percentage} className="h-2" />
+                        <p className="text-xs text-muted-foreground text-right">
+                          {stat.percentage}% ολοκληρωμένο
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </CardContent>
+            </Card>
 
             <Card>
               <CardHeader>
