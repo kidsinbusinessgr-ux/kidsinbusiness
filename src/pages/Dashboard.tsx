@@ -1,50 +1,42 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, BookOpen, Zap, TrendingUp, Star, CheckCircle2, Circle, Users } from "lucide-react";
+import { ArrowRight, BookOpen, Zap, TrendingUp, Star, CheckCircle2, Circle, Users, Edit2, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import Navigation from "@/components/Navigation";
 import GlobalTip from "@/components/GlobalTip";
+import { useAuthAndClasses } from "@/hooks/useAuthAndClasses";
 
 const MINI_IDS = ["mini-1", "mini-2", "mini-3"] as const;
 const CLASS_IDS = ["class-1", "class-2"] as const;
 const PROJECT_IDS = ["project-1", "project-2"] as const;
 const ALL_IDS = [...MINI_IDS, ...CLASS_IDS, ...PROJECT_IDS];
 
-const CLASS_OPTIONS = [
-  { id: "class-a", defaultLabel: "Τμήμα Α" },
-  { id: "class-b", defaultLabel: "Τμήμα Β" },
-  { id: "class-c", defaultLabel: "Τμήμα Γ" },
-] as const;
-
-type ClassId = (typeof CLASS_OPTIONS)[number]["id"];
-
-const getDefaultClassLabel = (id: ClassId) =>
-  CLASS_OPTIONS.find((c) => c.id === id)?.defaultLabel ?? id;
-
 const Dashboard = () => {
-  const [currentClassId, setCurrentClassId] = useState<ClassId>("class-a");
-  const [classNames, setClassNames] = useState<Record<string, string>>({});
+  const { classes, loading, renameClass } = useAuthAndClasses();
+  const [currentClassId, setCurrentClassId] = useState<string>("");
   const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
   const [recentCompleted, setRecentCompleted] = useState<string[]>([]);
+  const [editingClassId, setEditingClassId] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
 
-  // Load last selected class & class names on mount
+  // Initialize currentClassId once classes are loaded
   useEffect(() => {
-    const savedClass = localStorage.getItem("currentClassId");
-    if (savedClass && CLASS_OPTIONS.some((c) => c.id === savedClass)) {
-      setCurrentClassId(savedClass as ClassId);
+    if (classes.length > 0 && !currentClassId) {
+      const savedClass = localStorage.getItem("currentClassId");
+      const validClass = classes.find((c) => c.id === savedClass);
+      setCurrentClassId(validClass ? validClass.id : classes[0].id);
     }
-    const rawNames = localStorage.getItem("classNames");
-    if (rawNames) {
-      try {
-        setClassNames(JSON.parse(rawNames) as Record<string, string>);
-      } catch {
-        setClassNames({});
-      }
+  }, [classes, currentClassId]);
+
+  // Save selected class
+  useEffect(() => {
+    if (currentClassId) {
+      localStorage.setItem("currentClassId", currentClassId);
     }
-  }, []);
+  }, [currentClassId]);
 
   // Load completed challenges for current class
   useEffect(() => {
@@ -149,11 +141,11 @@ const Dashboard = () => {
   const unlockedAchievements = achievements.filter((a) => a.unlocked);
   const overallPercent = totalChallenges ? Math.round((completedCount / totalChallenges) * 100) : 0;
 
-  const getClassLabel = (id: ClassId): string => {
-    return classNames[id] || getDefaultClassLabel(id);
+  const getClassLabel = (id: string): string => {
+    return classes.find((c) => c.id === id)?.name || id;
   };
 
-  const getClassStats = (classId: ClassId) => {
+  const getClassStats = (classId: string) => {
     const key = `completedChallenges_${classId}`;
     const legacy = localStorage.getItem("completedChallenges");
     const saved = typeof window !== "undefined" ? localStorage.getItem(key) ?? legacy : null;
@@ -171,6 +163,35 @@ const Dashboard = () => {
     }
   };
 
+  const handleStartEdit = (classId: string, currentName: string) => {
+    setEditingClassId(classId);
+    setEditName(currentName);
+  };
+
+  const handleSaveEdit = async () => {
+    if (editingClassId && editName.trim()) {
+      await renameClass(editingClassId, editName.trim());
+      setEditingClassId(null);
+      setEditName("");
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingClassId(null);
+    setEditName("");
+  };
+
+  if (loading || classes.length === 0 || !currentClassId) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <main className="container mx-auto px-4 py-8">
+          <p className="text-muted-foreground">Φόρτωση...</p>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -187,7 +208,7 @@ const Dashboard = () => {
           {/* Class selector */}
           <div className="flex flex-col items-end gap-2">
             <div className="inline-flex items-center gap-1 rounded-full border border-border bg-card/80 p-1 text-xs md:text-sm">
-              {CLASS_OPTIONS.map((cls) => (
+              {classes.map((cls) => (
                 <Button
                   key={cls.id}
                   type="button"
@@ -196,10 +217,9 @@ const Dashboard = () => {
                   className="rounded-full px-3 py-1 h-8"
                   onClick={() => {
                     setCurrentClassId(cls.id);
-                    localStorage.setItem("currentClassId", cls.id);
                   }}
                 >
-                  {getClassLabel(cls.id)}
+                  {cls.name}
                 </Button>
               ))}
             </div>
@@ -210,21 +230,50 @@ const Dashboard = () => {
                 <CardTitle className="text-xs font-medium">Μετονομασία τμημάτων</CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col gap-2 py-2">
-                {CLASS_OPTIONS.map((cls) => (
+                {classes.map((cls) => (
                   <div key={cls.id} className="flex items-center gap-2">
-                    <span className="text-[11px] text-muted-foreground w-14">
-                      {getDefaultClassLabel(cls.id)}
-                    </span>
-                    <Input
-                      value={classNames[cls.id] ?? ""}
-                      placeholder={getDefaultClassLabel(cls.id)}
-                      className="h-7 text-xs"
-                      onChange={(e) => {
-                        const next = { ...classNames, [cls.id]: e.target.value };
-                        setClassNames(next);
-                        localStorage.setItem("classNames", JSON.stringify(next));
-                      }}
-                    />
+                    {editingClassId === cls.id ? (
+                      <>
+                        <Input
+                          value={editName}
+                          className="h-7 text-xs flex-1"
+                          onChange={(e) => setEditName(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") handleSaveEdit();
+                            if (e.key === "Escape") handleCancelEdit();
+                          }}
+                          autoFocus
+                        />
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-7 w-7 p-0"
+                          onClick={handleSaveEdit}
+                        >
+                          <Check className="h-4 w-4 text-green-600" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-7 w-7 p-0"
+                          onClick={handleCancelEdit}
+                        >
+                          <X className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-xs flex-1">{cls.name}</span>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-7 w-7 p-0"
+                          onClick={() => handleStartEdit(cls.id, cls.name)}
+                        >
+                          <Edit2 className="h-3 w-3" />
+                        </Button>
+                      </>
+                    )}
                   </div>
                 ))}
               </CardContent>
@@ -333,7 +382,7 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-3">
-              {CLASS_OPTIONS.map((cls) => {
+              {classes.map((cls) => {
                 const stats = getClassStats(cls.id);
                 return (
                   <div
@@ -343,7 +392,7 @@ const Dashboard = () => {
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium text-sm">{getClassLabel(cls.id)}</span>
+                      <span className="font-medium text-sm">{cls.name}</span>
                       <span className="text-xs text-muted-foreground">
                         {stats.completed}/{totalChallenges} challenges
                       </span>
