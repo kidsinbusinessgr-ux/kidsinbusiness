@@ -24,8 +24,15 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+const CLASS_OPTIONS = [
+  { id: "class-a", label: "Τμήμα Α" },
+  { id: "class-b", label: "Τμήμα Β" },
+  { id: "class-c", label: "Τμήμα Γ" },
+] as const;
+
 const Actions = () => {
   const { toast } = useToast();
+  const [currentClassId, setCurrentClassId] = useState<(typeof CLASS_OPTIONS)[number]["id"]>("class-a");
   const [completedChallenges, setCompletedChallenges] = useState<Set<string>>(new Set());
   const [statusFilter, setStatusFilter] = useState<"all" | "completed" | "incomplete">("all");
 
@@ -41,11 +48,20 @@ const Actions = () => {
   ];
 
   useEffect(() => {
-    const saved = localStorage.getItem("completedChallenges");
+    const key = `completedChallenges_${currentClassId}`;
+    const legacy = localStorage.getItem("completedChallenges");
+    const saved = localStorage.getItem(key) ?? legacy;
     if (saved) {
-      setCompletedChallenges(new Set(JSON.parse(saved)));
+      try {
+        const parsed = JSON.parse(saved) as string[];
+        setCompletedChallenges(new Set(parsed));
+      } catch {
+        setCompletedChallenges(new Set());
+      }
+    } else {
+      setCompletedChallenges(new Set());
     }
-  }, []);
+  }, [currentClassId]);
 
   const triggerConfetti = () => {
     const duration = 2000;
@@ -100,10 +116,12 @@ const Actions = () => {
 
     setCompletedChallenges(newCompleted);
     const completedArray = Array.from(newCompleted);
-    localStorage.setItem("completedChallenges", JSON.stringify(completedArray));
+    const completedKey = `completedChallenges_${currentClassId}`;
+    localStorage.setItem(completedKey, JSON.stringify(completedArray));
 
     if (!wasCompleted) {
-      const rawHistory = localStorage.getItem("completedChallengesHistory");
+      const historyKey = `completedChallengesHistory_${currentClassId}`;
+      const rawHistory = localStorage.getItem(historyKey);
       let history: string[] = [];
       if (rawHistory) {
         try {
@@ -116,7 +134,7 @@ const Actions = () => {
       const filtered = history.filter((entryId) => entryId !== id);
       filtered.push(id);
       const trimmed = filtered.slice(-20);
-      localStorage.setItem("completedChallengesHistory", JSON.stringify(trimmed));
+      localStorage.setItem(historyKey, JSON.stringify(trimmed));
     }
   };
 
@@ -134,10 +152,13 @@ const Actions = () => {
 
   const resetProgress = () => {
     setCompletedChallenges(new Set());
-    localStorage.removeItem("completedChallenges");
+    CLASS_OPTIONS.forEach((cls) => {
+      localStorage.removeItem(`completedChallenges_${cls.id}`);
+      localStorage.removeItem(`completedChallengesHistory_${cls.id}`);
+    });
     toast({
       title: "Η πρόοδος επαναφέρθηκε",
-      description: "Όλα τα challenges είναι ξανά διαθέσιμα.",
+      description: "Όλα τα challenges είναι ξανά διαθέσιμα για όλες τις τάξεις.",
       duration: 3000,
     });
   };
@@ -358,35 +379,53 @@ const Actions = () => {
                   <TabsTrigger value="projects">Projects</TabsTrigger>
                 </TabsList>
 
-                {/* Status Filter Buttons */}
-                <div className="inline-flex items-center gap-1 rounded-full border border-border bg-card/80 p-1 text-xs md:text-sm">
-                  <Button
-                    type="button"
-                    variant={statusFilter === "all" ? "default" : "ghost"}
-                    size="sm"
-                    className="rounded-full px-3 py-1 h-8"
-                    onClick={() => setStatusFilter("all")}
-                  >
-                    Όλα
-                  </Button>
-                  <Button
-                    type="button"
-                    variant={statusFilter === "completed" ? "default" : "ghost"}
-                    size="sm"
-                    className="rounded-full px-3 py-1 h-8"
-                    onClick={() => setStatusFilter("completed")}
-                  >
-                    Ολοκληρωμένα
-                  </Button>
-                  <Button
-                    type="button"
-                    variant={statusFilter === "incomplete" ? "default" : "ghost"}
-                    size="sm"
-                    className="rounded-full px-3 py-1 h-8"
-                    onClick={() => setStatusFilter("incomplete")}
-                  >
-                    Μη ολοκληρωμένα
-                  </Button>
+                <div className="flex flex-col gap-2 items-stretch sm:flex-row sm:items-center sm:gap-3">
+                  {/* Class Selector */}
+                  <div className="inline-flex items-center gap-1 rounded-full border border-border bg-card/80 p-1 text-xs md:text-sm">
+                    {CLASS_OPTIONS.map((cls) => (
+                      <Button
+                        key={cls.id}
+                        type="button"
+                        variant={currentClassId === cls.id ? "default" : "ghost"}
+                        size="sm"
+                        className="rounded-full px-3 py-1 h-8"
+                        onClick={() => setCurrentClassId(cls.id)}
+                      >
+                        {cls.label}
+                      </Button>
+                    ))}
+                  </div>
+
+                  {/* Status Filter Buttons */}
+                  <div className="inline-flex items-center gap-1 rounded-full border border-border bg-card/80 p-1 text-xs md:text-sm">
+                    <Button
+                      type="button"
+                      variant={statusFilter === "all" ? "default" : "ghost"}
+                      size="sm"
+                      className="rounded-full px-3 py-1 h-8"
+                      onClick={() => setStatusFilter("all")}
+                    >
+                      Όλα
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={statusFilter === "completed" ? "default" : "ghost"}
+                      size="sm"
+                      className="rounded-full px-3 py-1 h-8"
+                      onClick={() => setStatusFilter("completed")}
+                    >
+                      Ολοκληρωμένα
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={statusFilter === "incomplete" ? "default" : "ghost"}
+                      size="sm"
+                      className="rounded-full px-3 py-1 h-8"
+                      onClick={() => setStatusFilter("incomplete")}
+                    >
+                      Μη ολοκληρωμένα
+                    </Button>
+                  </div>
                 </div>
               </div>
 
