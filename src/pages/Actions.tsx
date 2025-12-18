@@ -213,6 +213,45 @@ const Actions = () => {
     },
   ];
 
+  const achievements = [
+    {
+      id: "first-challenge",
+      title: "Πρώτο Challenge",
+      description: "Ολοκλήρωσε το πρώτο σου challenge.",
+      unlocked: completedCount >= 1,
+    },
+    {
+      id: "three-challenges",
+      title: "3 Challenges",
+      description: "Ολοκλήρωσε 3 challenges συνολικά.",
+      unlocked: completedCount >= 3,
+    },
+    {
+      id: "all-mini",
+      title: "Όλα τα Mini Challenges",
+      description: "Ολοκλήρωσε όλα τα Mini Challenges.",
+      unlocked: miniCompleted === miniChallenges.length && miniChallenges.length > 0,
+    },
+    {
+      id: "all-class",
+      title: "Όλες οι Δραστηριότητες Τάξης",
+      description: "Ολοκλήρωσε όλες τις Δραστηριότητες Τάξης.",
+      unlocked: classCompleted === classActivities.length && classActivities.length > 0,
+    },
+    {
+      id: "all-projects",
+      title: "Όλα τα Projects",
+      description: "Ολοκλήρωσε όλα τα Projects.",
+      unlocked: projectsCompleted === projects.length && projects.length > 0,
+    },
+    {
+      id: "all-challenges",
+      title: "Master of Challenges",
+      description: "Ολοκλήρωσε όλα τα διαθέσιμα challenges.",
+      unlocked: completedCount === totalChallenges && totalChallenges > 0,
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -498,40 +537,41 @@ const Actions = () => {
               </CardContent>
             </Card>
 
+            {/* Achievements Card */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Πώς να επιλέξετε</CardTitle>
+                <CardTitle className="text-lg">Badges Επιτυχίας</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4 text-sm">
-                <div>
-                  <h4 className="font-semibold mb-2 flex items-center gap-2">
-                    <Zap className="w-4 h-4 text-primary" />
-                    Mini Challenges
-                  </h4>
-                  <p className="text-muted-foreground">
-                    Γρήγορες δράσεις για άμεση εμπέδωση
-                  </p>
-                </div>
-                <div>
-                  <h4 className="font-semibold mb-2 flex items-center gap-2">
-                    <Target className="w-4 h-4 text-secondary" />
-                    Δραστηριότητες Τάξης
-                  </h4>
-                  <p className="text-muted-foreground">
-                    Ομαδική εργασία με συγκεκριμένους στόχους
-                  </p>
-                </div>
-                <div>
-                  <h4 className="font-semibold mb-2 flex items-center gap-2">
-                    <Rocket className="w-4 h-4 text-accent" />
-                    Projects
-                  </h4>
-                  <p className="text-muted-foreground">
-                    Ολοκληρωμένα έργα πολλών ημερών
-                  </p>
-                </div>
+              <CardContent className="space-y-3 text-sm">
+                {achievements.map((ach) => (
+                  <div
+                    key={ach.id}
+                    className={`flex items-start gap-3 rounded-lg border px-3 py-2 ${
+                      ach.unlocked ? "bg-primary/5 border-primary/40" : "bg-muted/40 border-dashed"
+                    }`}
+                  >
+                    <div className="mt-0.5">
+                      {ach.unlocked ? (
+                        <CheckCircle2 className="w-5 h-5 text-primary" />
+                      ) : (
+                        <Circle className="w-5 h-5 text-muted-foreground" />
+                      )}
+                    </div>
+                    <div>
+                      <p
+                        className={`font-semibold ${
+                          ach.unlocked ? "text-foreground" : "text-muted-foreground"
+                        }`}
+                      >
+                        {ach.title}
+                      </p>
+                      <p className="text-xs text-muted-foreground">{ach.description}</p>
+                    </div>
+                  </div>
+                ))}
               </CardContent>
             </Card>
+
           </div>
         </div>
       </main>
