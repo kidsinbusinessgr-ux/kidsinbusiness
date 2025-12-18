@@ -12,6 +12,17 @@ import Navigation from "@/components/Navigation";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import GlobalTip from "@/components/GlobalTip";
 import { Toaster } from "@/components/ui/toaster";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const Actions = () => {
   const { toast } = useToast();
@@ -101,6 +112,16 @@ const Actions = () => {
       return items.filter((item) => !isCompleted(item.id));
     }
     return items;
+  };
+
+  const resetProgress = () => {
+    setCompletedChallenges(new Set());
+    localStorage.removeItem("completedChallenges");
+    toast({
+      title: "Η πρόοδος επαναφέρθηκε",
+      description: "Όλα τα challenges είναι ξανά διαθέσιμα.",
+      duration: 3000,
+    });
   };
   const miniChallenges = [
     {
@@ -260,23 +281,47 @@ const Actions = () => {
         <Breadcrumbs items={[{ label: "Δράσεις" }]} />
         
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-2">
-            <h1 className="text-4xl font-bold">Δράσεις & Challenges</h1>
-            <div className="flex items-center gap-3">
-              <Badge variant="secondary" className="text-base px-4 py-2">
-                {completedCount}/{totalChallenges} ολοκληρώθηκε
-              </Badge>
-              <Badge variant="outline" className="text-base px-4 py-2">
-                {completionPercentage}%
-              </Badge>
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-2">
+            <div>
+              <h1 className="text-4xl font-bold">Δράσεις & Challenges</h1>
+              <p className="text-muted-foreground text-lg">
+                Πρακτικές δραστηριότητες για εφαρμογή της γνώσης
+              </p>
+            </div>
+            <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:justify-end">
+              <div className="flex items-center gap-3">
+                <Badge variant="secondary" className="text-base px-4 py-2">
+                  {completedCount}/{totalChallenges} ολοκληρώθηκε
+                </Badge>
+                <Badge variant="outline" className="text-base px-4 py-2">
+                  {completionPercentage}%
+                </Badge>
+              </div>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="ghost" size="sm" className="self-end text-xs sm:text-sm">
+                    Επαναφορά προόδου
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Επαναφορά όλων των challenges;</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Αυτό θα διαγράψει όλη την έως τώρα πρόοδο (συμπεριλαμβανομένων badges και στατιστικών).
+                      Η ενέργεια δεν μπορεί να αναιρεθεί.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Άκυρο</AlertDialogCancel>
+                    <AlertDialogAction onClick={resetProgress}>Ναι, επαναφορά</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </div>
-          <p className="text-muted-foreground text-lg mb-4">
-            Πρακτικές δραστηριότητες για εφαρμογή της γνώσης
-          </p>
           
           {/* Progress Bar */}
-          <div className="space-y-2">
+          <div className="space-y-2 mt-2">
             <div className="flex items-center justify-between text-sm">
               <span className="font-medium text-foreground">Συνολική Πρόοδος</span>
               <span className="text-muted-foreground">{completedCount} από {totalChallenges} δράσεις</span>
