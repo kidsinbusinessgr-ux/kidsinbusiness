@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, BookOpen, Zap, TrendingUp, Star, CheckCircle2, Circle, Users, Edit2, Check, X } from "lucide-react";
+import { ArrowRight, BookOpen, Zap, TrendingUp, Star, CheckCircle2, Circle, Users, Edit2, Check, X, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -15,12 +15,13 @@ const PROJECT_IDS = ["project-1", "project-2"] as const;
 const ALL_IDS = [...MINI_IDS, ...CLASS_IDS, ...PROJECT_IDS];
 
 const Dashboard = () => {
-  const { classes, loading, renameClass } = useAuthAndClasses();
+  const { classes, loading, renameClass, isAuthenticated, createClass } = useAuthAndClasses();
   const [currentClassId, setCurrentClassId] = useState<string>("");
   const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
   const [recentCompleted, setRecentCompleted] = useState<string[]>([]);
   const [editingClassId, setEditingClassId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
+  const [newClassName, setNewClassName] = useState("");
 
   // Initialize currentClassId once classes are loaded
   useEffect(() => {
@@ -181,6 +182,17 @@ const Dashboard = () => {
     setEditName("");
   };
 
+  const handleCreateClass = async () => {
+    const name = newClassName.trim();
+    if (!name) return;
+
+    const created = await createClass(name);
+    if (created) {
+      setNewClassName("");
+      setCurrentClassId(created.id);
+    }
+  };
+
   if (loading || classes.length === 0 || !currentClassId) {
     return (
       <div className="min-h-screen bg-background">
@@ -278,6 +290,38 @@ const Dashboard = () => {
                 ))}
               </CardContent>
             </Card>
+
+            {/* Create new class for authenticated teachers */}
+            {isAuthenticated && (
+              <Card className="w-full max-w-xs border-dashed">
+                <CardHeader className="py-2">
+                  <CardTitle className="text-xs font-medium">Νέο τμήμα</CardTitle>
+                </CardHeader>
+                <CardContent className="flex items-center gap-2 py-2">
+                  <Input
+                    value={newClassName}
+                    placeholder="Όνομα τμήματος"
+                    className="h-8 text-xs flex-1"
+                    onChange={(e) => setNewClassName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleCreateClass();
+                      }
+                    }}
+                  />
+                  <Button
+                    size="sm"
+                    className="h-8 px-2"
+                    onClick={handleCreateClass}
+                    disabled={!newClassName.trim()}
+                  >
+                    <Plus className="h-4 w-4 mr-1" />
+                    Προσθήκη
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
 
