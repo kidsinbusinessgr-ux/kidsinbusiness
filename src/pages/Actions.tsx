@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Zap, Target, Rocket, Clock, Users, CheckCircle2, Circle } from "lucide-react";
 import confetti from "canvas-confetti";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -10,9 +11,22 @@ import { Progress } from "@/components/ui/progress";
 import Navigation from "@/components/Navigation";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import GlobalTip from "@/components/GlobalTip";
+import { Toaster } from "@/components/ui/toaster";
 
 const Actions = () => {
+  const { toast } = useToast();
   const [completedChallenges, setCompletedChallenges] = useState<Set<string>>(new Set());
+
+  const motivationalMessages = [
+    "Συγχαρητήρια! Ένα βήμα πιο κοντά στο στόχο σου! 🎉",
+    "Εξαιρετική δουλειά! Συνέχισε έτσι! 💪",
+    "Μπράβο! Η επιμονή σου αποδίδει! 🌟",
+    "Τέλεια! Είσαι πραγματικός επιχειρηματίας! 🚀",
+    "Υπέροχα! Η προσπάθειά σου φαίνεται! ⭐",
+    "Εκπληκτικό! Κάθε βήμα μετράει! 🎯",
+    "Φανταστικό! Συνεχίζεις να εξελίσσεσαι! 💡",
+    "Μεγάλη επιτυχία! Είσαι σε καλό δρόμο! 🏆",
+  ];
 
   useEffect(() => {
     const saved = localStorage.getItem('completedChallenges');
@@ -62,6 +76,14 @@ const Actions = () => {
       newCompleted.add(id);
       // Trigger confetti only when completing (not uncompleting)
       triggerConfetti();
+      
+      // Show motivational toast
+      const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+      toast({
+        title: "Challenge Ολοκληρώθηκε!",
+        description: randomMessage,
+        duration: 3000,
+      });
     }
     
     setCompletedChallenges(newCompleted);
@@ -469,6 +491,7 @@ const Actions = () => {
           </div>
         </div>
       </main>
+      <Toaster />
     </div>
   );
 };
