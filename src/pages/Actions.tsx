@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Zap, Target, Rocket, Clock, Users, CheckCircle2, Circle } from "lucide-react";
+import { Zap, Target, Rocket, Clock, Users, CheckCircle2, Circle, Edit2, Trash2 } from "lucide-react";
 import confetti from "canvas-confetti";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,24 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import GlobalTip from "@/components/GlobalTip";
 import { Toaster } from "@/components/ui/toaster";
 import { useAuthAndClasses } from "@/hooks/useAuthAndClasses";
+import { supabase } from "@/integrations/supabase/client";
+import { miniChallenges as seedMini, classActivities as seedClass, projects as seedProjects } from "@/config/actionsConfig";
+
+type ActivityCategory = "mini" | "class" | "project";
+
+type Activity = {
+  id: string;
+  slug: string;
+  title: string;
+  description: string | null;
+  duration: string | null;
+  chapter: string | null;
+  chapterId: string | null;
+  difficulty: string | null;
+  participants: string | null;
+  complexity: string | null;
+  category: ActivityCategory;
+};
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,14 +42,16 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { miniChallenges, classActivities, projects } from "@/config/actionsConfig";
 
 const Actions = () => {
-  const { toast } = useToast();
-  const { classes, loading } = useAuthAndClasses();
+  const { classes, loading, isAuthenticated } = useAuthAndClasses();
   const [currentClassId, setCurrentClassId] = useState<string>("");
   const [completedChallenges, setCompletedChallenges] = useState<Set<string>>(new Set());
   const [statusFilter, setStatusFilter] = useState<"all" | "completed" | "incomplete">("all");
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [activitiesLoading, setActivitiesLoading] = useState(true);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const motivationalMessages = [
     "Συγχαρητήρια! Ένα βήμα πιο κοντά στο στόχο σου! 🎉",
@@ -60,6 +80,7 @@ const Actions = () => {
     }
   }, [currentClassId]);
 
+  // Load completion state for current class
   useEffect(() => {
     const key = `completedChallenges_${currentClassId}`;
     const legacy = localStorage.getItem("completedChallenges");
@@ -75,6 +96,123 @@ const Actions = () => {
       setCompletedChallenges(new Set());
     }
   }, [currentClassId]);
+
+  // Load activities from backend; if none exist, seed from current config
+  useEffect(() => {
+    const loadActivities = async () => {
+      setActivitiesLoading(true);
+      const { data, error } = await supabase
+        .from("actions_activities")
+        .select("id, slug, title, description, duration, chapter, chapter_id, difficulty, participants, complexity, category")
+        .order("created_at", { ascending: true });
+
+      if (error) {
+        console.error("Error loading activities", error);
+        toast({
+          title: "Σφάλμα φόρτωσης δράσεων",
+          description: error.message,
+          variant: "destructive",
+        });
+        setActivitiesLoading(false);
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        // Seed from existing config for first-time use (once per project)
+        const seedPayload = [
+          ...seedMini.map((m) => ({
+            slug: m.id,
+            title: m.title,
+            description: m.description,
+            duration: m.duration,
+            chapter: m.chapter,
+            chapter_id: m.chapterId,
+            difficulty: m.difficulty,
+            participants: null,
+            complexity: null,
+            category: "mini" as ActivityCategory,
+          })),
+          ...seedClass.map((c) => ({
+            slug: c.id,
+            title: c.title,
+            description: c.description,
+            duration: c.duration,
+            chapter: c.chapter,
+            chapter_id: c.chapterId,
+            difficulty: null,
+            participants: c.participants,
+            complexity: null,
+            category: "class" as ActivityCategory,
+          })),
+          ...seedProjects.map((p) => ({
+            slug: p.id,
+            title: p.title,
+            description: p.description,
+            duration: p.duration,
+            chapter: p.chapter,
+            chapter_id: p.chapterId,
+            difficulty: null,
+            participants: null,
+            complexity: p.complexity,
+            category: "project" as ActivityCategory,
+          })),
+        ];
+
+        const { data: seeded, error: seedError } = await supabase
+          .from("actions_activities")
+          .insert(seedPayload)
+          .select("id, slug, title, description, duration, chapter, chapter_id, difficulty, participants, complexity, category");
+
+        if (seedError) {
+          console.error("Error seeding activities", seedError);
+          toast({
+            title: "Σφάλμα αρχικοποίησης δράσεων",
+            description: seedError.message,
+            variant: "destructive",
+          });
+          setActivitiesLoading(false);
+          return;
+        }
+
+        setActivities(
+          (seeded || []).map((row) => ({
+            id: row.id,
+            slug: row.slug,
+            title: row.title,
+            description: row.description,
+            duration: row.duration,
+            chapter: row.chapter,
+            chapterId: row.chapter_id,
+            difficulty: row.difficulty,
+            participants: row.participants,
+            complexity: row.complexity,
+            category: row.category as ActivityCategory,
+          }))
+        );
+        setActivitiesLoading(false);
+        return;
+      }
+
+      setActivities(
+        data.map((row) => ({
+          id: row.id,
+          slug: row.slug,
+          title: row.title,
+          description: row.description,
+          duration: row.duration,
+          chapter: row.chapter,
+          chapterId: row.chapter_id,
+          difficulty: row.difficulty,
+          participants: row.participants,
+          complexity: row.complexity,
+          category: row.category as ActivityCategory,
+        }))
+      );
+      setActivitiesLoading(false);
+    };
+
+    loadActivities();
+  }, [toast]);
 
   const triggerConfetti = () => {
     const duration = 2000;
@@ -93,16 +231,16 @@ const Actions = () => {
       }
 
       const particleCount = 50 * (timeLeft / duration);
-      
+
       confetti({
         ...defaults,
         particleCount,
-        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
       });
       confetti({
         ...defaults,
         particleCount,
-        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
       });
     }, 250);
   };
@@ -175,17 +313,192 @@ const Actions = () => {
       duration: 3000,
     });
   };
-  // Challenge/activity definitions are loaded from src/config/actionsConfig.ts
 
+  const handleDeleteActivity = async (id: string) => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Απαιτείται σύνδεση",
+        description: "Συνδεθείτε ως εκπαιδευτικός για να διαγράψετε δράσεις.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-  const totalChallenges = miniChallenges.length + classActivities.length + projects.length;
+    const { error } = await supabase.from("actions_activities").delete().eq("id", id);
+
+    if (error) {
+      toast({
+        title: "Αποτυχία διαγραφής",
+        description: error.message,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Remove from local state
+    setActivities((prev) => prev.filter((a) => a.id !== id));
+
+    // Remove any stored completion/history entries for this activity across classes
+    classes.forEach((cls) => {
+      const completedKey = `completedChallenges_${cls.id}`;
+      const historyKey = `completedChallengesHistory_${cls.id}`;
+
+      const completedRaw = localStorage.getItem(completedKey);
+      if (completedRaw) {
+        try {
+          const parsed = JSON.parse(completedRaw) as string[];
+          const filtered = parsed.filter((entryId) => entryId !== id);
+          localStorage.setItem(completedKey, JSON.stringify(filtered));
+        } catch {
+          // ignore parse errors
+        }
+      }
+
+      const historyRaw = localStorage.getItem(historyKey);
+      if (historyRaw) {
+        try {
+          const parsed = JSON.parse(historyRaw) as string[];
+          const filtered = parsed.filter((entryId) => entryId !== id);
+          localStorage.setItem(historyKey, JSON.stringify(filtered));
+        } catch {
+          // ignore parse errors
+        }
+      }
+    });
+
+    // Also clear from current in-memory completed set
+    setCompletedChallenges((prev) => {
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
+
+    toast({
+      title: "Η δράση διαγράφηκε",
+      description: "Η δράση αφαιρέθηκε από όλες τις τάξεις.",
+    });
+  };
+
+  const handleEditActivity = async (id: string) => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Απαιτείται σύνδεση",
+        description: "Συνδεθείτε ως εκπαιδευτικός για να επεξεργαστείτε δράσεις.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const activity = activities.find((a) => a.id === id);
+    if (!activity) return;
+
+    const newTitle = window.prompt("Νέος τίτλος για τη δράση", activity.title || "");
+    if (!newTitle || newTitle.trim() === activity.title) {
+      return;
+    }
+
+    const { error } = await supabase
+      .from("actions_activities")
+      .update({ title: newTitle.trim() })
+      .eq("id", id);
+
+    if (error) {
+      toast({
+        title: "Αποτυχία ενημέρωσης",
+        description: error.message,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setActivities((prev) =>
+      prev.map((a) => (a.id === id ? { ...a, title: newTitle.trim() } : a))
+    );
+
+    toast({
+      title: "Ο τίτλος ενημερώθηκε",
+      description: "Η δράση ενημερώθηκε με τον νέο τίτλο.",
+    });
+  };
+
+  const handleCreateActivity = async (category: ActivityCategory) => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Απαιτείται σύνδεση",
+        description: "Συνδεθείτε ως εκπαιδευτικός για να δημιουργήσετε νέες δράσεις.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const now = Date.now();
+    const slug = `${category}-${now}`;
+    const defaultTitle =
+      category === "mini"
+        ? "Νέο Mini Challenge"
+        : category === "class"
+        ? "Νέα δραστηριότητα τάξης"
+        : "Νέο project";
+
+    const { data, error } = await supabase
+      .from("actions_activities")
+      .insert({
+        slug,
+        title: defaultTitle,
+        category,
+      })
+      .select(
+        "id, slug, title, description, duration, chapter, chapter_id, difficulty, participants, complexity, category"
+      )
+      .single();
+
+    if (error) {
+      toast({
+        title: "Αποτυχία δημιουργίας",
+        description: error.message,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setActivities((prev) => [
+      ...prev,
+      {
+        id: data.id,
+        slug: data.slug,
+        title: data.title,
+        description: data.description,
+        duration: data.duration,
+        chapter: data.chapter,
+        chapterId: data.chapter_id,
+        difficulty: data.difficulty,
+        participants: data.participants,
+        complexity: data.complexity,
+        category: data.category as ActivityCategory,
+      },
+    ]);
+
+    toast({
+      title: "Νέα δράση δημιουργήθηκε",
+      description: "Μπορείτε τώρα να προσαρμόσετε τα στοιχεία της.",
+    });
+  };
+
+  // Derive activities per category from backend data
+  const miniChallenges = activities.filter((a) => a.category === "mini");
+  const classActivities = activities.filter((a) => a.category === "class");
+  const projects = activities.filter((a) => a.category === "project");
+
+  const totalChallenges = activities.length;
   const completedCount = completedChallenges.size;
-  const completionPercentage = Math.round((completedCount / totalChallenges) * 100);
+  const completionPercentage = totalChallenges
+    ? Math.round((completedCount / totalChallenges) * 100)
+    : 0;
 
   // Calculate stats by category
-  const miniCompleted = miniChallenges.filter(c => isCompleted(c.id)).length;
-  const classCompleted = classActivities.filter(c => isCompleted(c.id)).length;
-  const projectsCompleted = projects.filter(c => isCompleted(c.id)).length;
+  const miniCompleted = miniChallenges.filter((c) => isCompleted(c.id)).length;
+  const classCompleted = classActivities.filter((c) => isCompleted(c.id)).length;
+  const projectsCompleted = projects.filter((c) => isCompleted(c.id)).length;
 
   const stats = [
     {
@@ -316,12 +629,26 @@ const Actions = () => {
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <Tabs defaultValue="mini" className="space-y-6">
-              <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                <TabsList className="grid w-full md:w-auto grid-cols-3">
-                  <TabsTrigger value="mini">Mini Challenges</TabsTrigger>
-                  <TabsTrigger value="class">Δραστηριότητες Τάξης</TabsTrigger>
-                  <TabsTrigger value="projects">Projects</TabsTrigger>
-                </TabsList>
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <TabsList className="grid w-full md:w-auto grid-cols-3">
+                <TabsTrigger value="mini">Mini Challenges</TabsTrigger>
+                <TabsTrigger value="class">Δραστηριότητες Τάξης</TabsTrigger>
+                <TabsTrigger value="projects">Projects</TabsTrigger>
+              </TabsList>
+
+              {isAuthenticated && (
+                <div className="flex flex-wrap gap-2 justify-end">
+                  <Button size="sm" variant="outline" onClick={() => handleCreateActivity("mini")}>
+                    + Mini
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={() => handleCreateActivity("class")}>
+                    + Τάξης
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={() => handleCreateActivity("project")}>
+                    + Project
+                  </Button>
+                </div>
+              )}
 
                 <div className="flex flex-col gap-2 items-stretch sm:flex-row sm:items-center sm:gap-3">
                   {/* Class Selector */}
@@ -443,7 +770,9 @@ const Actions = () => {
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
                             <Target className="w-5 h-5 text-secondary" />
-                            <Badge variant="secondary">{activity.chapter}</Badge>
+                            {activity.chapter && (
+                              <Badge variant="secondary">{activity.chapter}</Badge>
+                            )}
                             {isCompleted(activity.id) && (
                               <Badge className="bg-primary/20 text-primary border-primary/30">
                                 <CheckCircle2 className="w-3 h-3 mr-1" />
@@ -452,39 +781,96 @@ const Actions = () => {
                             )}
                           </div>
                           <CardTitle>{activity.title}</CardTitle>
-                          <CardDescription className="mt-2">
-                            {activity.description}
-                          </CardDescription>
-                        </div>
-                        <button
-                          onClick={() => toggleChallenge(activity.id)}
-                          className="ml-2 p-2 rounded-full hover:bg-muted transition-all duration-200 hover:scale-110 active:scale-95"
-                          aria-label={isCompleted(activity.id) ? "Mark as incomplete" : "Mark as complete"}
-                        >
-                          {isCompleted(activity.id) ? (
-                            <CheckCircle2 className="w-6 h-6 text-primary animate-in zoom-in duration-300" />
-                          ) : (
-                            <Circle className="w-6 h-6 text-muted-foreground hover:text-primary transition-colors" />
+                          {activity.description && (
+                            <CardDescription className="mt-2">
+                              {activity.description}
+                            </CardDescription>
                           )}
-                        </button>
+                        </div>
+                        <div className="flex flex-col items-end gap-2">
+                          <button
+                            onClick={() => toggleChallenge(activity.id)}
+                            className="p-2 rounded-full hover:bg-muted transition-all duration-200 hover:scale-110 active:scale-95"
+                            aria-label={
+                              isCompleted(activity.id)
+                                ? "Mark as incomplete"
+                                : "Mark as complete"
+                            }
+                          >
+                            {isCompleted(activity.id) ? (
+                              <CheckCircle2 className="w-6 h-6 text-primary animate-in zoom-in duration-300" />
+                            ) : (
+                              <Circle className="w-6 h-6 text-muted-foreground hover:text-primary transition-colors" />
+                            )}
+                          </button>
+                          {isAuthenticated && (
+                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7"
+                                onClick={() => handleEditActivity(activity.id)}
+                              >
+                                <Edit2 className="w-3 h-3" />
+                              </Button>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-7 w-7 text-destructive"
+                                  >
+                                    <Trash2 className="w-3 h-3" />
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>
+                                      Διαγραφή δραστηριότητας;
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Αυτή η ενέργεια θα αφαιρέσει τη δραστηριότητα από όλες τις
+                                      τάξεις και θα διαγράψει τυχόν πρόοδο που έχει γίνει σε αυτήν.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Άκυρο</AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={() => handleDeleteActivity(activity.id)}
+                                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                    >
+                                      Ναι, διαγραφή
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </CardHeader>
                     <CardContent>
                       <div className="flex items-center gap-4 mb-4 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <Clock className="w-4 h-4" />
-                          {activity.duration}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Users className="w-4 h-4" />
-                          {activity.participants}
-                        </div>
+                        {activity.duration && (
+                          <div className="flex items-center gap-1">
+                            <Clock className="w-4 h-4" />
+                            {activity.duration}
+                          </div>
+                        )}
+                        {activity.participants && (
+                          <div className="flex items-center gap-1">
+                            <Users className="w-4 h-4" />
+                            {activity.participants}
+                          </div>
+                        )}
                       </div>
-                      <Link to={`/chapters/${activity.chapterId}`}>
-                        <Button variant="secondary" className="w-full">
-                          Δείτε τη δραστηριότητα
-                        </Button>
-                      </Link>
+                      {activity.chapterId && (
+                        <Link to={`/chapters/${activity.chapterId}`}>
+                          <Button variant="secondary" className="w-full">
+                            Δείτε τη δραστηριότητα
+                          </Button>
+                        </Link>
+                      )}
                     </CardContent>
                   </Card>
                 ))}
@@ -503,7 +889,9 @@ const Actions = () => {
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
                             <Rocket className="w-5 h-5 text-accent" />
-                            <Badge variant="secondary">{project.chapter}</Badge>
+                            {project.chapter && (
+                              <Badge variant="secondary">{project.chapter}</Badge>
+                            )}
                             {isCompleted(project.id) && (
                               <Badge className="bg-primary/20 text-primary border-primary/30">
                                 <CheckCircle2 className="w-3 h-3 mr-1" />
@@ -512,36 +900,95 @@ const Actions = () => {
                             )}
                           </div>
                           <CardTitle>{project.title}</CardTitle>
-                          <CardDescription className="mt-2">
-                            {project.description}
-                          </CardDescription>
-                        </div>
-                        <button
-                          onClick={() => toggleChallenge(project.id)}
-                          className="ml-2 p-2 rounded-full hover:bg-muted transition-all duration-200 hover:scale-110 active:scale-95"
-                          aria-label={isCompleted(project.id) ? "Mark as incomplete" : "Mark as complete"}
-                        >
-                          {isCompleted(project.id) ? (
-                            <CheckCircle2 className="w-6 h-6 text-primary animate-in zoom-in duration-300" />
-                          ) : (
-                            <Circle className="w-6 h-6 text-muted-foreground hover:text-primary transition-colors" />
+                          {project.description && (
+                            <CardDescription className="mt-2">
+                              {project.description}
+                            </CardDescription>
                           )}
-                        </button>
+                        </div>
+                        <div className="flex flex-col items-end gap-2">
+                          <button
+                            onClick={() => toggleChallenge(project.id)}
+                            className="p-2 rounded-full hover:bg-muted transition-all duration-200 hover:scale-110 active:scale-95"
+                            aria-label={
+                              isCompleted(project.id)
+                                ? "Mark as incomplete"
+                                : "Mark as complete"
+                            }
+                          >
+                            {isCompleted(project.id) ? (
+                              <CheckCircle2 className="w-6 h-6 text-primary animate-in zoom-in duration-300" />
+                            ) : (
+                              <Circle className="w-6 h-6 text-muted-foreground hover:text-primary transition-colors" />
+                            )}
+                          </button>
+                          {isAuthenticated && (
+                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7"
+                                onClick={() => handleEditActivity(project.id)}
+                              >
+                                <Edit2 className="w-3 h-3" />
+                              </Button>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-7 w-7 text-destructive"
+                                  >
+                                    <Trash2 className="w-3 h-3" />
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>
+                                      Διαγραφή project;
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Αυτή η ενέργεια θα αφαιρέσει το project από όλες τις τάξεις και
+                                      θα διαγράψει τυχόν πρόοδο που έχει γίνει σε αυτό.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Άκυρο</AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={() => handleDeleteActivity(project.id)}
+                                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                    >
+                                      Ναι, διαγραφή
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </CardHeader>
                     <CardContent>
                       <div className="flex items-center gap-4 mb-4 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <Clock className="w-4 h-4" />
-                          {project.duration}
-                        </div>
-                        <Badge variant="outline">Πολυπλοκότητα: {project.complexity}</Badge>
+                        {project.duration && (
+                          <div className="flex items-center gap-1">
+                            <Clock className="w-4 h-4" />
+                            {project.duration}
+                          </div>
+                        )}
+                        {project.complexity && (
+                          <Badge variant="outline">
+                            Πολυπλοκότητα: {project.complexity}
+                          </Badge>
+                        )}
                       </div>
-                      <Link to={`/chapters/${project.chapterId}`}>
-                        <Button variant="default" className="w-full">
-                          Ξεκινήστε το Project
-                        </Button>
-                      </Link>
+                      {project.chapterId && (
+                        <Link to={`/chapters/${project.chapterId}`}>
+                          <Button variant="default" className="w-full">
+                            Ξεκινήστε το Project
+                          </Button>
+                        </Link>
+                      )}
                     </CardContent>
                   </Card>
                 ))}
