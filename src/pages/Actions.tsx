@@ -140,6 +140,7 @@ const Actions = () => {
   const [activitiesLoading, setActivitiesLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editDraft, setEditDraft] = useState<Partial<Activity> | null>(null);
+  const [editErrors, setEditErrors] = useState<Partial<Record<keyof Omit<Activity, "id" | "slug" | "category">, string>>>({});
   const { toast } = useToast();
 
   const motivationalMessages = [
@@ -473,6 +474,7 @@ const Actions = () => {
     if (!activity) return;
 
     setEditingId(id);
+    setEditErrors({});
     setEditDraft({
       title: activity.title ?? "",
       description: activity.description ?? "",
@@ -488,8 +490,8 @@ const Actions = () => {
   const handleCancelEdit = () => {
     setEditingId(null);
     setEditDraft(null);
+    setEditErrors({});
   };
-
   const handleSaveEdit = async () => {
     if (!editingId || !editDraft) return;
 
@@ -927,78 +929,108 @@ const Actions = () => {
                     <CardContent>
                       {editingId === challenge.id ? (
                         <div className="space-y-2 text-sm">
-                          <Input
-                            value={editDraft?.title ?? ""}
-                            placeholder="Τίτλος"
-                            className="h-8 text-xs"
-                            onChange={(e) =>
-                              setEditDraft((prev) => ({ ...prev, title: e.target.value }))
-                            }
-                          />
-                          <Input
-                            value={editDraft?.description ?? ""}
-                            placeholder="Περιγραφή"
-                            className="h-8 text-xs"
-                            onChange={(e) =>
-                              setEditDraft((prev) => ({ ...prev, description: e.target.value }))
-                            }
-                          />
-                          <div className="flex gap-2">
-                            <Select
-                              value={editDraft?.duration ?? ""}
-                              onValueChange={(value) =>
-                                setEditDraft((prev) => ({ ...prev, duration: value }))
-                              }
-                            >
-                              <SelectTrigger className="h-8 text-xs flex-1">
-                                <SelectValue placeholder="Διάρκεια" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="5 λεπτά">5 λεπτά</SelectItem>
-                                <SelectItem value="10 λεπτά">10 λεπτά</SelectItem>
-                                <SelectItem value="15 λεπτά">15 λεπτά</SelectItem>
-                                <SelectItem value="30 λεπτά">30 λεπτά</SelectItem>
-                              </SelectContent>
-                            </Select>
+                          <div>
                             <Input
-                              value={editDraft?.difficulty ?? ""}
-                              placeholder="Δυσκολία"
-                              className="h-8 text-xs flex-1"
+                              value={editDraft?.title ?? ""}
+                              placeholder="Τίτλος"
+                              className="h-8 text-xs"
                               onChange={(e) =>
-                                setEditDraft((prev) => ({ ...prev, difficulty: e.target.value }))
+                                setEditDraft((prev) => ({ ...prev, title: e.target.value }))
                               }
                             />
+                            {editErrors.title && (
+                              <p className="mt-1 text-xs text-destructive">{editErrors.title}</p>
+                            )}
+                          </div>
+                          <div>
+                            <Input
+                              value={editDraft?.description ?? ""}
+                              placeholder="Περιγραφή"
+                              className="h-8 text-xs"
+                              onChange={(e) =>
+                                setEditDraft((prev) => ({ ...prev, description: e.target.value }))
+                              }
+                            />
+                            {editErrors.description && (
+                              <p className="mt-1 text-xs text-destructive">{editErrors.description}</p>
+                            )}
                           </div>
                           <div className="flex gap-2">
-                            <Select
-                              value={editDraft?.chapterId ?? ""}
-                              onValueChange={(value) =>
-                                setEditDraft((prev) => ({
-                                  ...prev,
-                                  chapterId: value,
-                                  chapter: `Chapter ${value}`,
-                                }))
-                              }
-                            >
-                              <SelectTrigger className="h-8 text-xs flex-1">
-                                <SelectValue placeholder="Chapter ID" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="1">Chapter 1</SelectItem>
-                                <SelectItem value="2">Chapter 2</SelectItem>
-                                <SelectItem value="3">Chapter 3</SelectItem>
-                                <SelectItem value="4">Chapter 4</SelectItem>
-                                <SelectItem value="5">Chapter 5</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <Input
-                              value={editDraft?.chapter ?? ""}
-                              placeholder="Ετικέτα chapter"
-                              className="h-8 text-xs flex-1"
-                              onChange={(e) =>
-                                setEditDraft((prev) => ({ ...prev, chapter: e.target.value }))
-                              }
-                            />
+                            <div className="flex-1">
+                              <Select
+                                value={editDraft?.duration ?? ""}
+                                onValueChange={(value) =>
+                                  setEditDraft((prev) => ({ ...prev, duration: value }))
+                                }
+                              >
+                                <SelectTrigger className="h-8 text-xs flex-1">
+                                  <SelectValue placeholder="Διάρκεια" />
+                                </SelectTrigger>
+                                <SelectContent className="z-50 bg-popover">
+                                  <SelectItem value="5 λεπτά">5 λεπτά</SelectItem>
+                                  <SelectItem value="10 λεπτά">10 λεπτά</SelectItem>
+                                  <SelectItem value="15 λεπτά">15 λεπτά</SelectItem>
+                                  <SelectItem value="30 λεπτά">30 λεπτά</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              {editErrors.duration && (
+                                <p className="mt-1 text-xs text-destructive">{editErrors.duration}</p>
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <Input
+                                value={editDraft?.difficulty ?? ""}
+                                placeholder="Δυσκολία"
+                                className="h-8 text-xs flex-1"
+                                onChange={(e) =>
+                                  setEditDraft((prev) => ({ ...prev, difficulty: e.target.value }))
+                                }
+                              />
+                              {editErrors.difficulty && (
+                                <p className="mt-1 text-xs text-destructive">{editErrors.difficulty}</p>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <div className="flex-1">
+                              <Select
+                                value={editDraft?.chapterId ?? ""}
+                                onValueChange={(value) =>
+                                  setEditDraft((prev) => ({
+                                    ...prev,
+                                    chapterId: value,
+                                    chapter: `Chapter ${value}`,
+                                  }))
+                                }
+                              >
+                                <SelectTrigger className="h-8 text-xs flex-1">
+                                  <SelectValue placeholder="Chapter ID" />
+                                </SelectTrigger>
+                                <SelectContent className="z-50 bg-popover">
+                                  <SelectItem value="1">Chapter 1</SelectItem>
+                                  <SelectItem value="2">Chapter 2</SelectItem>
+                                  <SelectItem value="3">Chapter 3</SelectItem>
+                                  <SelectItem value="4">Chapter 4</SelectItem>
+                                  <SelectItem value="5">Chapter 5</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              {editErrors.chapterId && (
+                                <p className="mt-1 text-xs text-destructive">{editErrors.chapterId}</p>
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <Input
+                                value={editDraft?.chapter ?? ""}
+                                placeholder="Ετικέτα chapter"
+                                className="h-8 text-xs flex-1"
+                                onChange={(e) =>
+                                  setEditDraft((prev) => ({ ...prev, chapter: e.target.value }))
+                                }
+                              />
+                              {editErrors.chapter && (
+                                <p className="mt-1 text-xs text-destructive">{editErrors.chapter}</p>
+                              )}
+                            </div>
                           </div>
                           <div className="flex justify-end gap-2 pt-2">
                             <Button
@@ -1135,77 +1167,107 @@ const Actions = () => {
                     <CardContent>
                       {editingId === activity.id ? (
                         <div className="space-y-2 text-sm">
-                          <Input
-                            value={editDraft?.title ?? ""}
-                            placeholder="Τίτλος"
-                            className="h-8 text-xs"
-                            onChange={(e) =>
-                              setEditDraft((prev) => ({ ...prev, title: e.target.value }))
-                            }
-                          />
-                          <Input
-                            value={editDraft?.description ?? ""}
-                            placeholder="Περιγραφή"
-                            className="h-8 text-xs"
-                            onChange={(e) =>
-                              setEditDraft((prev) => ({ ...prev, description: e.target.value }))
-                            }
-                          />
-                          <div className="flex gap-2">
-                            <Select
-                              value={editDraft?.duration ?? ""}
-                              onValueChange={(value) =>
-                                setEditDraft((prev) => ({ ...prev, duration: value }))
-                              }
-                            >
-                              <SelectTrigger className="h-8 text-xs flex-1">
-                                <SelectValue placeholder="Διάρκεια" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="15 λεπτά">15 λεπτά</SelectItem>
-                                <SelectItem value="30 λεπτά">30 λεπτά</SelectItem>
-                                <SelectItem value="45 λεπτά">45 λεπτά</SelectItem>
-                              </SelectContent>
-                            </Select>
+                          <div>
                             <Input
-                              value={editDraft?.participants ?? ""}
-                              placeholder="Συμμετέχοντες (π.χ. 4-6 μαθητές)"
-                              className="h-8 text-xs flex-1"
+                              value={editDraft?.title ?? ""}
+                              placeholder="Τίτλος"
+                              className="h-8 text-xs"
                               onChange={(e) =>
-                                setEditDraft((prev) => ({ ...prev, participants: e.target.value }))
+                                setEditDraft((prev) => ({ ...prev, title: e.target.value }))
                               }
                             />
+                            {editErrors.title && (
+                              <p className="mt-1 text-xs text-destructive">{editErrors.title}</p>
+                            )}
+                          </div>
+                          <div>
+                            <Input
+                              value={editDraft?.description ?? ""}
+                              placeholder="Περιγραφή"
+                              className="h-8 text-xs"
+                              onChange={(e) =>
+                                setEditDraft((prev) => ({ ...prev, description: e.target.value }))
+                              }
+                            />
+                            {editErrors.description && (
+                              <p className="mt-1 text-xs text-destructive">{editErrors.description}</p>
+                            )}
                           </div>
                           <div className="flex gap-2">
-                            <Select
-                              value={editDraft?.chapterId ?? ""}
-                              onValueChange={(value) =>
-                                setEditDraft((prev) => ({
-                                  ...prev,
-                                  chapterId: value,
-                                  chapter: `Chapter ${value}`,
-                                }))
-                              }
-                            >
-                              <SelectTrigger className="h-8 text-xs flex-1">
-                                <SelectValue placeholder="Chapter ID" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="1">Chapter 1</SelectItem>
-                                <SelectItem value="2">Chapter 2</SelectItem>
-                                <SelectItem value="3">Chapter 3</SelectItem>
-                                <SelectItem value="4">Chapter 4</SelectItem>
-                                <SelectItem value="5">Chapter 5</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <Input
-                              value={editDraft?.chapter ?? ""}
-                              placeholder="Ετικέτα chapter"
-                              className="h-8 text-xs flex-1"
-                              onChange={(e) =>
-                                setEditDraft((prev) => ({ ...prev, chapter: e.target.value }))
-                              }
-                            />
+                            <div className="flex-1">
+                              <Select
+                                value={editDraft?.duration ?? ""}
+                                onValueChange={(value) =>
+                                  setEditDraft((prev) => ({ ...prev, duration: value }))
+                                }
+                              >
+                                <SelectTrigger className="h-8 text-xs flex-1">
+                                  <SelectValue placeholder="Διάρκεια" />
+                                </SelectTrigger>
+                                <SelectContent className="z-50 bg-popover">
+                                  <SelectItem value="15 λεπτά">15 λεπτά</SelectItem>
+                                  <SelectItem value="30 λεπτά">30 λεπτά</SelectItem>
+                                  <SelectItem value="45 λεπτά">45 λεπτά</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              {editErrors.duration && (
+                                <p className="mt-1 text-xs text-destructive">{editErrors.duration}</p>
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <Input
+                                value={editDraft?.participants ?? ""}
+                                placeholder="Συμμετέχοντες (π.χ. 4-6 μαθητές)"
+                                className="h-8 text-xs flex-1"
+                                onChange={(e) =>
+                                  setEditDraft((prev) => ({ ...prev, participants: e.target.value }))
+                                }
+                              />
+                              {editErrors.participants && (
+                                <p className="mt-1 text-xs text-destructive">{editErrors.participants}</p>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <div className="flex-1">
+                              <Select
+                                value={editDraft?.chapterId ?? ""}
+                                onValueChange={(value) =>
+                                  setEditDraft((prev) => ({
+                                    ...prev,
+                                    chapterId: value,
+                                    chapter: `Chapter ${value}`,
+                                  }))
+                                }
+                              >
+                                <SelectTrigger className="h-8 text-xs flex-1">
+                                  <SelectValue placeholder="Chapter ID" />
+                                </SelectTrigger>
+                                <SelectContent className="z-50 bg-popover">
+                                  <SelectItem value="1">Chapter 1</SelectItem>
+                                  <SelectItem value="2">Chapter 2</SelectItem>
+                                  <SelectItem value="3">Chapter 3</SelectItem>
+                                  <SelectItem value="4">Chapter 4</SelectItem>
+                                  <SelectItem value="5">Chapter 5</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              {editErrors.chapterId && (
+                                <p className="mt-1 text-xs text-destructive">{editErrors.chapterId}</p>
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <Input
+                                value={editDraft?.chapter ?? ""}
+                                placeholder="Ετικέτα chapter"
+                                className="h-8 text-xs flex-1"
+                                onChange={(e) =>
+                                  setEditDraft((prev) => ({ ...prev, chapter: e.target.value }))
+                                }
+                              />
+                              {editErrors.chapter && (
+                                <p className="mt-1 text-xs text-destructive">{editErrors.chapter}</p>
+                              )}
+                            </div>
                           </div>
                           <div className="flex justify-end gap-2 pt-2">
                             <Button
