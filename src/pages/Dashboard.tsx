@@ -22,6 +22,9 @@ const Dashboard = () => {
   const [editingClassId, setEditingClassId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
   const [newClassName, setNewClassName] = useState("");
+  const [newClassSchool, setNewClassSchool] = useState("");
+  const [newClassGrade, setNewClassGrade] = useState("");
+  const [newClassYear, setNewClassYear] = useState("");
 
   // Initialize currentClassId once classes are loaded
   useEffect(() => {
@@ -184,11 +187,17 @@ const Dashboard = () => {
 
   const handleCreateClass = async () => {
     const name = newClassName.trim();
+    const school = newClassSchool.trim() || undefined;
+    const grade = newClassGrade.trim() || undefined;
+    const year = newClassYear.trim() || undefined;
     if (!name) return;
 
-    const created = await createClass(name);
+    const created = await createClass(name, school, grade, year);
     if (created) {
       setNewClassName("");
+      setNewClassSchool("");
+      setNewClassGrade("");
+      setNewClassYear("");
       setCurrentClassId(created.id);
     }
   };
@@ -297,28 +306,72 @@ const Dashboard = () => {
                 <CardHeader className="py-2">
                   <CardTitle className="text-xs font-medium">Νέο τμήμα</CardTitle>
                 </CardHeader>
-                <CardContent className="flex items-center gap-2 py-2">
-                  <Input
-                    value={newClassName}
-                    placeholder="Όνομα τμήματος"
-                    className="h-8 text-xs flex-1"
-                    onChange={(e) => setNewClassName(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        handleCreateClass();
-                      }
-                    }}
-                  />
-                  <Button
-                    size="sm"
-                    className="h-8 px-2"
-                    onClick={handleCreateClass}
-                    disabled={!newClassName.trim()}
-                  >
-                    <Plus className="h-4 w-4 mr-1" />
-                    Προσθήκη
-                  </Button>
+                <CardContent className="flex flex-col gap-2 py-2">
+                  <div className="flex items-center gap-2">
+                    <Input
+                      value={newClassName}
+                      placeholder="Όνομα τμήματος"
+                      className="h-8 text-xs flex-1"
+                      onChange={(e) => setNewClassName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handleCreateClass();
+                        }
+                      }}
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 gap-2">
+                    <Input
+                      value={newClassSchool}
+                      placeholder="Σχολείο (προαιρετικό)"
+                      className="h-8 text-xs"
+                      onChange={(e) => setNewClassSchool(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handleCreateClass();
+                        }
+                      }}
+                    />
+                    <div className="flex gap-2">
+                      <Input
+                        value={newClassGrade}
+                        placeholder="Τάξη (προαιρετικό)"
+                        className="h-8 text-xs flex-1"
+                        onChange={(e) => setNewClassGrade(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            handleCreateClass();
+                          }
+                        }}
+                      />
+                      <Input
+                        value={newClassYear}
+                        placeholder="Σχολικό έτος (προαιρετικό)"
+                        className="h-8 text-xs flex-1"
+                        onChange={(e) => setNewClassYear(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            handleCreateClass();
+                          }
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-end pt-1">
+                    <Button
+                      size="sm"
+                      className="h-8 px-2"
+                      onClick={handleCreateClass}
+                      disabled={!newClassName.trim()}
+                    >
+                      <Plus className="h-4 w-4 mr-1" />
+                      Προσθήκη
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             )}
