@@ -99,7 +99,25 @@ const Actions = () => {
     }
 
     setCompletedChallenges(newCompleted);
-    localStorage.setItem("completedChallenges", JSON.stringify(Array.from(newCompleted)));
+    const completedArray = Array.from(newCompleted);
+    localStorage.setItem("completedChallenges", JSON.stringify(completedArray));
+
+    if (!wasCompleted) {
+      const rawHistory = localStorage.getItem("completedChallengesHistory");
+      let history: string[] = [];
+      if (rawHistory) {
+        try {
+          history = JSON.parse(rawHistory) as string[];
+        } catch {
+          history = [];
+        }
+      }
+      // keep unique order, newest at the end
+      const filtered = history.filter((entryId) => entryId !== id);
+      filtered.push(id);
+      const trimmed = filtered.slice(-20);
+      localStorage.setItem("completedChallengesHistory", JSON.stringify(trimmed));
+    }
   };
 
   const isCompleted = (id: string) => completedChallenges.has(id);

@@ -27,12 +27,46 @@ const Dashboard = () => {
     }
   }, []);
 
+  const [recentCompleted, setRecentCompleted] = useState<string[]>([]);
+
+  useEffect(() => {
+    const historyRaw = localStorage.getItem("completedChallengesHistory");
+    if (historyRaw) {
+      try {
+        const parsed = JSON.parse(historyRaw) as string[];
+        const filtered = parsed.filter((id) => ALL_IDS.includes(id as any));
+        // most recent last in history, so reverse and take unique
+        const seen = new Set<string>();
+        const uniqueRecent: string[] = [];
+        for (let i = filtered.length - 1; i >= 0 && uniqueRecent.length < 3; i--) {
+          const id = filtered[i];
+          if (!seen.has(id)) {
+            seen.add(id);
+            uniqueRecent.push(id);
+          }
+        }
+        setRecentCompleted(uniqueRecent);
+      } catch {
+        // ignore parse errors
+      }
+    }
+  }, []);
+
   const completedCount = completedIds.size;
   const totalChallenges = ALL_IDS.length;
   const miniCompleted = MINI_IDS.filter((id) => completedIds.has(id)).length;
   const classCompleted = CLASS_IDS.filter((id) => completedIds.has(id)).length;
   const projectsCompleted = PROJECT_IDS.filter((id) => completedIds.has(id)).length;
 
+  const challengeMeta: Record<string, { title: string; type: string; icon: typeof Star }> = {
+    "mini-1": { title: "Ιδέα σε 5 λεπτά", type: "Mini Challenge", icon: Star },
+    "mini-2": { title: "Λύσε το πρόβλημα", type: "Mini Challenge", icon: Star },
+    "mini-3": { title: "Pitch σε 30 δευτερόλεπτα", type: "Mini Challenge", icon: Star },
+    "class-1": { title: "Ο ρόλος του ηγέτη", type: "Δραστηριότητα", icon: TrendingUp },
+    "class-2": { title: "Η επιχείρησή μου", type: "Δραστηριότητα", icon: TrendingUp },
+    "project-1": { title: "Business Plan Junior", type: "Project", icon: BookOpen },
+    "project-2": { title: "Παρουσίαση ομάδας", type: "Project", icon: BookOpen },
+  };
   const achievements = [
     {
       id: "first-challenge",
@@ -115,9 +149,9 @@ const Dashboard = () => {
                     <p className="text-sm text-muted-foreground">{overallPercent}% ολοκληρωμένο</p>
                   </div>
                 </div>
-                <Link to="/chapter/1">
+                <Link to="/actions">
                   <Button className="w-full group">
-                    Συνέχεια
+                    Πήγαινε στις Δράσεις
                     <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </Link>
@@ -139,35 +173,41 @@ const Dashboard = () => {
               Πρόσφατες Δράσεις
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="grid md:grid-cols-3 gap-4">
-              {[
-                { title: "Ιδέα σε 5 λεπτά", type: "Mini Challenge", icon: Star },
-                { title: "Ο ρόλος του ηγέτη", type: "Δραστηριότητα", icon: TrendingUp },
-                { title: "Παρουσίαση ομάδας", type: "Project", icon: BookOpen },
-              ].map((action, idx) => {
-                const Icon = action.icon;
-                return (
-                  <div
-                    key={idx}
-                    className="p-4 border rounded-lg hover:border-primary/50 transition-colors cursor-pointer"
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
-                        <Icon className="w-5 h-5 text-accent-foreground" />
-                      </div>
-                      <div>
-                        <Badge variant="secondary" className="mb-2 text-xs">
-                          {action.type}
-                        </Badge>
-                        <h4 className="font-semibold text-sm">{action.title}</h4>
+            <CardContent>
+              <div className="grid md:grid-cols-3 gap-4">
+                {recentCompleted.length === 0 && (
+                  <p className="text-sm text-muted-foreground">
+                    Δεν υπάρχουν ακόμη ολοκληρωμένες δράσεις. Ξεκινήστε από τη σελίδα Δράσεις για να δείτε εδώ τα πιο πρόσφατα challenges.
+                  </p>
+                )}
+                {recentCompleted.map((id) => {
+                  const meta = challengeMeta[id];
+                  if (!meta) return null;
+                  const Icon = meta.icon;
+                  return (
+                    <div
+                      key={id}
+                      className="p-4 border rounded-lg hover:border-primary/50 transition-colors cursor-pointer"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
+                          <Icon className="w-5 h-5 text-accent-foreground" />
+                        </div>
+                        <div>
+                          <Badge variant="secondary" className="mb-2 text-xs">
+                            {meta.type}
+                          </Badge>
+                          <h4 className="font-semibold text-sm flex items-center gap-1">
+                            {meta.title}
+                            <CheckCircle2 className="w-4 h-4 text-primary" />
+                          </h4>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          </CardContent>
+                  );
+                })}
+              </div>
+            </CardContent>
         </Card>
 
         {/* Unlocked Achievement Badges */}
