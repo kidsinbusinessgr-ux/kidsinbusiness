@@ -24,13 +24,11 @@ import Navigation from "@/components/Navigation";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import GlobalTip from "@/components/GlobalTip";
 import { Toaster } from "@/components/ui/toaster";
-import { Input } from "@/components/ui/input";
 import { useAuthAndClasses } from "@/hooks/useAuthAndClasses";
 import { supabase } from "@/integrations/supabase/client";
 import { miniChallenges as seedMini, classActivities as seedClass, projects as seedProjects } from "@/config/actionsConfig";
-import { activityEditSchema, normalizeNullable } from "@/lib/activityValidation";
-
-type ActivityCategory = "mini" | "class" | "project";
+import { normalizeNullable } from "@/lib/activityValidation";
+import { ActivityEditForm, ActivityEditFormValues, ActivityCategory } from "@/components/actions/ActivityEditForm";
 
 type Activity = {
   id: string;
@@ -46,8 +44,6 @@ type Activity = {
   category: ActivityCategory;
 };
 
-
-
 const Actions = () => {
   const { classes, loading, isAuthenticated } = useAuthAndClasses();
   const [currentClassId, setCurrentClassId] = useState<string>("");
@@ -56,8 +52,6 @@ const Actions = () => {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [activitiesLoading, setActivitiesLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editDraft, setEditDraft] = useState<Partial<Activity> | null>(null);
-  const [editErrors, setEditErrors] = useState<Partial<Record<keyof Omit<Activity, "id" | "slug" | "category">, string>>>({});
   const { toast } = useToast();
 
   const motivationalMessages = [
@@ -387,31 +381,18 @@ const Actions = () => {
   };
 
   const handleEditActivity = (id: string) => {
-    const activity = activities.find((a) => a.id === id);
-    if (!activity) return;
-
     setEditingId(id);
-    setEditErrors({});
-    setEditDraft({
-      title: activity.title ?? "",
-      description: activity.description ?? "",
-      duration: activity.duration ?? "",
-      chapter: activity.chapter ?? "",
-      chapterId: activity.chapterId ?? "",
-      difficulty: activity.difficulty ?? "",
-      participants: activity.participants ?? "",
-      complexity: activity.complexity ?? "",
-    });
   };
-
+ 
   const handleCancelEdit = () => {
     setEditingId(null);
-    setEditDraft(null);
-    setEditErrors({});
   };
-  const handleSaveEdit = async () => {
-    if (!editingId || !editDraft) return;
-
+ 
+  const handleSaveEdit = async (
+    id: string,
+    values: ActivityEditFormValues,
+    category: ActivityCategory
+  ) => {
     if (!isAuthenticated) {
       toast({
         title: "Απαιτείται σύνδεση",
@@ -420,60 +401,23 @@ const Actions = () => {
       });
       return;
     }
-
-    const currentActivity = activities.find((a) => a.id === editingId);
-
-    const parsed = activityEditSchema.safeParse({
-      title: editDraft.title ?? "",
-      description: editDraft.description ?? null,
-      duration: editDraft.duration ?? null,
-      chapter: editDraft.chapter ?? null,
-      chapterId: editDraft.chapterId ?? null,
-      difficulty: editDraft.difficulty ?? null,
-      participants: editDraft.participants ?? null,
-      complexity: editDraft.complexity ?? null,
-      category: currentActivity?.category,
-    });
-
-    if (!parsed.success) {
-      const fieldErrors: typeof editErrors = {};
-      for (const issue of parsed.error.issues) {
-        const field = issue.path[0] as keyof typeof fieldErrors;
-        if (field && !fieldErrors[field]) {
-          fieldErrors[field] = issue.message;
-        }
-      }
-      setEditErrors(fieldErrors);
-
-      const firstError = parsed.error.issues[0];
-      toast({
-        title: "Μη έγκυρα στοιχεία δράσης",
-        description: firstError?.message ?? "Ελέγξτε τα πεδία της φόρμας και δοκιμάστε ξανά.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setEditErrors({});
-
-    const data = parsed.data;
-
+ 
     const payload = {
-      title: data.title.trim(),
-      description: normalizeNullable(data.description),
-      duration: normalizeNullable(data.duration),
-      chapter: normalizeNullable(data.chapter),
-      chapter_id: normalizeNullable(data.chapterId),
-      difficulty: normalizeNullable(data.difficulty),
-      participants: normalizeNullable(data.participants),
-      complexity: normalizeNullable(data.complexity),
+      title: values.title.trim(),
+      description: normalizeNullable(values.description),
+      duration: normalizeNullable(values.duration),
+      chapter: normalizeNullable(values.chapter),
+      chapter_id: normalizeNullable(values.chapterId),
+      difficulty: normalizeNullable(values.difficulty),
+      participants: normalizeNullable(values.participants),
+      complexity: normalizeNullable(values.complexity),
     };
-
+ 
     const { error } = await supabase
       .from("actions_activities")
       .update(payload)
-      .eq("id", editingId);
-
+      .eq("id", id);
+ 
     if (error) {
       toast({
         title: "Αποτυχία ενημέρωσης",
@@ -482,10 +426,10 @@ const Actions = () => {
       });
       return;
     }
-
+ 
     setActivities((prev) =>
       prev.map((a) =>
-        a.id === editingId
+        a.id === id
           ? {
               ...a,
               title: payload.title,
@@ -500,10 +444,9 @@ const Actions = () => {
           : a
       )
     );
-
+ 
     setEditingId(null);
-    setEditDraft(null);
-
+ 
     toast({
       title: "Η δράση ενημερώθηκε",
       description: "Οι αλλαγές αποθηκεύτηκαν με επιτυχία.",
@@ -856,123 +799,21 @@ const Actions = () => {
                     </CardHeader>
                     <CardContent>
                       {editingId === challenge.id ? (
-                        <div className="space-y-2 text-sm">
-                          <div>
-                            <Input
-                              value={editDraft?.title ?? ""}
-                              placeholder="Τίτλος"
-                              className="h-8 text-xs"
-                              onChange={(e) =>
-                                setEditDraft((prev) => ({ ...prev, title: e.target.value }))
-                              }
-                            />
-                            {editErrors.title && (
-                              <p className="mt-1 text-xs text-destructive">{editErrors.title}</p>
-                            )}
-                          </div>
-                          <div>
-                            <Input
-                              value={editDraft?.description ?? ""}
-                              placeholder="Περιγραφή"
-                              className="h-8 text-xs"
-                              onChange={(e) =>
-                                setEditDraft((prev) => ({ ...prev, description: e.target.value }))
-                              }
-                            />
-                            {editErrors.description && (
-                              <p className="mt-1 text-xs text-destructive">{editErrors.description}</p>
-                            )}
-                          </div>
-                          <div className="flex gap-2">
-                            <div className="flex-1">
-                              <Select
-                                value={editDraft?.duration ?? ""}
-                                onValueChange={(value) =>
-                                  setEditDraft((prev) => ({ ...prev, duration: value }))
-                                }
-                              >
-                                <SelectTrigger className="h-8 text-xs flex-1">
-                                  <SelectValue placeholder="Διάρκεια" />
-                                </SelectTrigger>
-                                <SelectContent className="z-50 bg-popover">
-                                  <SelectItem value="5 λεπτά">5 λεπτά</SelectItem>
-                                  <SelectItem value="10 λεπτά">10 λεπτά</SelectItem>
-                                  <SelectItem value="15 λεπτά">15 λεπτά</SelectItem>
-                                  <SelectItem value="30 λεπτά">30 λεπτά</SelectItem>
-                                </SelectContent>
-                              </Select>
-                              {editErrors.duration && (
-                                <p className="mt-1 text-xs text-destructive">{editErrors.duration}</p>
-                              )}
-                            </div>
-                            <div className="flex-1">
-                              <Input
-                                value={editDraft?.difficulty ?? ""}
-                                placeholder="Δυσκολία"
-                                className="h-8 text-xs flex-1"
-                                onChange={(e) =>
-                                  setEditDraft((prev) => ({ ...prev, difficulty: e.target.value }))
-                                }
-                              />
-                              {editErrors.difficulty && (
-                                <p className="mt-1 text-xs text-destructive">{editErrors.difficulty}</p>
-                              )}
-                            </div>
-                          </div>
-                          <div className="flex gap-2">
-                            <div className="flex-1">
-                              <Select
-                                value={editDraft?.chapterId ?? ""}
-                                onValueChange={(value) =>
-                                  setEditDraft((prev) => ({
-                                    ...prev,
-                                    chapterId: value,
-                                    chapter: `Chapter ${value}`,
-                                  }))
-                                }
-                              >
-                                <SelectTrigger className="h-8 text-xs flex-1">
-                                  <SelectValue placeholder="Chapter ID" />
-                                </SelectTrigger>
-                                <SelectContent className="z-50 bg-popover">
-                                  <SelectItem value="1">Chapter 1</SelectItem>
-                                  <SelectItem value="2">Chapter 2</SelectItem>
-                                  <SelectItem value="3">Chapter 3</SelectItem>
-                                  <SelectItem value="4">Chapter 4</SelectItem>
-                                  <SelectItem value="5">Chapter 5</SelectItem>
-                                </SelectContent>
-                              </Select>
-                              {editErrors.chapterId && (
-                                <p className="mt-1 text-xs text-destructive">{editErrors.chapterId}</p>
-                              )}
-                            </div>
-                            <div className="flex-1">
-                              <Input
-                                value={editDraft?.chapter ?? ""}
-                                placeholder="Ετικέτα chapter"
-                                className="h-8 text-xs flex-1"
-                                onChange={(e) =>
-                                  setEditDraft((prev) => ({ ...prev, chapter: e.target.value }))
-                                }
-                              />
-                              {editErrors.chapter && (
-                                <p className="mt-1 text-xs text-destructive">{editErrors.chapter}</p>
-                              )}
-                            </div>
-                          </div>
-                          <div className="flex justify-end gap-2 pt-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={handleCancelEdit}
-                            >
-                              Άκυρο
-                            </Button>
-                            <Button size="sm" onClick={handleSaveEdit}>
-                              Αποθήκευση
-                            </Button>
-                          </div>
-                        </div>
+                        <ActivityEditForm
+                          category={challenge.category}
+                          initialValues={{
+                            title: challenge.title,
+                            description: challenge.description,
+                            duration: challenge.duration,
+                            chapter: challenge.chapter,
+                            chapterId: challenge.chapterId,
+                            difficulty: challenge.difficulty,
+                            participants: challenge.participants,
+                            complexity: challenge.complexity,
+                          }}
+                          onSubmit={(values) => handleSaveEdit(challenge.id, values, challenge.category)}
+                          onCancel={handleCancelEdit}
+                        />
                       ) : (
                         <>
                           <div className="flex items-center gap-4 mb-4 text-sm text-muted-foreground">
@@ -1094,122 +935,21 @@ const Actions = () => {
                     </CardHeader>
                     <CardContent>
                       {editingId === activity.id ? (
-                        <div className="space-y-2 text-sm">
-                          <div>
-                            <Input
-                              value={editDraft?.title ?? ""}
-                              placeholder="Τίτλος"
-                              className="h-8 text-xs"
-                              onChange={(e) =>
-                                setEditDraft((prev) => ({ ...prev, title: e.target.value }))
-                              }
-                            />
-                            {editErrors.title && (
-                              <p className="mt-1 text-xs text-destructive">{editErrors.title}</p>
-                            )}
-                          </div>
-                          <div>
-                            <Input
-                              value={editDraft?.description ?? ""}
-                              placeholder="Περιγραφή"
-                              className="h-8 text-xs"
-                              onChange={(e) =>
-                                setEditDraft((prev) => ({ ...prev, description: e.target.value }))
-                              }
-                            />
-                            {editErrors.description && (
-                              <p className="mt-1 text-xs text-destructive">{editErrors.description}</p>
-                            )}
-                          </div>
-                          <div className="flex gap-2">
-                            <div className="flex-1">
-                              <Select
-                                value={editDraft?.duration ?? ""}
-                                onValueChange={(value) =>
-                                  setEditDraft((prev) => ({ ...prev, duration: value }))
-                                }
-                              >
-                                <SelectTrigger className="h-8 text-xs flex-1">
-                                  <SelectValue placeholder="Διάρκεια" />
-                                </SelectTrigger>
-                                <SelectContent className="z-50 bg-popover">
-                                  <SelectItem value="15 λεπτά">15 λεπτά</SelectItem>
-                                  <SelectItem value="30 λεπτά">30 λεπτά</SelectItem>
-                                  <SelectItem value="45 λεπτά">45 λεπτά</SelectItem>
-                                </SelectContent>
-                              </Select>
-                              {editErrors.duration && (
-                                <p className="mt-1 text-xs text-destructive">{editErrors.duration}</p>
-                              )}
-                            </div>
-                            <div className="flex-1">
-                              <Input
-                                value={editDraft?.participants ?? ""}
-                                placeholder="Συμμετέχοντες (π.χ. 4-6 μαθητές)"
-                                className="h-8 text-xs flex-1"
-                                onChange={(e) =>
-                                  setEditDraft((prev) => ({ ...prev, participants: e.target.value }))
-                                }
-                              />
-                              {editErrors.participants && (
-                                <p className="mt-1 text-xs text-destructive">{editErrors.participants}</p>
-                              )}
-                            </div>
-                          </div>
-                          <div className="flex gap-2">
-                            <div className="flex-1">
-                              <Select
-                                value={editDraft?.chapterId ?? ""}
-                                onValueChange={(value) =>
-                                  setEditDraft((prev) => ({
-                                    ...prev,
-                                    chapterId: value,
-                                    chapter: `Chapter ${value}`,
-                                  }))
-                                }
-                              >
-                                <SelectTrigger className="h-8 text-xs flex-1">
-                                  <SelectValue placeholder="Chapter ID" />
-                                </SelectTrigger>
-                                <SelectContent className="z-50 bg-popover">
-                                  <SelectItem value="1">Chapter 1</SelectItem>
-                                  <SelectItem value="2">Chapter 2</SelectItem>
-                                  <SelectItem value="3">Chapter 3</SelectItem>
-                                  <SelectItem value="4">Chapter 4</SelectItem>
-                                  <SelectItem value="5">Chapter 5</SelectItem>
-                                </SelectContent>
-                              </Select>
-                              {editErrors.chapterId && (
-                                <p className="mt-1 text-xs text-destructive">{editErrors.chapterId}</p>
-                              )}
-                            </div>
-                            <div className="flex-1">
-                              <Input
-                                value={editDraft?.chapter ?? ""}
-                                placeholder="Ετικέτα chapter"
-                                className="h-8 text-xs flex-1"
-                                onChange={(e) =>
-                                  setEditDraft((prev) => ({ ...prev, chapter: e.target.value }))
-                                }
-                              />
-                              {editErrors.chapter && (
-                                <p className="mt-1 text-xs text-destructive">{editErrors.chapter}</p>
-                              )}
-                            </div>
-                          </div>
-                          <div className="flex justify-end gap-2 pt-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={handleCancelEdit}
-                            >
-                              Άκυρο
-                            </Button>
-                            <Button size="sm" onClick={handleSaveEdit}>
-                              Αποθήκευση
-                            </Button>
-                          </div>
-                        </div>
+                        <ActivityEditForm
+                          category={activity.category}
+                          initialValues={{
+                            title: activity.title,
+                            description: activity.description,
+                            duration: activity.duration,
+                            chapter: activity.chapter,
+                            chapterId: activity.chapterId,
+                            difficulty: activity.difficulty,
+                            participants: activity.participants,
+                            complexity: activity.complexity,
+                          }}
+                          onSubmit={(values) => handleSaveEdit(activity.id, values, activity.category)}
+                          onCancel={handleCancelEdit}
+                        />
                       ) : (
                         <>
                           <div className="flex items-center gap-4 mb-4 text-sm text-muted-foreground">
