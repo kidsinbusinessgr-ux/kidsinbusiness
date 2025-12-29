@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const VALID_CHAPTER_IDS = ["1", "2", "3", "4", "5"] as const;
+export const VALID_CHAPTER_IDS = ["1", "2", "3", "4", "5", "6"] as const;
 
 export const MINI_DURATIONS: string[] = ["5 λεπτά", "10 λεπτά", "15 λεπτά", "30 λεπτά"];
 export const CLASS_DURATIONS: string[] = ["15 λεπτά", "30 λεπτά", "45 λεπτά"];

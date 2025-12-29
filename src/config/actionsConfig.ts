@@ -56,6 +56,16 @@ export const miniChallenges: MiniChallenge[] = [
     chapterId: "5",
     difficulty: "Προχωρημένο",
   },
+  {
+    id: "mini-4",
+    title: "Budgeting Tool",
+    description:
+      "Mini-app όπου τα παιδιά καταγράφουν έσοδα, έξοδα και κέρδη από την επιχειρηματική τους ιδέα.",
+    duration: "30 λεπτά",
+    chapter: "Chapter 6",
+    chapterId: "6",
+    difficulty: "Μέτριο",
+  },
 ];
 
 export const classActivities: ClassActivity[] = [
@@ -77,6 +87,16 @@ export const classActivities: ClassActivity[] = [
     chapterId: "3",
     participants: "Όλη η τάξη",
   },
+  {
+    id: "class-3",
+    title: "Virtual Stock Market",
+    description:
+      "Οι μαθητές πουλάνε \"μετοχές\" της εικονικής τους επιχείρησης για να συγκεντρώσουν αρχικό κεφάλαιο.",
+    duration: "45 λεπτά",
+    chapter: "Chapter 6",
+    chapterId: "6",
+    participants: "Όλη η τάξη",
+  },
 ];
 
 export const projects: ProjectActivity[] = [
@@ -96,6 +116,16 @@ export const projects: ProjectActivity[] = [
     duration: "2-3 μέρες",
     chapter: "Chapter 5",
     chapterId: "5",
+    complexity: "Μέτριο",
+  },
+  {
+    id: "project-3",
+    title: "Pricing Simulator",
+    description:
+      "Οι ομάδες αλλάζουν την τιμή του προϊόντος τους και παρατηρούν πώς επηρεάζεται το συνολικό κέρδος.",
+    duration: "2-3 μέρες",
+    chapter: "Chapter 6",
+    chapterId: "6",
     complexity: "Μέτριο",
   },
 ];

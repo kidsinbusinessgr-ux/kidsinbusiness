@@ -58,6 +58,16 @@ const chapters = [
     color: "from-accent to-primary",
     progress: 0,
   },
+  {
+    id: 6,
+    title: "Χρηματοοικονομικός Γραμματισμός",
+    description: "Μαθαίνουμε για έσοδα, έξοδα, κέρδη και βασικές οικονομικές αποφάσεις μέσα από παιχνίδι",
+    lessons: 5,
+    duration: "60 λεπτά",
+    icon: BookOpen,
+    color: "from-secondary to-accent",
+    progress: 0,
+  },
 ];
 
 const Chapters = () => {
@@ -71,7 +81,7 @@ const Chapters = () => {
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">Μαθήματα Επιχειρηματικότητας</h1>
           <p className="text-muted-foreground text-lg">
-            5 Chapters που θα μετατρέψουν τους μαθητές σε επιχειρηματικούς στοχαστές
+            6 Chapters που θα μετατρέψουν τους μαθητές σε επιχειρηματικούς στοχαστές
           </p>
         </div>
 
