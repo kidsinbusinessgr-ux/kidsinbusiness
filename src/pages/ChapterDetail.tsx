@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import Navigation from "@/components/Navigation";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import GlobalTip from "@/components/GlobalTip";
+import budgetingWorksheet from "@/assets/worksheet-budgeting-tool.png";
+import pricingWorksheet from "@/assets/worksheet-pricing-simulator.png";
 
 const chapterTitles: Record<string, string> = {
   "1": "Τι είναι η Επιχειρηματικότητα;",
@@ -674,6 +676,67 @@ const ChapterDetail = () => {
                   </ul>
                 </CardContent>
               </Card>
+
+              {chapterId === "6" && (
+                <Card className="mt-4 bg-card border-accent/40">
+                  <CardHeader>
+                    <CardTitle className="text-lg">
+                      Οπτικά Worksheets – Χρηματοοικονομικός Γραμματισμός
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4 text-sm text-foreground">
+                    <p>
+                      Κατέβασε και εκτύπωσε τα παρακάτω worksheets για να δουλέψετε στην τάξη τα εργαλεία
+                      Budgeting Tool και Pricing Simulator.
+                    </p>
+
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <figure className="space-y-2">
+                        <img
+                          src={budgetingWorksheet}
+                          alt="Worksheet Budgeting Tool για έσοδα, έξοδα και κέρδος στα ελληνικά"
+                          className="w-full rounded-md border border-border object-contain"
+                          loading="lazy"
+                        />
+                        <figcaption className="flex items-center justify-between gap-2">
+                          <span className="font-medium">Budgeting Tool – Πίνακας Εσόδων / Εξόδων</span>
+                          <a
+                            href={budgetingWorksheet}
+                            download
+                            className="text-xs underline text-primary"
+                          >
+                            Λήψη εικόνας
+                          </a>
+                        </figcaption>
+                      </figure>
+
+                      <figure className="space-y-2">
+                        <img
+                          src={pricingWorksheet}
+                          alt="Worksheet Pricing Simulator για τιμή, τεμάχια και κέρδος στα ελληνικά"
+                          className="w-full rounded-md border border-border object-contain"
+                          loading="lazy"
+                        />
+                        <figcaption className="flex items-center justify-between gap-2">
+                          <span className="font-medium">Pricing Simulator – Πίνακας Τιμής & Κέρδους</span>
+                          <a
+                            href={pricingWorksheet}
+                            download
+                            className="text-xs underline text-primary"
+                          >
+                            Λήψη εικόνας
+                          </a>
+                        </figcaption>
+                      </figure>
+                    </div>
+
+                    <p className="text-muted-foreground">
+                      Tip: Αν θέλεις σε μορφή PDF, μπορείς να εκτυπώσεις τις εικόνες ως PDF από τον υπολογιστή
+                      σου πριν τις μοιράσεις στα παιδιά.
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
             </section>
           </div>
 
