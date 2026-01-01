@@ -750,6 +750,11 @@ const Actions = () => {
                             {challenge.chapter && (
                               <Badge variant="secondary">{challenge.chapter}</Badge>
                             )}
+                            {challenge.slug === "mini-4" && (
+                              <Badge variant="outline" className="text-[10px] uppercase tracking-wide">
+                                Χρηματοοικονομικός Γραμματισμός
+                              </Badge>
+                            )}
                             {isCompleted(challenge.id) && (
                               <Badge className="bg-primary/20 text-primary border-primary/30">
                                 <CheckCircle2 className="w-3 h-3 mr-1" />
@@ -854,6 +859,11 @@ const Actions = () => {
                             <Target className="w-5 h-5 text-secondary" />
                             {activity.chapter && (
                               <Badge variant="secondary">{activity.chapter}</Badge>
+                            )}
+                            {activity.slug === "class-3" && (
+                              <Badge variant="outline" className="text-[10px] uppercase tracking-wide">
+                                Χρηματοοικονομικός Γραμματισμός
+                              </Badge>
                             )}
                             {isCompleted(activity.id) && (
                               <Badge className="bg-primary/20 text-primary border-primary/30">
@@ -995,6 +1005,11 @@ const Actions = () => {
                             <Rocket className="w-5 h-5 text-accent" />
                             {project.chapter && (
                               <Badge variant="secondary">{project.chapter}</Badge>
+                            )}
+                            {project.slug === "project-3" && (
+                              <Badge variant="outline" className="text-[10px] uppercase tracking-wide">
+                                Χρηματοοικονομικός Γραμματισμός
+                              </Badge>
                             )}
                             {isCompleted(project.id) && (
                               <Badge className="bg-primary/20 text-primary border-primary/30">
