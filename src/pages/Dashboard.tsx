@@ -9,9 +9,9 @@ import Navigation from "@/components/Navigation";
 import GlobalTip from "@/components/GlobalTip";
 import { useAuthAndClasses } from "@/hooks/useAuthAndClasses";
 
-const MINI_IDS = ["mini-1", "mini-2", "mini-3"] as const;
-const CLASS_IDS = ["class-1", "class-2"] as const;
-const PROJECT_IDS = ["project-1", "project-2"] as const;
+const MINI_IDS = ["mini-1", "mini-2", "mini-3", "mini-4"] as const;
+const CLASS_IDS = ["class-1", "class-2", "class-3"] as const;
+const PROJECT_IDS = ["project-1", "project-2", "project-3"] as const;
 const ALL_IDS = [...MINI_IDS, ...CLASS_IDS, ...PROJECT_IDS];
 
 const Dashboard = () => {
@@ -98,10 +98,13 @@ const Dashboard = () => {
     "mini-1": { title: "Ιδέα σε 5 λεπτά", type: "Mini Challenge", icon: Star },
     "mini-2": { title: "Λύσε το πρόβλημα", type: "Mini Challenge", icon: Star },
     "mini-3": { title: "Pitch σε 30 δευτερόλεπτα", type: "Mini Challenge", icon: Star },
+    "mini-4": { title: "Budgeting Tool", type: "Mini Challenge – Οικονομικά", icon: Star },
     "class-1": { title: "Ο ρόλος του ηγέτη", type: "Δραστηριότητα", icon: TrendingUp },
     "class-2": { title: "Η επιχείρησή μου", type: "Δραστηριότητα", icon: TrendingUp },
+    "class-3": { title: "Virtual Stock Market", type: "Δραστηριότητα – Οικονομικά", icon: TrendingUp },
     "project-1": { title: "Business Plan Junior", type: "Project", icon: BookOpen },
     "project-2": { title: "Παρουσίαση ομάδας", type: "Project", icon: BookOpen },
+    "project-3": { title: "Pricing Simulator", type: "Project – Οικονομικά", icon: BookOpen },
   };
   const achievements = [
     {
@@ -133,6 +136,24 @@ const Dashboard = () => {
       title: "Όλα τα Projects",
       description: "Ολοκλήρωσε όλα τα Projects.",
       unlocked: projectsCompleted === PROJECT_IDS.length && PROJECT_IDS.length > 0,
+    },
+    {
+      id: "finance-starter",
+      title: "Οικονομικός Εξερευνητής",
+      description: "Ολοκλήρωσε τουλάχιστον ένα από τα οικονομικά challenges (Budgeting, Pricing ή Stock Market).",
+      unlocked:
+        completedIds.has("mini-4") ||
+        completedIds.has("class-3") ||
+        completedIds.has("project-3"),
+    },
+    {
+      id: "finance-master",
+      title: "Master Χρηματοοικονομικού Γραμματισμού",
+      description: "Ολοκλήρωσε και τα 3 οικονομικά challenges: Budgeting Tool, Virtual Stock Market, Pricing Simulator.",
+      unlocked:
+        completedIds.has("mini-4") &&
+        completedIds.has("class-3") &&
+        completedIds.has("project-3"),
     },
     {
       id: "all-challenges",
