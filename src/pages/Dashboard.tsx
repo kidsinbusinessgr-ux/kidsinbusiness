@@ -228,7 +228,7 @@ const Dashboard = () => {
       <div className="min-h-screen bg-background">
         <Navigation />
         <main className="container mx-auto px-4 py-8">
-          <p className="text-muted-foreground">Φόρτωση...</p>
+          <p className="text-muted-foreground">Loading...</p>
         </main>
       </div>
     );
@@ -269,7 +269,7 @@ const Dashboard = () => {
             {/* Rename classes inline */}
             <Card className="w-full max-w-xs border-dashed">
               <CardHeader className="py-2">
-                <CardTitle className="text-xs font-medium">Μετονομασία τμημάτων</CardTitle>
+                <CardTitle className="text-xs font-medium">Rename classes</CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col gap-2 py-2">
                 {classes.map((cls) => (
@@ -325,7 +325,7 @@ const Dashboard = () => {
             {isAuthenticated && (
               <Card className="w-full max-w-xs border-dashed">
                 <CardHeader className="py-2">
-                  <CardTitle className="text-xs font-medium">Νέο τμήμα</CardTitle>
+                  <CardTitle className="text-xs font-medium">New class</CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-2 py-2">
                   <div className="flex items-center gap-2">
