@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import Navigation from "@/components/Navigation";
 import GlobalTip from "@/components/GlobalTip";
 import { useAuthAndClasses } from "@/hooks/useAuthAndClasses";
-
+import { useLanguage } from "@/context/LanguageContext";
 const MINI_IDS = ["mini-1", "mini-2", "mini-3", "mini-4"] as const;
 const CLASS_IDS = ["class-1", "class-2", "class-3"] as const;
 const PROJECT_IDS = ["project-1", "project-2", "project-3"] as const;
@@ -16,6 +16,7 @@ const ALL_IDS = [...MINI_IDS, ...CLASS_IDS, ...PROJECT_IDS];
 
 const Dashboard = () => {
   const { classes, loading, renameClass, isAuthenticated, createClass } = useAuthAndClasses();
+  const { language } = useLanguage();
   const [currentClassId, setCurrentClassId] = useState<string>("");
   const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
   const [recentCompleted, setRecentCompleted] = useState<string[]>([]);
@@ -228,7 +229,9 @@ const Dashboard = () => {
       <div className="min-h-screen bg-background">
         <Navigation />
         <main className="container mx-auto px-4 py-8">
-          <p className="text-muted-foreground">Loading...</p>
+          <p className="text-muted-foreground">
+            {language === "en" ? "Loading..." : "Φόρτωση..."}
+          </p>
         </main>
       </div>
     );
@@ -242,9 +245,15 @@ const Dashboard = () => {
         {/* Welcome Header */}
         <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
-            <h1 className="text-4xl font-bold mb-2">Καλώς ήρθατε στο Kids in Business</h1>
+            <h1 className="text-4xl font-bold mb-2">
+              {language === "en"
+                ? "Welcome to Kids in Business"
+                : "Καλώς ήρθατε στο Kids in Business"}
+            </h1>
             <p className="text-muted-foreground text-lg">
-              Εμπνεύστε τους μαθητές σας να γίνουν οι επιχειρηματίες του αύριο
+              {language === "en"
+                ? "Inspire your students to become the entrepreneurs of tomorrow"
+                : "Εμπνεύστε τους μαθητές σας να γίνουν οι επιχειρηματίες του αύριο"}
             </p>
           </div>
           {/* Class selector */}
@@ -269,7 +278,9 @@ const Dashboard = () => {
             {/* Rename classes inline */}
             <Card className="w-full max-w-xs border-dashed">
               <CardHeader className="py-2">
-                <CardTitle className="text-xs font-medium">Rename classes</CardTitle>
+                <CardTitle className="text-xs font-medium">
+                  {language === "en" ? "Rename classes" : "Μετονομασία τμημάτων"}
+                </CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col gap-2 py-2">
                 {classes.map((cls) => (
@@ -325,7 +336,9 @@ const Dashboard = () => {
             {isAuthenticated && (
               <Card className="w-full max-w-xs border-dashed">
                 <CardHeader className="py-2">
-                  <CardTitle className="text-xs font-medium">New class</CardTitle>
+                  <CardTitle className="text-xs font-medium">
+                    {language === "en" ? "New class" : "Νέο τμήμα"}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-2 py-2">
                   <div className="flex items-center gap-2">
@@ -390,7 +403,7 @@ const Dashboard = () => {
                       disabled={!newClassName.trim()}
                     >
                       <Plus className="h-4 w-4 mr-1" />
-                      Προσθήκη
+                      {language === "en" ? "Add" : "Προσθήκη"}
                     </Button>
                   </div>
                 </CardContent>
