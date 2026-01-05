@@ -9,11 +9,13 @@ import {
 } from "@/components/ui/sheet";
 import { useState } from "react";
 import logo from "@/assets/kids-in-business-logo.png";
+import { useLanguage } from "@/context/LanguageContext";
 
 const Navigation = () => {
   const location = useLocation();
   const [open, setOpen] = useState(false);
   const { isAuthenticated, signOut } = useAuthAndClasses();
+  const { language, setLanguage } = useLanguage();
 
   const navItems = [
     { path: "/chapters", label: "Μαθήματα", icon: BookOpen },
@@ -29,15 +31,31 @@ const Navigation = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-3">
-            <img 
-              src={logo} 
-              alt="Kids in Business" 
+            <img
+              src={logo}
+              alt="Kids in Business"
               className="h-10 w-auto"
             />
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-3">
+            <div className="flex items-center gap-1 border rounded-full px-2 py-1 text-xs">
+              <button
+                type="button"
+                className={`px-2 py-0.5 rounded-full ${language === "el" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
+                onClick={() => setLanguage("el")}
+              >
+                GR
+              </button>
+              <button
+                type="button"
+                className={`px-2 py-0.5 rounded-full ${language === "en" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
+                onClick={() => setLanguage("en")}
+              >
+                EN
+              </button>
+            </div>
             {navItems.map((item) => {
               const Icon = item.icon;
               return (
@@ -114,6 +132,22 @@ const Navigation = () => {
                     </Button>
                   </Link>
                 )}
+                <div className="flex items-center gap-2 mt-4">
+                  <button
+                    type="button"
+                    className={`px-3 py-1 rounded-full text-xs border ${language === "el" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
+                    onClick={() => setLanguage("el")}
+                  >
+                    GR
+                  </button>
+                  <button
+                    type="button"
+                    className={`px-3 py-1 rounded-full text-xs border ${language === "en" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
+                    onClick={() => setLanguage("en")}
+                  >
+                    EN
+                  </button>
+                </div>
               </div>
             </SheetContent>
           </Sheet>
