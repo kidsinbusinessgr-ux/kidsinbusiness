@@ -656,6 +656,16 @@ const Actions = () => {
             </div>
             <Progress value={completionPercentage} className="h-3" />
           </div>
+
+          {/* Financial Literacy Legend */}
+          <div className="mt-3 inline-flex items-start gap-2 rounded-lg border border-dashed border-primary/30 bg-primary/5 px-3 py-2 text-xs md:text-sm text-muted-foreground">
+            <Badge variant="outline" className="text-[10px] uppercase tracking-wide mt-0.5">
+              Χρηματοοικονομικός Γραμματισμός
+            </Badge>
+            <span>
+              Το badge «Χρηματοοικονομικός Γραμματισμός» εμφανίζεται δίπλα στις δράσεις Budgeting Tool, Virtual Stock Market και Pricing Simulator που ανήκουν στο Chapter 6, ώστε τα παιδιά να αναγνωρίζουν δραστηριότητες χρηματοοικονομικού γραμματισμού.
+            </span>
+          </div>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6">
