@@ -490,30 +490,34 @@ const ChapterDetail = () => {
             </section>
 
             <section id="lesson-1-1" className="scroll-mt-20">
-              <h2 className="text-2xl font-bold mb-4">{content.lesson1Title}</h2>
+              <h2 className="text-lg sm:text-xl font-semibold leading-snug tracking-tight mb-3">
+                {content.lesson1Title}
+              </h2>
               {content.storyParagraphs.map((para, idx) => (
-                <p key={idx} className="mb-4 leading-relaxed">
+                <p key={idx} className="mb-3 text-sm sm:text-base leading-relaxed">
                   {para}
                 </p>
               ))}
-              <p className="italic text-sm text-muted-foreground">{content.teacherStoryNote}</p>
+              <p className="mt-1 italic text-xs sm:text-sm text-muted-foreground">{content.teacherStoryNote}</p>
             </section>
 
             <section id="what-is-entrepreneurship" className="scroll-mt-20">
-              <h3 className="text-xl font-semibold mb-2">
+              <h3 className="text-base sm:text-lg font-semibold leading-snug tracking-tight mb-2.5">
                 {translations.chapterDetail.forKidsLabel[language]}
               </h3>
-              <p className="mb-4">{content.definitionKids}</p>
-              <h3 className="text-xl font-semibold mb-2">
+              <p className="mb-3 text-sm sm:text-base leading-relaxed">{content.definitionKids}</p>
+              <h3 className="text-base sm:text-lg font-semibold leading-snug tracking-tight mb-2.5">
                 {translations.chapterDetail.forTeacherLabel[language]}
               </h3>
-              <p className="mb-4">{content.definitionTeacher}</p>
+              <p className="mb-3 text-sm sm:text-base leading-relaxed text-muted-foreground">{content.definitionTeacher}</p>
             </section>
 
             <section id="lesson-1-2" className="scroll-mt-20">
-              <h2 className="text-2xl font-bold mb-4">{content.lesson2Title}</h2>
+              <h2 className="text-lg sm:text-xl font-semibold leading-snug tracking-tight mb-3">
+                {content.lesson2Title}
+              </h2>
               {content.lesson2Paragraphs.map((para, idx) => (
-                <p key={idx} className="mb-4 leading-relaxed">
+                <p key={idx} className="mb-3 text-sm sm:text-base leading-relaxed">
                   {para}
                 </p>
               ))}
@@ -604,13 +608,17 @@ const ChapterDetail = () => {
             </section>
 
             <section id="closing-ritual" className="scroll-mt-20">
-              <h2 className="text-2xl font-bold mb-4">{content.closingTitle}</h2>
-              <p>{content.closingText}</p>
+              <h2 className="text-lg sm:text-xl font-semibold leading-snug tracking-tight mb-3">
+                {content.closingTitle}
+              </h2>
+              <p className="text-sm sm:text-base leading-relaxed text-muted-foreground">{content.closingText}</p>
             </section>
 
             <section id="reflection" className="scroll-mt-20">
-              <h2 className="text-2xl font-bold mb-4">{content.reflectionTitle}</h2>
-              <ul className="list-disc list-inside space-y-2">
+              <h2 className="text-lg sm:text-xl font-semibold leading-snug tracking-tight mb-3">
+                {content.reflectionTitle}
+              </h2>
+              <ul className="list-disc list-inside space-y-2 text-sm sm:text-base leading-relaxed">
                 {content.reflectionQuestions.map((q, idx) => (
                   <li key={idx}>{q}</li>
                 ))}
