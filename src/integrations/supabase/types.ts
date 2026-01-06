@@ -21,6 +21,7 @@ export type Database = {
           chapter_id: string | null
           complexity: string | null
           created_at: string
+          creator_id: string | null
           description: string | null
           difficulty: string | null
           duration: string | null
@@ -36,6 +37,7 @@ export type Database = {
           chapter_id?: string | null
           complexity?: string | null
           created_at?: string
+          creator_id?: string | null
           description?: string | null
           difficulty?: string | null
           duration?: string | null
@@ -51,6 +53,7 @@ export type Database = {
           chapter_id?: string | null
           complexity?: string | null
           created_at?: string
+          creator_id?: string | null
           description?: string | null
           difficulty?: string | null
           duration?: string | null
