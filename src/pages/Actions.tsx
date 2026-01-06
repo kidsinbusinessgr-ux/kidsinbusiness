@@ -845,49 +845,59 @@ const Actions = () => {
                   )}
                 </div>
 
-              <TabsContent value="mini" className="space-y-4">
+              <TabsContent value="mini" className="space-y-3 sm:space-y-4">
                 {filterActivities(miniChallenges).map((challenge) => {
                   const canModify = isAuthenticated && user && challenge.creatorId === user.id;
                   return (
                     <Card
                       key={challenge.id}
-                      className={`hover:shadow-lg transition-all duration-300 group relative ${
-                        isCompleted(challenge.id) ? "bg-primary/5 border-primary/30" : ""
+                      className={`group relative border border-border/80 hover:border-primary/50 hover:shadow-md transition-all duration-200 ${
+                        isCompleted(challenge.id) ? "bg-primary/5 border-primary/60" : "bg-card"
                       }`}
                     >
-                      <CardHeader>
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                              <Zap className="w-5 h-5 text-primary" />
+                      <CardHeader className="pb-3 sm:pb-4">
+                        <div className="flex items-start justify-between gap-3 sm:gap-4">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
+                              <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
                               {challenge.chapter && (
-                                <Badge variant="secondary">{challenge.chapter}</Badge>
+                                <Badge
+                                  variant="secondary"
+                                  className="text-[10px] sm:text-xs font-medium px-2 py-0.5"
+                                >
+                                  {challenge.chapter}
+                                </Badge>
                               )}
                               {challenge.slug === "mini-4" && (
-                                <Badge variant="outline" className="text-[10px] uppercase tracking-wide">
+                                <Badge
+                                  variant="outline"
+                                  className="text-[9px] sm:text-[10px] uppercase tracking-wide px-2 py-0.5"
+                                >
                                   Χρηματοοικονομικός Γραμματισμός
                                 </Badge>
                               )}
                               {isCompleted(challenge.id) && (
-                                <Badge className="bg-primary/20 text-primary border-primary/30">
+                                <Badge className="bg-primary/10 text-primary border-primary/40 text-[10px] sm:text-xs font-medium">
                                   <CheckCircle2 className="w-3 h-3 mr-1" />
                                   Ολοκληρώθηκε
                                 </Badge>
                               )}
                             </div>
-                            <CardTitle>{challenge.title}</CardTitle>
-                            {editingId === challenge.id ? null : (
-                              challenge.description && (
-                                <CardDescription className="mt-2">
-                                  {challenge.description}
-                                </CardDescription>
-                              )
-                            )}
+                            <CardTitle className="text-base sm:text-lg font-semibold leading-snug truncate">
+                              {challenge.title}
+                            </CardTitle>
+                            {editingId === challenge.id
+                              ? null
+                              : challenge.description && (
+                                  <CardDescription className="mt-1.5 text-sm sm:text-base line-clamp-2">
+                                    {challenge.description}
+                                  </CardDescription>
+                                )}
                           </div>
-                          <div className="flex flex-col items-end gap-2">
+                          <div className="flex flex-col items-end gap-2 ml-2 shrink-0">
                             <button
                               onClick={() => toggleChallenge(challenge.id)}
-                              className="p-2 rounded-full hover:bg-muted transition-all duration-200 hover:scale-110 active:scale-95"
+                              className="p-2 rounded-full hover:bg-muted transition-all duration-150 hover:scale-110 active:scale-95"
                               aria-label={
                                 isCompleted(challenge.id)
                                   ? "Mark as incomplete"
@@ -895,7 +905,7 @@ const Actions = () => {
                               }
                             >
                               {isCompleted(challenge.id) ? (
-                                <CheckCircle2 className="w-6 h-6 text-primary animate-in zoom-in duration-300" />
+                                <CheckCircle2 className="w-6 h-6 text-primary animate-in zoom-in duration-200" />
                               ) : (
                                 <Circle className="w-6 h-6 text-muted-foreground hover:text-primary transition-colors" />
                               )}
@@ -934,7 +944,7 @@ const Actions = () => {
                           </div>
                         </div>
                       </CardHeader>
-                      <CardContent>
+                      <CardContent className="pt-0 pb-3 sm:pb-4">
                         {editingId === challenge.id ? (
                           <ActivityEditForm
                             category={challenge.category}
@@ -953,7 +963,7 @@ const Actions = () => {
                           />
                         ) : (
                           <>
-                            <div className="flex items-center gap-4 mb-4 text-sm text-muted-foreground">
+                            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-3 text-xs sm:text-sm text-muted-foreground">
                               {challenge.duration && (
                                 <div className="flex items-center gap-1">
                                   <Clock className="w-4 h-4" />
@@ -961,12 +971,16 @@ const Actions = () => {
                                 </div>
                               )}
                               {challenge.difficulty && (
-                                <Badge variant="outline">{challenge.difficulty}</Badge>
+                                <Badge variant="outline" className="text-[11px] px-2 py-0.5">
+                                  {challenge.difficulty}
+                                </Badge>
                               )}
                             </div>
                             {challenge.chapterId && (
                               <Link to={`/chapters/${challenge.chapterId}`}>
-                                <Button className="w-full">Ξεκινήστε το Challenge</Button>
+                                <Button className="w-full" size="sm">
+                                  Ξεκινήστε το Challenge
+                                </Button>
                               </Link>
                             )}
                           </>
@@ -977,49 +991,60 @@ const Actions = () => {
                 })}
               </TabsContent>
 
-              <TabsContent value="class" className="space-y-4">
+
+              <TabsContent value="class" className="space-y-3 sm:space-y-4">
                 {filterActivities(classActivities).map((activity) => {
                   const canModify = isAuthenticated && user && activity.creatorId === user.id;
                   return (
                     <Card
                       key={activity.id}
-                      className={`hover:shadow-lg transition-all duration-300 group relative ${
-                        isCompleted(activity.id) ? "bg-primary/5 border-primary/30" : ""
+                      className={`group relative border border-border/80 hover:border-secondary/50 hover:shadow-md transition-all duration-200 ${
+                        isCompleted(activity.id) ? "bg-primary/5 border-primary/60" : "bg-card"
                       }`}
                     >
-                      <CardHeader>
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                              <Target className="w-5 h-5 text-secondary" />
+                      <CardHeader className="pb-3 sm:pb-4">
+                        <div className="flex items-start justify-between gap-3 sm:gap-4">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
+                              <Target className="w-4 h-4 sm:w-5 sm:h-5 text-secondary" />
                               {activity.chapter && (
-                                <Badge variant="secondary">{activity.chapter}</Badge>
+                                <Badge
+                                  variant="secondary"
+                                  className="text-[10px] sm:text-xs font-medium px-2 py-0.5"
+                                >
+                                  {activity.chapter}
+                                </Badge>
                               )}
                               {activity.slug === "class-3" && (
-                                <Badge variant="outline" className="text-[10px] uppercase tracking-wide">
+                                <Badge
+                                  variant="outline"
+                                  className="text-[9px] sm:text-[10px] uppercase tracking-wide px-2 py-0.5"
+                                >
                                   Χρηματοοικονομικός Γραμματισμός
                                 </Badge>
                               )}
                               {isCompleted(activity.id) && (
-                                <Badge className="bg-primary/20 text-primary border-primary/30">
+                                <Badge className="bg-primary/10 text-primary border-primary/40 text-[10px] sm:text-xs font-medium">
                                   <CheckCircle2 className="w-3 h-3 mr-1" />
                                   Ολοκληρώθηκε
                                 </Badge>
                               )}
                             </div>
-                            <CardTitle>{activity.title}</CardTitle>
-                            {editingId === activity.id ? null : (
-                              activity.description && (
-                                <CardDescription className="mt-2">
-                                  {activity.description}
-                                </CardDescription>
-                              )
-                            )}
+                            <CardTitle className="text-base sm:text-lg font-semibold leading-snug truncate">
+                              {activity.title}
+                            </CardTitle>
+                            {editingId === activity.id
+                              ? null
+                              : activity.description && (
+                                  <CardDescription className="mt-1.5 text-sm sm:text-base line-clamp-2">
+                                    {activity.description}
+                                  </CardDescription>
+                                )}
                           </div>
-                          <div className="flex flex-col items-end gap-2">
+                          <div className="flex flex-col items-end gap-2 ml-2 shrink-0">
                             <button
                               onClick={() => toggleChallenge(activity.id)}
-                              className="p-2 rounded-full hover:bg-muted transition-all duration-200 hover:scale-110 active:scale-95"
+                              className="p-2 rounded-full hover:bg-muted transition-all duration-150 hover:scale-110 active:scale-95"
                               aria-label={
                                 isCompleted(activity.id)
                                   ? "Mark as incomplete"
@@ -1027,7 +1052,7 @@ const Actions = () => {
                               }
                             >
                               {isCompleted(activity.id) ? (
-                                <CheckCircle2 className="w-6 h-6 text-primary animate-in zoom-in duration-300" />
+                                <CheckCircle2 className="w-6 h-6 text-primary animate-in zoom-in duration-200" />
                               ) : (
                                 <Circle className="w-6 h-6 text-muted-foreground hover:text-primary transition-colors" />
                               )}
@@ -1097,7 +1122,7 @@ const Actions = () => {
                           </div>
                         </div>
                       </CardHeader>
-                      <CardContent>
+                      <CardContent className="pt-0 pb-3 sm:pb-4">
                         {editingId === activity.id ? (
                           <ActivityEditForm
                             category={activity.category}
@@ -1116,7 +1141,7 @@ const Actions = () => {
                           />
                         ) : (
                           <>
-                            <div className="flex items-center gap-4 mb-4 text-sm text-muted-foreground">
+                            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-3 text-xs sm:text-sm text-muted-foreground">
                               {activity.duration && (
                                 <div className="flex items-center gap-1">
                                   <Clock className="w-4 h-4" />
@@ -1132,7 +1157,7 @@ const Actions = () => {
                             </div>
                             {activity.chapterId && (
                               <Link to={`/chapters/${activity.chapterId}`}>
-                                <Button variant="secondary" className="w-full">
+                                <Button variant="secondary" className="w-full" size="sm">
                                   Δείτε τη δραστηριότητα
                                 </Button>
                               </Link>
@@ -1145,47 +1170,58 @@ const Actions = () => {
                 })}
               </TabsContent>
 
-              <TabsContent value="projects" className="space-y-4">
+
+              <TabsContent value="projects" className="space-y-3 sm:space-y-4">
                 {filterActivities(projects).map((project) => {
                   const canModify = isAuthenticated && user && project.creatorId === user.id;
                   return (
                     <Card
                       key={project.id}
-                      className={`hover:shadow-lg transition-all duration-300 group relative ${
-                        isCompleted(project.id) ? "bg-primary/5 border-primary/30" : ""
+                      className={`group relative border border-border/80 hover:border-accent/50 hover:shadow-md transition-all duration-200 ${
+                        isCompleted(project.id) ? "bg-primary/5 border-primary/60" : "bg-card"
                       }`}
                     >
-                      <CardHeader>
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                              <Rocket className="w-5 h-5 text-accent" />
+                      <CardHeader className="pb-3 sm:pb-4">
+                        <div className="flex items-start justify-between gap-3 sm:gap-4">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
+                              <Rocket className="w-4 h-4 sm:w-5 sm:h-5 text-accent" />
                               {project.chapter && (
-                                <Badge variant="secondary">{project.chapter}</Badge>
+                                <Badge
+                                  variant="secondary"
+                                  className="text-[10px] sm:text-xs font-medium px-2 py-0.5"
+                                >
+                                  {project.chapter}
+                                </Badge>
                               )}
                               {project.slug === "project-3" && (
-                                <Badge variant="outline" className="text-[10px] uppercase tracking-wide">
+                                <Badge
+                                  variant="outline"
+                                  className="text-[9px] sm:text-[10px] uppercase tracking-wide px-2 py-0.5"
+                                >
                                   Χρηματοοικονομικός Γραμματισμός
                                 </Badge>
                               )}
                               {isCompleted(project.id) && (
-                                <Badge className="bg-primary/20 text-primary border-primary/30">
+                                <Badge className="bg-primary/10 text-primary border-primary/40 text-[10px] sm:text-xs font-medium">
                                   <CheckCircle2 className="w-3 h-3 mr-1" />
                                   Ολοκληρώθηκε
                                 </Badge>
                               )}
                             </div>
-                            <CardTitle>{project.title}</CardTitle>
+                            <CardTitle className="text-base sm:text-lg font-semibold leading-snug truncate">
+                              {project.title}
+                            </CardTitle>
                             {project.description && (
-                              <CardDescription className="mt-2">
+                              <CardDescription className="mt-1.5 text-sm sm:text-base line-clamp-2">
                                 {project.description}
                               </CardDescription>
                             )}
                           </div>
-                          <div className="flex flex-col items-end gap-2">
+                          <div className="flex flex-col items-end gap-2 ml-2 shrink-0">
                             <button
                               onClick={() => toggleChallenge(project.id)}
-                              className="p-2 rounded-full hover:bg-muted transition-all duration-200 hover:scale-110 active:scale-95"
+                              className="p-2 rounded-full hover:bg-muted transition-all duration-150 hover:scale-110 active:scale-95"
                               aria-label={
                                 isCompleted(project.id)
                                   ? "Mark as incomplete"
@@ -1193,7 +1229,7 @@ const Actions = () => {
                               }
                             >
                               {isCompleted(project.id) ? (
-                                <CheckCircle2 className="w-6 h-6 text-primary animate-in zoom-in duration-300" />
+                                <CheckCircle2 className="w-6 h-6 text-primary animate-in zoom-in duration-200" />
                               ) : (
                                 <Circle className="w-6 h-6 text-muted-foreground hover:text-primary transition-colors" />
                               )}
@@ -1263,8 +1299,8 @@ const Actions = () => {
                           </div>
                         </div>
                       </CardHeader>
-                      <CardContent>
-                        <div className="flex items-center gap-4 mb-4 text-sm text-muted-foreground">
+                      <CardContent className="pt-0 pb-3 sm:pb-4">
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-3 text-xs sm:text-sm text-muted-foreground">
                           {project.duration && (
                             <div className="flex items-center gap-1">
                               <Clock className="w-4 h-4" />
@@ -1272,14 +1308,14 @@ const Actions = () => {
                             </div>
                           )}
                           {project.complexity && (
-                            <Badge variant="outline">
+                            <Badge variant="outline" className="text-[11px] px-2 py-0.5">
                               Πολυπλοκότητα: {project.complexity}
                             </Badge>
                           )}
                         </div>
                         {project.chapterId && (
                           <Link to={`/chapters/${project.chapterId}`}>
-                            <Button variant="default" className="w-full">
+                            <Button variant="default" className="w-full" size="sm">
                               Ξεκινήστε το Project
                             </Button>
                           </Link>
@@ -1289,6 +1325,7 @@ const Actions = () => {
                   );
                 })}
               </TabsContent>
+
             </Tabs>
           </div>
 
