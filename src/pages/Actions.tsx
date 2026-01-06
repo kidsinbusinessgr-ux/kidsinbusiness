@@ -56,6 +56,7 @@ const Actions = () => {
   const [statusFilter, setStatusFilter] = useState<"all" | "completed" | "incomplete">("all");
   const [ownershipFilter, setOwnershipFilter] = useState<"all" | "mine">("all");
   const [sortOption, setSortOption] = useState<"default" | "chapter" | "duration" | "createdAt">("default");
+  const [activeTab, setActiveTab] = useState<"mini" | "class" | "projects">("mini");
   const [activities, setActivities] = useState<Activity[]>([]);
   const [activitiesLoading, setActivitiesLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -100,6 +101,7 @@ const Actions = () => {
   useEffect(() => {
     const loadActivities = async () => {
       setActivitiesLoading(true);
+
       const { data, error } = await supabase
         .from("actions_activities")
         .select(
@@ -117,6 +119,8 @@ const Actions = () => {
         setActivitiesLoading(false);
         return;
       }
+
+      let activityRows = data ?? [];
 
       if (!data || data.length === 0) {
         // Seed from existing config for first-time use (once per project)
@@ -159,25 +163,29 @@ const Actions = () => {
           })),
         ];
 
-      const { data, error } = await supabase
-        .from("actions_activities")
-        .insert(seedPayload)
-        .select(
-          "id, slug, title, description, duration, chapter, chapter_id, difficulty, participants, complexity, category, creator_id, created_at"
-        );
-      if (error) {
-        console.error("Error seeding activities", error);
-        toast({
-          title: translations.actions.toastSeedErrorTitle[language],
-          description: error.message,
-          variant: "destructive",
-        });
-        setActivitiesLoading(false);
-        return;
+        const { data: seededData, error: seedError } = await supabase
+          .from("actions_activities")
+          .insert(seedPayload)
+          .select(
+            "id, slug, title, description, duration, chapter, chapter_id, difficulty, participants, complexity, category, creator_id, created_at"
+          );
+
+        if (seedError) {
+          console.error("Error seeding activities", seedError);
+          toast({
+            title: translations.actions.toastSeedErrorTitle[language],
+            description: seedError.message,
+            variant: "destructive",
+          });
+          setActivitiesLoading(false);
+          return;
+        }
+
+        activityRows = seededData ?? [];
       }
- 
+
       setActivities(
-        (data || []).map((row: any) => ({
+        activityRows.map((row: any) => ({
           id: row.id,
           slug: row.slug,
           title: row.title,
@@ -192,8 +200,8 @@ const Actions = () => {
           creatorId: row.creator_id ?? null,
         }))
       );
+
       setActivitiesLoading(false);
-      return;
     };
 
     loadActivities();
@@ -531,6 +539,14 @@ const Actions = () => {
   const visibleClass = filterActivities(classActivities);
   const visibleProjects = filterActivities(projects);
 
+  const visibleMiniCompleted = visibleMini.filter((a) => isCompleted(a.id)).length;
+  const visibleClassCompleted = visibleClass.filter((a) => isCompleted(a.id)).length;
+  const visibleProjectsCompleted = visibleProjects.filter((a) => isCompleted(a.id)).length;
+
+  const visibleMiniOwned = isAuthenticated && user ? visibleMini.filter((a) => a.creatorId === user.id).length : 0;
+  const visibleClassOwned = isAuthenticated && user ? visibleClass.filter((a) => a.creatorId === user.id).length : 0;
+  const visibleProjectsOwned = isAuthenticated && user ? visibleProjects.filter((a) => a.creatorId === user.id).length : 0;
+
 
   const stats = [
     {
@@ -696,7 +712,11 @@ const Actions = () => {
 
           <div className="grid lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2">
-              <Tabs defaultValue="mini" className="space-y-6">
+              <Tabs
+                value={activeTab}
+                onValueChange={(v) => setActiveTab(v as "mini" | "class" | "projects")}
+                className="space-y-6"
+              >
                 <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                   <TabsList className="grid w-full md:w-auto grid-cols-3">
                     <TabsTrigger value="mini">Mini Challenges</TabsTrigger>
@@ -818,22 +838,6 @@ const Actions = () => {
               </div>
 
               <TabsContent value="mini" className="space-y-4">
-                <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-card/70 px-3 py-2 text-xs md:text-sm text-muted-foreground">
-                  <span className="font-medium text-foreground">
-                    {language === "el" ? "Mini Challenges:" : "Mini challenges:"}
-                  </span>
-                  <span>
-                    {language === "el" ? "Σύνολο:" : "Total:"} {visibleMini.length}
-                  </span>
-                  <span>
-                    {language === "el" ? "Ολοκληρωμένες:" : "Completed:"} {visibleMini.filter((a) => isCompleted(a.id)).length}
-                  </span>
-                  {isAuthenticated && user && (
-                    <span>
-                      {language === "el" ? "Δικές μου:" : "Owned by me:"} {visibleMini.filter((a) => a.creatorId === user.id).length}
-                    </span>
-                  )}
-                </div>
                 {filterActivities(miniChallenges).map((challenge) => {
                   const canModify = isAuthenticated && user && challenge.creatorId === user.id;
                   return (
@@ -966,22 +970,6 @@ const Actions = () => {
               </TabsContent>
 
               <TabsContent value="class" className="space-y-4">
-                <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-card/70 px-3 py-2 text-xs md:text-sm text-muted-foreground">
-                  <span className="font-medium text-foreground">
-                    {language === "el" ? "Δραστηριότητες τάξης:" : "Class activities:"}
-                  </span>
-                  <span>
-                    {language === "el" ? "Σύνολο:" : "Total:"} {visibleClass.length}
-                  </span>
-                  <span>
-                    {language === "el" ? "Ολοκληρωμένες:" : "Completed:"} {visibleClass.filter((a) => isCompleted(a.id)).length}
-                  </span>
-                  {isAuthenticated && user && (
-                    <span>
-                      {language === "el" ? "Δικές μου:" : "Owned by me:"} {visibleClass.filter((a) => a.creatorId === user.id).length}
-                    </span>
-                  )}
-                </div>
                 {filterActivities(classActivities).map((activity) => {
                   const canModify = isAuthenticated && user && activity.creatorId === user.id;
                   return (
@@ -1150,22 +1138,6 @@ const Actions = () => {
               </TabsContent>
 
               <TabsContent value="projects" className="space-y-4">
-                <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-card/70 px-3 py-2 text-xs md:text-sm text-muted-foreground">
-                  <span className="font-medium text-foreground">
-                    {language === "el" ? "Projects:" : "Projects:"}
-                  </span>
-                  <span>
-                    {language === "el" ? "Σύνολο:" : "Total:"} {visibleProjects.length}
-                  </span>
-                  <span>
-                    {language === "el" ? "Ολοκληρωμένα:" : "Completed:"} {visibleProjects.filter((a) => isCompleted(a.id)).length}
-                  </span>
-                  {isAuthenticated && user && (
-                    <span>
-                      {language === "el" ? "Δικά μου:" : "Owned by me:"} {visibleProjects.filter((a) => a.creatorId === user.id).length}
-                    </span>
-                  )}
-                </div>
                 {filterActivities(projects).map((project) => {
                   const canModify = isAuthenticated && user && project.creatorId === user.id;
                   return (
