@@ -630,45 +630,53 @@ const ChapterDetail = () => {
           <aside className="space-y-6">
             <GlobalTip tip="Κάθε Chapter ακολουθεί την ίδια ροή: ιστορία, έννοιες, δραστηριότητα, mini challenge και αναστοχασμός. Το περιεχόμενο προσαρμόζεται στο θέμα του κάθε κεφαλαίου." />
 
-            <Card>
-              <CardHeader>
-                <CardTitle>{translations.chapterDetail.worksheetsTitle[language]}</CardTitle>
+            <Card className="border border-border/80 bg-card/60 shadow-sm hover-scale animate-enter">
+              <CardHeader className="pb-2 sm:pb-3">
+                <CardTitle className="text-sm sm:text-base font-semibold leading-snug tracking-tight">
+                  {translations.chapterDetail.worksheetsTitle[language]}
+                </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-3 pt-1">
                 <a
                   href={budgetingWorksheet}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between rounded-md border border-border p-3 hover:bg-accent hover:text-accent-foreground"
+                  className="flex items-center justify-between rounded-md border border-border/80 bg-background/40 px-3 py-2.5 text-xs sm:text-sm text-muted-foreground hover-scale hover:bg-accent/40 hover:text-accent-foreground transition-colors"
                 >
-                  {translations.chapterDetail.budgetingWorksheetCaption[language]}
-                  <ArrowRight className="h-4 w-4" />
+                  <span className="mr-3 line-clamp-2 text-left">
+                    {translations.chapterDetail.budgetingWorksheetCaption[language]}
+                  </span>
+                  <ArrowRight className="h-3.5 w-3.5 flex-shrink-0" />
                 </a>
                 <a
                   href={pricingWorksheet}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between rounded-md border border-border p-3 hover:bg-accent hover:text-accent-foreground"
+                  className="flex items-center justify-between rounded-md border border-border/80 bg-background/40 px-3 py-2.5 text-xs sm:text-sm text-muted-foreground hover-scale hover:bg-accent/40 hover:text-accent-foreground transition-colors"
                 >
-                  {translations.chapterDetail.pricingWorksheetCaption[language]}
-                  <ArrowRight className="h-4 w-4" />
+                  <span className="mr-3 line-clamp-2 text-left">
+                    {translations.chapterDetail.pricingWorksheetCaption[language]}
+                  </span>
+                  <ArrowRight className="h-3.5 w-3.5 flex-shrink-0" />
                 </a>
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>{translations.navigation.teachers[language]}</CardTitle>
+            <Card className="border border-border/80 bg-card/60 shadow-sm hover-scale animate-enter">
+              <CardHeader className="pb-2 sm:pb-3">
+                <CardTitle className="text-sm sm:text-base font-semibold leading-snug tracking-tight">
+                  {translations.navigation.teachers[language]}
+                </CardTitle>
               </CardHeader>
-              <CardContent>
-                <ul className="list-disc list-inside space-y-2">
+              <CardContent className="pt-1">
+                <ul className="list-disc list-inside space-y-1.5 text-xs sm:text-sm text-muted-foreground">
                   <li>
-                    <Link to="/teachers" className="text-primary hover:underline">
+                    <Link to="/teachers" className="story-link">
                       {translations.navigation.teachers[language]}
                     </Link>
                   </li>
                   <li>
-                    <Link to="/chapters" className="text-primary hover:underline">
+                    <Link to="/chapters" className="story-link">
                       {translations.navigation.chapters[language]}
                     </Link>
                   </li>
