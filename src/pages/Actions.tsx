@@ -739,15 +739,15 @@ const Actions = () => {
           </div>
         </div>
 
-          <div className="grid lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2">
+          <div className="grid gap-6 lg:grid-cols-3 lg:gap-8 items-start">
+            <div className="lg:col-span-2 space-y-4 md:space-y-6">
               <Tabs
                 value={activeTab}
                 onValueChange={(v) => setActiveTab(v as "mini" | "class" | "projects")}
-                className="space-y-6"
+                className="space-y-4 md:space-y-6"
               >
-                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                  <TabsList className="grid w-full md:w-auto grid-cols-3">
+                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                  <TabsList className="grid w-full md:w-auto grid-cols-3 text-xs sm:text-sm">
                     <TabsTrigger value="mini">Mini Challenges</TabsTrigger>
                     <TabsTrigger value="class">
                       {language === "el" ? "Δραστηριότητες Τάξης" : "Class activities"}
@@ -755,23 +755,24 @@ const Actions = () => {
                     <TabsTrigger value="projects">Projects</TabsTrigger>
                   </TabsList>
 
-              {isAuthenticated && (
-                <div className="flex flex-wrap gap-2 justify-end">
-                  <Button size="sm" variant="outline" onClick={() => handleCreateActivity("mini")}>
-                    + Mini
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={() => handleCreateActivity("class")}>
-                    + Τάξης
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={() => handleCreateActivity("project")}>
-                    + Project
-                  </Button>
+                  {isAuthenticated && (
+                    <div className="flex flex-wrap justify-start gap-2 md:justify-end">
+                      <Button size="sm" variant="outline" onClick={() => handleCreateActivity("mini")}>
+                        + Mini
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => handleCreateActivity("class")}>
+                        + Τάξης
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => handleCreateActivity("project")}>
+                        + Project
+                      </Button>
+                    </div>
+                  )}
                 </div>
-              )}
 
-                <div className="flex flex-col gap-2 items-stretch sm:flex-row sm:items-center sm:gap-3">
+                <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4 flex-wrap">
                   {/* Class Selector */}
-                  <div className="inline-flex items-center gap-1 rounded-full border border-border bg-card/80 p-1 text-xs md:text-sm">
+                  <div className="inline-flex flex-wrap items-center gap-1 rounded-full border border-border bg-card/80 p-1 text-xs md:text-sm">
                     {classes.map((cls) => (
                       <Button
                         key={cls.id}
@@ -789,7 +790,7 @@ const Actions = () => {
                   </div>
  
                   {/* Status Filter Buttons */}
-                  <div className="inline-flex items-center gap-1 rounded-full border border-border bg-card/80 p-1 text-xs md:text-sm">
+                  <div className="inline-flex flex-wrap items-center gap-1 rounded-full border border-border bg-card/80 p-1 text-xs md:text-sm">
                     <Button
                       type="button"
                       variant={statusFilter === "all" ? "default" : "ghost"}
@@ -821,7 +822,7 @@ const Actions = () => {
  
                   {/* Ownership Filter Buttons */}
                   {isAuthenticated && user && (
-                    <div className="inline-flex items-center gap-1 rounded-full border border-border bg-card/80 p-1 text-xs md:text-sm">
+                    <div className="inline-flex flex-wrap items-center gap-1 rounded-full border border-border bg-card/80 p-1 text-xs md:text-sm">
                       <Button
                         type="button"
                         variant={ownershipFilter === "all" ? "default" : "ghost"}
@@ -1307,9 +1308,9 @@ const Actions = () => {
                     : "Stats below reflect the activities currently visible in the selected tab."}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-card/70 px-3 py-2 text-xs md:text-sm text-muted-foreground">
-                  <span className="font-medium text-foreground">{currentLabel}</span>
+              <CardContent className="space-y-5 md:space-y-6">
+                <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2 sm:gap-3 rounded-lg border border-border bg-card/80 px-3 py-2 text-xs sm:text-sm text-muted-foreground">
+                  <span className="font-semibold text-foreground tracking-tight">{currentLabel}</span>
                   <span>
                     {language === "el" ? "Σύνολο:" : "Total:"} {currentTotal}
                   </span>
