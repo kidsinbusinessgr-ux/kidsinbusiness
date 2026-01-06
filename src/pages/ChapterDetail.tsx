@@ -481,7 +481,7 @@ const ChapterDetail = () => {
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            <section id="opening" className="scroll-mt-20">
+            <section id="opening" className="scroll-mt-20 animate-enter">
               {content.openingParagraphs.map((para, idx) => (
                 <p key={idx} className="mb-4 leading-relaxed text-muted-foreground">
                   {para}
@@ -489,7 +489,7 @@ const ChapterDetail = () => {
               ))}
             </section>
 
-            <section id="lesson-1-1" className="scroll-mt-20">
+            <section id="lesson-1-1" className="scroll-mt-20 animate-enter">
               <h2 className="text-lg sm:text-xl font-semibold leading-snug tracking-tight mb-3">
                 {content.lesson1Title}
               </h2>
@@ -501,7 +501,7 @@ const ChapterDetail = () => {
               <p className="mt-1 italic text-xs sm:text-sm text-muted-foreground">{content.teacherStoryNote}</p>
             </section>
 
-            <section id="what-is-entrepreneurship" className="scroll-mt-20">
+            <section id="what-is-entrepreneurship" className="scroll-mt-20 animate-enter">
               <h3 className="text-base sm:text-lg font-semibold leading-snug tracking-tight mb-2.5">
                 {translations.chapterDetail.forKidsLabel[language]}
               </h3>
@@ -512,7 +512,7 @@ const ChapterDetail = () => {
               <p className="mb-3 text-sm sm:text-base leading-relaxed text-muted-foreground">{content.definitionTeacher}</p>
             </section>
 
-            <section id="lesson-1-2" className="scroll-mt-20">
+            <section id="lesson-1-2" className="scroll-mt-20 animate-enter">
               <h2 className="text-lg sm:text-xl font-semibold leading-snug tracking-tight mb-3">
                 {content.lesson2Title}
               </h2>
@@ -523,8 +523,8 @@ const ChapterDetail = () => {
               ))}
             </section>
 
-            <section id="lesson-1-3" className="scroll-mt-20">
-              <Card className="border border-border/80 bg-card/60 shadow-sm">
+            <section id="lesson-1-3" className="scroll-mt-20 animate-enter">
+              <Card className="border border-border/80 bg-card/60 shadow-sm hover-scale">
                 <CardHeader className="pb-2 sm:pb-3">
                   <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between">
                     <div>
@@ -607,14 +607,14 @@ const ChapterDetail = () => {
               </Card>
             </section>
 
-            <section id="closing-ritual" className="scroll-mt-20">
+            <section id="closing-ritual" className="scroll-mt-20 animate-enter">
               <h2 className="text-lg sm:text-xl font-semibold leading-snug tracking-tight mb-3">
                 {content.closingTitle}
               </h2>
               <p className="text-sm sm:text-base leading-relaxed text-muted-foreground">{content.closingText}</p>
             </section>
 
-            <section id="reflection" className="scroll-mt-20">
+            <section id="reflection" className="scroll-mt-20 animate-enter">
               <h2 className="text-lg sm:text-xl font-semibold leading-snug tracking-tight mb-3">
                 {content.reflectionTitle}
               </h2>
