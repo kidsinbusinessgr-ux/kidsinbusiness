@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import Navigation from "@/components/Navigation";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import GlobalTip from "@/components/GlobalTip";
+import { useLanguage } from "@/context/LanguageContext";
 
 const chapters = [
   {
@@ -71,17 +72,23 @@ const chapters = [
 ];
 
 const Chapters = () => {
+  const { language } = useLanguage();
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
       
       <main className="container mx-auto px-4 py-8">
-        <Breadcrumbs items={[{ label: "Μαθήματα" }]} />
+        <Breadcrumbs items={[{ label: language === "el" ? "Μαθήματα" : "Chapters" }]} />
         
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Μαθήματα Επιχειρηματικότητας</h1>
+          <h1 className="text-4xl font-bold mb-2">
+            {language === "el" ? "Μαθήματα Επιχειρηματικότητας" : "Entrepreneurship Lessons"}
+          </h1>
           <p className="text-muted-foreground text-lg">
-            6 Chapters που θα μετατρέψουν τους μαθητές σε επιχειρηματικούς στοχαστές
+            {language === "el"
+              ? "6 Chapters που θα μετατρέψουν τους μαθητές σε επιχειρηματικούς στοχαστές"
+              : "6 chapters that help students think like young entrepreneurs"}
           </p>
         </div>
 
@@ -115,8 +122,12 @@ const Chapters = () => {
                   <CardContent>
                     <div className="space-y-4">
                       <div className="flex gap-4 text-sm text-muted-foreground">
-                        <Badge variant="secondary">{chapter.lessons} μαθήματα</Badge>
-                        <span>⏱️ {chapter.duration}</span>
+                        <Badge variant="secondary">
+                          {chapter.lessons} {language === "el" ? "μαθήματα" : "lessons"}
+                        </Badge>
+                        <span>
+                          ⏱️ {chapter.duration}
+                        </span>
                       </div>
                       
                       {chapter.progress > 0 && (
@@ -128,14 +139,20 @@ const Chapters = () => {
                             ></div>
                           </div>
                           <p className="text-sm text-muted-foreground">
-                            {chapter.progress}% ολοκληρωμένο
+                            {chapter.progress}% {language === "el" ? "ολοκληρωμένο" : "complete"}
                           </p>
                         </div>
                       )}
 
                       <Link to={`/chapter/${chapter.id}`}>
                         <Button className="w-full group-hover:bg-primary/90">
-                          {chapter.progress > 0 ? "Συνέχεια" : "Έναρξη"}
+                          {chapter.progress > 0
+                            ? language === "el"
+                              ? "Συνέχεια"
+                              : "Continue"
+                            : language === "el"
+                              ? "Έναρξη"
+                              : "Start"}
                           <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                         </Button>
                       </Link>

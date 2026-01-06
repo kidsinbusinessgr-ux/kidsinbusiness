@@ -4,19 +4,32 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import Navigation from "@/components/Navigation";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import GlobalTip from "@/components/GlobalTip";
+import { useLanguage } from "@/context/LanguageContext";
 
 const Teachers = () => {
+  const { language } = useLanguage();
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
       
       <main className="container mx-auto px-4 py-8">
-        <Breadcrumbs items={[{ label: "Για Εκπαιδευτικούς" }]} />
+        <Breadcrumbs
+          items={[
+            {
+              label: language === "el" ? "Για Εκπαιδευτικούς" : "For Teachers",
+            },
+          ]}
+        />
         
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Υποστήριξη Εκπαιδευτικών</h1>
+          <h1 className="text-4xl font-bold mb-2">
+            {language === "el" ? "Υποστήριξη Εκπαιδευτικών" : "Teacher Support"}
+          </h1>
           <p className="text-muted-foreground text-lg">
-            Όλα όσα χρειάζεστε για να διδάξετε επιχειρηματικότητα με εμπιστοσύνη
+            {language === "el"
+              ? "Όλα όσα χρειάζεστε για να διδάξετε επιχειρηματικότητα με εμπιστοσύνη"
+              : "Everything you need to teach entrepreneurship with confidence"}
           </p>
         </div>
 
@@ -146,20 +159,24 @@ const Teachers = () => {
                   </AccordionItem>
 
                   <AccordionItem value="item-4">
-                    <AccordionTrigger>Τι υλικά χρειάζομαι;</AccordionTrigger>
-                    <AccordionContent>
-                      Τα περισσότερα μαθήματα χρειάζονται μόνο βασικά υλικά (χαρτί, μαρκαδόροι,
-                      post-its). Συγκεκριμένα υλικά αναφέρονται σε κάθε δραστηριότητα.
-                    </AccordionContent>
-                  </AccordionItem>
-
-                  <AccordionItem value="item-5">
                     <AccordionTrigger>
-                      Μπορώ να προσαρμόσω το περιεχόμενο;
+                      {language === "el" ? "Τι υλικά χρειάζομαι;" : "What materials do I need?"}
                     </AccordionTrigger>
                     <AccordionContent>
-                      Απολύτως! Ενθαρρύνουμε την προσαρμογή του περιεχομένου στις ανάγκες και τα
-                      ενδιαφέροντα της τάξης σας.
+                      {language === "el"
+                        ? "Τα περισσότερα μαθήματα χρειάζονται μόνο βασικά υλικά (χαρτί, μαρκαδόροι, post-its). Συγκεκριμένα υλικά αναφέρονται σε κάθε δραστηριότητα."
+                        : "Most lessons only need basic materials (paper, markers, post-its). Specific materials are listed in each activity."}
+                    </AccordionContent>
+                  </AccordionItem>
+ 
+                  <AccordionItem value="item-5">
+                    <AccordionTrigger>
+                      {language === "el" ? "Μπορώ να προσαρμόσω το περιεχόμενο;" : "Can I adapt the content?"}
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      {language === "el"
+                        ? "Απολύτως! Ενθαρρύνουμε την προσαρμογή του περιεχομένου στις ανάγκες και τα ενδιαφέροντα της τάξης σας."
+                        : "Absolutely! We encourage you to adapt the content to your class needs and interests."}
                     </AccordionContent>
                   </AccordionItem>
                 </Accordion>

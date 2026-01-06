@@ -6,35 +6,56 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import Navigation from "@/components/Navigation";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import GlobalTip from "@/components/GlobalTip";
+import { useLanguage } from "@/context/LanguageContext";
 
 const Community = () => {
+  const { language } = useLanguage();
+
   const posts = [
     {
       author: "Μαρία Π.",
-      role: "Εκπαιδευτικός",
-      title: "Πώς προσάρμοσα το Chapter 2 για την τάξη μου",
-      excerpt: "Οι μαθητές μου λάτρεψαν την προσθήκη μιας δραστηριότητας με lego...",
+      role: language === "el" ? "Εκπαιδευτικός" : "Teacher",
+      title:
+        language === "el"
+          ? "Πώς προσάρμοσα το Chapter 2 για την τάξη μου"
+          : "How I adapted Chapter 2 for my class",
+      excerpt:
+        language === "el"
+          ? "Οι μαθητές μου λάτρεψαν την προσθήκη μιας δραστηριότητας με lego..."
+          : "My students loved adding a Lego-based activity...",
       likes: 24,
       comments: 8,
-      badge: "Εμπνευσμένο",
+      badge: language === "el" ? "Εμπνευσμένο" : "Inspired",
     },
     {
       author: "Γιώργος Α.",
-      role: "Διευθυντής",
-      title: "5 τρόποι να ενθαρρύνετε τη συνεργασία",
-      excerpt: "Μετά από 2 χρόνια διδασκαλίας επιχειρηματικότητας, αυτές είναι οι...",
+      role: language === "el" ? "Διευθυντής" : "Principal",
+      title:
+        language === "el"
+          ? "5 τρόποι να ενθαρρύνετε τη συνεργασία"
+          : "5 ways to encourage collaboration",
+      excerpt:
+        language === "el"
+          ? "Μετά από 2 χρόνια διδασκαλίας επιχειρηματικότητας, αυτές είναι οι..."
+          : "After 2 years of teaching entrepreneurship, these are my top learnings...",
       likes: 42,
       comments: 15,
-      badge: "Δημοφιλές",
+      badge: language === "el" ? "Δημοφιλές" : "Popular",
     },
     {
       author: "Ελένη Κ.",
-      role: "Εκπαιδευτικός",
-      title: "Mini Challenge: Επιχείρηση από ανακυκλώσιμα",
-      excerpt: "Δημιούργησα ένα challenge που συνδυάζει περιβαλλοντική συνείδηση...",
+      role: language === "el" ? "Εκπαιδευτικός" : "Teacher",
+      title:
+        language === "el"
+          ? "Mini Challenge: Επιχείρηση από ανακυκλώσιμα"
+          : "Mini Challenge: Business from recyclables",
+      excerpt:
+        language === "el"
+          ? "Δημιούργησα ένα challenge που συνδυάζει περιβαλλοντική συνείδηση..."
+          : "I created a challenge that combines environmental awareness with entrepreneurship...",
       likes: 31,
       comments: 12,
-      badge: "Νέο",
+      badge: language === "el" ? "Νέο" : "New",
     },
   ];
 
@@ -43,12 +64,22 @@ const Community = () => {
       <Navigation />
       
       <main className="container mx-auto px-4 py-8">
-        <Breadcrumbs items={[{ label: "Κοινότητα" }]} />
+        <Breadcrumbs
+          items={[
+            {
+              label: language === "el" ? "Κοινότητα" : "Community",
+            },
+          ]}
+        />
         
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Κοινότητα Εκπαιδευτικών</h1>
+          <h1 className="text-4xl font-bold mb-2">
+            {language === "el" ? "Κοινότητα Εκπαιδευτικών" : "Teacher Community"}
+          </h1>
           <p className="text-muted-foreground text-lg">
-            Μοιραστείτε ιδέες και εμπνευστείτε από άλλους εκπαιδευτικούς
+            {language === "el"
+              ? "Μοιραστείτε ιδέες και εμπνευστείτε από άλλους εκπαιδευτικούς"
+              : "Share ideas and get inspired by other teachers"}
           </p>
         </div>
 
@@ -62,13 +93,17 @@ const Community = () => {
                     <Users className="w-6 h-6 text-primary-foreground" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold mb-2">Έρχεται σύντομα! 🎉</h2>
+                    <h2 className="text-2xl font-bold mb-2">
+                      {language === "el" ? "Έρχεται σύντομα! 🎉" : "Coming soon! 🎉"}
+                    </h2>
                     <p className="text-muted-foreground mb-4">
-                      Η πλήρης κοινότητα βρίσκεται υπό κατασκευή. Σύντομα θα μπορείτε να
-                      συνδεθείτε με άλλους εκπαιδευτικούς, να μοιραστείτε τις δράσεις σας
-                      και να ανακαλύψετε νέες ιδέες.
+                      {language === "el"
+                        ? "Η πλήρης κοινότητα βρίσκεται υπό κατασκευή. Σύντομα θα μπορείτε να συνδεθείτε με άλλους εκπαιδευτικούς, να μοιραστείτε τις δράσεις σας και να ανακαλύψετε νέες ιδέες."
+                        : "The full community is under construction. Soon you will connect with other teachers, share your activities and discover new ideas."}
                     </p>
-                    <Button>Ενημερώστε με</Button>
+                    <Button>
+                      {language === "el" ? "Ενημερώστε με" : "Notify me"}
+                    </Button>
                   </div>
                 </div>
               </CardContent>
@@ -76,7 +111,9 @@ const Community = () => {
 
             {/* Preview Posts */}
             <div>
-              <h2 className="text-2xl font-bold mb-4">Προεπισκόπηση Κοινότητας</h2>
+              <h2 className="text-2xl font-bold mb-4">
+                {language === "el" ? "Προεπισκόπηση Κοινότητας" : "Community preview"}
+              </h2>
               <div className="space-y-4">
                 {posts.map((post, idx) => (
                   <Card key={idx} className="hover:shadow-lg transition-all">
@@ -100,8 +137,12 @@ const Community = () => {
                     </CardHeader>
                     <CardContent>
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <span>👍 {post.likes} likes</span>
-                        <span>💬 {post.comments} σχόλια</span>
+                        <span>
+                          👍 {post.likes} {language === "el" ? "likes" : "likes"}
+                        </span>
+                        <span>
+                          💬 {post.comments} {language === "el" ? "σχόλια" : "comments"}
+                        </span>
                       </div>
                     </CardContent>
                   </Card>
@@ -111,11 +152,19 @@ const Community = () => {
           </div>
 
           <div className="space-y-6">
-            <GlobalTip tip="Η κοινότητα θα σας επιτρέψει να μοιραστείτε τις επιτυχίες σας και να μάθετε από τις εμπειρίες άλλων!" />
+            <GlobalTip
+              tip={
+                language === "el"
+                  ? "Η κοινότητα θα σας επιτρέψει να μοιραστείτε τις επιτυχίες σας και να μάθετε από τις εμπειρίες άλλων!"
+                  : "The community will let you share your wins and learn from other teachers' experiences!"
+              }
+            />
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Τι θα περιλαμβάνει;</CardTitle>
+                <CardTitle className="text-lg">
+                  {language === "el" ? "Τι θα περιλαμβάνει;" : "What will it include?"}
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex gap-3">
@@ -123,9 +172,13 @@ const Community = () => {
                     <Share2 className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <h4 className="font-semibold mb-1">Μοιραστείτε Δράσεις</h4>
+                    <h4 className="font-semibold mb-1">
+                      {language === "el" ? "Μοιραστείτε Δράσεις" : "Share activities"}
+                    </h4>
                     <p className="text-sm text-muted-foreground">
-                      Δημοσιεύστε τις δικές σας δραστηριότητες
+                      {language === "el"
+                        ? "Δημοσιεύστε τις δικές σας δραστηριότητες"
+                        : "Publish your own classroom activities"}
                     </p>
                   </div>
                 </div>
@@ -135,9 +188,13 @@ const Community = () => {
                     <Lightbulb className="w-5 h-5 text-accent-foreground" />
                   </div>
                   <div>
-                    <h4 className="font-semibold mb-1">Ιδέες & Έμπνευση</h4>
+                    <h4 className="font-semibold mb-1">
+                      {language === "el" ? "Ιδέες & Έμπνευση" : "Ideas & inspiration"}
+                    </h4>
                     <p className="text-sm text-muted-foreground">
-                      Ανακαλύψτε τι κάνουν άλλοι
+                      {language === "el"
+                        ? "Ανακαλύψτε τι κάνουν άλλοι"
+                        : "Discover what other teachers are doing"}
                     </p>
                   </div>
                 </div>
@@ -149,7 +206,7 @@ const Community = () => {
                   <div>
                     <h4 className="font-semibold mb-1">Best Practices</h4>
                     <p className="text-sm text-muted-foreground">
-                      Μάθετε από τους καλύτερους
+                      {language === "el" ? "Μάθετε από τους καλύτερους" : "Learn from the best"}
                     </p>
                   </div>
                 </div>
@@ -158,15 +215,18 @@ const Community = () => {
 
             <Card className="bg-gradient-to-br from-secondary/10 to-accent/10 border-secondary/30">
               <CardHeader>
-                <CardTitle className="text-lg">Ενημερώσεις</CardTitle>
+                <CardTitle className="text-lg">
+                  {language === "el" ? "Ενημερώσεις" : "Updates"}
+                </CardTitle>
               </CardHeader>
               <CardContent className="text-sm">
                 <p className="text-muted-foreground mb-4">
-                  Γίνετε από τους πρώτους που θα έχουν πρόσβαση στην κοινότητα. Θα σας
-                  ειδοποιήσουμε μόλις είναι έτοιμη!
+                  {language === "el"
+                    ? "Γίνετε από τους πρώτους που θα έχουν πρόσβαση στην κοινότητα. Θα σας ειδοποιήσουμε μόλις είναι έτοιμη!"
+                    : "Be among the first to access the community. We’ll notify you as soon as it’s ready!"}
                 </p>
                 <Button variant="secondary" className="w-full">
-                  Εγγραφή για ενημερώσεις
+                  {language === "el" ? "Εγγραφή για ενημερώσεις" : "Sign up for updates"}
                 </Button>
               </CardContent>
             </Card>
