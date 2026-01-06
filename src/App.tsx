@@ -11,6 +11,7 @@ import Teachers from "./pages/Teachers";
 import Community from "./pages/Community";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import FounderDashboard from "./pages/FounderDashboard";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Dashboard />} />
+          <Route path="/founder" element={<FounderDashboard />} />
           <Route path="/chapters" element={<Chapters />} />
           <Route path="/chapter/:id" element={<ChapterDetail />} />
           <Route path="/actions" element={<Actions />} />
@@ -37,3 +39,4 @@ const App = () => (
 );
 
 export default App;
+
