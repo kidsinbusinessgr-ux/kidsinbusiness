@@ -1,4 +1,5 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useLanguage } from "@/context/LanguageContext";
+import { translations } from "@/i18n/translations";
 
 const Index = () => {
   const { language } = useLanguage();
