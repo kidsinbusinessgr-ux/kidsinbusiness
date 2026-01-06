@@ -9,6 +9,7 @@ import Navigation from "@/components/Navigation";
 import GlobalTip from "@/components/GlobalTip";
 import { useAuthAndClasses } from "@/hooks/useAuthAndClasses";
 import { useLanguage } from "@/context/LanguageContext";
+import { translations } from "@/i18n/translations";
 const MINI_IDS = ["mini-1", "mini-2", "mini-3", "mini-4"] as const;
 const CLASS_IDS = ["class-1", "class-2", "class-3"] as const;
 const PROJECT_IDS = ["project-1", "project-2", "project-3"] as const;
@@ -230,7 +231,7 @@ const Dashboard = () => {
         <Navigation />
         <main className="container mx-auto px-4 py-8">
           <p className="text-muted-foreground">
-            {language === "en" ? "Loading..." : "Φόρτωση..."}
+            {translations.dashboard.loadingText[language]}
           </p>
         </main>
       </div>
@@ -246,14 +247,10 @@ const Dashboard = () => {
         <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
             <h1 className="text-4xl font-bold mb-2">
-              {language === "en"
-                ? "Welcome to Kids in Business"
-                : "Καλώς ήρθατε στο Kids in Business"}
+              {translations.dashboard.welcomeTitle[language]}
             </h1>
             <p className="text-muted-foreground text-lg">
-              {language === "en"
-                ? "Inspire your students to become the entrepreneurs of tomorrow"
-                : "Εμπνεύστε τους μαθητές σας να γίνουν οι επιχειρηματίες του αύριο"}
+              {translations.dashboard.welcomeSubtitle[language]}
             </p>
           </div>
           {/* Class selector */}
@@ -278,8 +275,8 @@ const Dashboard = () => {
             {/* Rename classes inline */}
             <Card className="w-full max-w-xs border-dashed">
               <CardHeader className="py-2">
-                <CardTitle className="text-xs font-medium">
-                  {language === "en" ? "Rename classes" : "Μετονομασία τμημάτων"}
+              <CardTitle className="text-xs font-medium">
+                {translations.dashboard.renameClassesTitle[language]}
                 </CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col gap-2 py-2">
@@ -337,14 +334,14 @@ const Dashboard = () => {
               <Card className="w-full max-w-xs border-dashed">
                 <CardHeader className="py-2">
                   <CardTitle className="text-xs font-medium">
-                    {language === "en" ? "New class" : "Νέο τμήμα"}
+                    {translations.dashboard.newClassTitle[language]}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-2 py-2">
                   <div className="flex items-center gap-2">
                     <Input
                       value={newClassName}
-                      placeholder="Όνομα τμήματος"
+                      placeholder={translations.dashboard.newClassNamePlaceholder[language]}
                       className="h-8 text-xs flex-1"
                       onChange={(e) => setNewClassName(e.target.value)}
                       onKeyDown={(e) => {
@@ -358,7 +355,7 @@ const Dashboard = () => {
                   <div className="grid grid-cols-1 gap-2">
                     <Input
                       value={newClassSchool}
-                      placeholder="Σχολείο (προαιρετικό)"
+                      placeholder={translations.dashboard.newClassSchoolPlaceholder[language]}
                       className="h-8 text-xs"
                       onChange={(e) => setNewClassSchool(e.target.value)}
                       onKeyDown={(e) => {
@@ -371,7 +368,7 @@ const Dashboard = () => {
                     <div className="flex gap-2">
                       <Input
                         value={newClassGrade}
-                        placeholder="Τάξη (προαιρετικό)"
+                        placeholder={translations.dashboard.newClassGradePlaceholder[language]}
                         className="h-8 text-xs flex-1"
                         onChange={(e) => setNewClassGrade(e.target.value)}
                         onKeyDown={(e) => {
@@ -383,7 +380,7 @@ const Dashboard = () => {
                       />
                       <Input
                         value={newClassYear}
-                        placeholder="Σχολικό έτος (προαιρετικό)"
+                        placeholder={translations.dashboard.newClassYearPlaceholder[language]}
                         className="h-8 text-xs flex-1"
                         onChange={(e) => setNewClassYear(e.target.value)}
                         onKeyDown={(e) => {

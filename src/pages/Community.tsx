@@ -7,6 +7,7 @@ import Navigation from "@/components/Navigation";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import GlobalTip from "@/components/GlobalTip";
 import { useLanguage } from "@/context/LanguageContext";
+import { translations } from "@/i18n/translations";
 
 const Community = () => {
   const { language } = useLanguage();
@@ -67,19 +68,17 @@ const Community = () => {
         <Breadcrumbs
           items={[
             {
-              label: language === "el" ? "Κοινότητα" : "Community",
+              label: translations.community.breadcrumbLabel[language],
             },
           ]}
         />
         
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">
-            {language === "el" ? "Κοινότητα Εκπαιδευτικών" : "Teacher Community"}
+            {translations.community.pageTitle[language]}
           </h1>
           <p className="text-muted-foreground text-lg">
-            {language === "el"
-              ? "Μοιραστείτε ιδέες και εμπνευστείτε από άλλους εκπαιδευτικούς"
-              : "Share ideas and get inspired by other teachers"}
+            {translations.community.pageSubtitle[language]}
           </p>
         </div>
 
@@ -94,15 +93,13 @@ const Community = () => {
                   </div>
                   <div>
                     <h2 className="text-2xl font-bold mb-2">
-                      {language === "el" ? "Έρχεται σύντομα! 🎉" : "Coming soon! 🎉"}
+                      {translations.community.comingSoonTitle[language]}
                     </h2>
                     <p className="text-muted-foreground mb-4">
-                      {language === "el"
-                        ? "Η πλήρης κοινότητα βρίσκεται υπό κατασκευή. Σύντομα θα μπορείτε να συνδεθείτε με άλλους εκπαιδευτικούς, να μοιραστείτε τις δράσεις σας και να ανακαλύψετε νέες ιδέες."
-                        : "The full community is under construction. Soon you will connect with other teachers, share your activities and discover new ideas."}
+                      {translations.community.comingSoonDescription[language]}
                     </p>
                     <Button>
-                      {language === "el" ? "Ενημερώστε με" : "Notify me"}
+                      {translations.community.comingSoonButton[language]}
                     </Button>
                   </div>
                 </div>
@@ -112,7 +109,7 @@ const Community = () => {
             {/* Preview Posts */}
             <div>
               <h2 className="text-2xl font-bold mb-4">
-                {language === "el" ? "Προεπισκόπηση Κοινότητας" : "Community preview"}
+                {translations.community.previewTitle[language]}
               </h2>
               <div className="space-y-4">
                 {posts.map((post, idx) => (
@@ -138,10 +135,10 @@ const Community = () => {
                     <CardContent>
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <span>
-                          👍 {post.likes} {language === "el" ? "likes" : "likes"}
+                          👍 {post.likes} {translations.community.likesLabel[language]}
                         </span>
                         <span>
-                          💬 {post.comments} {language === "el" ? "σχόλια" : "comments"}
+                          💬 {post.comments} {translations.community.commentsLabel[language]}
                         </span>
                       </div>
                     </CardContent>
@@ -153,17 +150,13 @@ const Community = () => {
 
           <div className="space-y-6">
             <GlobalTip
-              tip={
-                language === "el"
-                  ? "Η κοινότητα θα σας επιτρέψει να μοιραστείτε τις επιτυχίες σας και να μάθετε από τις εμπειρίες άλλων!"
-                  : "The community will let you share your wins and learn from other teachers' experiences!"
-              }
+              tip={translations.community.globalTip[language]}
             />
 
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">
-                  {language === "el" ? "Τι θα περιλαμβάνει;" : "What will it include?"}
+                  {translations.community.whatWillIncludeTitle[language]}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -173,12 +166,10 @@ const Community = () => {
                   </div>
                   <div>
                     <h4 className="font-semibold mb-1">
-                      {language === "el" ? "Μοιραστείτε Δράσεις" : "Share activities"}
+                      {translations.community.shareActivitiesTitle[language]}
                     </h4>
                     <p className="text-sm text-muted-foreground">
-                      {language === "el"
-                        ? "Δημοσιεύστε τις δικές σας δραστηριότητες"
-                        : "Publish your own classroom activities"}
+                      {translations.community.shareActivitiesDescription[language]}
                     </p>
                   </div>
                 </div>
@@ -189,12 +180,10 @@ const Community = () => {
                   </div>
                   <div>
                     <h4 className="font-semibold mb-1">
-                      {language === "el" ? "Ιδέες & Έμπνευση" : "Ideas & inspiration"}
+                      {translations.community.ideasInspirationTitle[language]}
                     </h4>
                     <p className="text-sm text-muted-foreground">
-                      {language === "el"
-                        ? "Ανακαλύψτε τι κάνουν άλλοι"
-                        : "Discover what other teachers are doing"}
+                      {translations.community.ideasInspirationDescription[language]}
                     </p>
                   </div>
                 </div>
@@ -204,9 +193,11 @@ const Community = () => {
                     <TrendingUp className="w-5 h-5 text-secondary-foreground" />
                   </div>
                   <div>
-                    <h4 className="font-semibold mb-1">Best Practices</h4>
+                    <h4 className="font-semibold mb-1">
+                      {translations.community.bestPracticesTitle[language]}
+                    </h4>
                     <p className="text-sm text-muted-foreground">
-                      {language === "el" ? "Μάθετε από τους καλύτερους" : "Learn from the best"}
+                      {translations.community.bestPracticesDescription[language]}
                     </p>
                   </div>
                 </div>
@@ -216,17 +207,15 @@ const Community = () => {
             <Card className="bg-gradient-to-br from-secondary/10 to-accent/10 border-secondary/30">
               <CardHeader>
                 <CardTitle className="text-lg">
-                  {language === "el" ? "Ενημερώσεις" : "Updates"}
+                  {translations.community.updatesTitle[language]}
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-sm">
                 <p className="text-muted-foreground mb-4">
-                  {language === "el"
-                    ? "Γίνετε από τους πρώτους που θα έχουν πρόσβαση στην κοινότητα. Θα σας ειδοποιήσουμε μόλις είναι έτοιμη!"
-                    : "Be among the first to access the community. We’ll notify you as soon as it’s ready!"}
+                  {translations.community.updatesDescription[language]}
                 </p>
                 <Button variant="secondary" className="w-full">
-                  {language === "el" ? "Εγγραφή για ενημερώσεις" : "Sign up for updates"}
+                  {translations.community.updatesButton[language]}
                 </Button>
               </CardContent>
             </Card>

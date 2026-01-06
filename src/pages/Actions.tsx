@@ -30,6 +30,7 @@ import { miniChallenges as seedMini, classActivities as seedClass, projects as s
 import { normalizeNullable } from "@/lib/activityValidation";
 import { ActivityEditForm, ActivityEditFormValues, ActivityCategory } from "@/components/actions/ActivityEditForm";
 import { useLanguage } from "@/context/LanguageContext";
+import { translations } from "@/i18n/translations";
 
 type Activity = {
   id: string;
@@ -56,16 +57,7 @@ const Actions = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const motivationalMessages = [
-    "Συγχαρητήρια! Ένα βήμα πιο κοντά στο στόχο σου! 🎉",
-    "Εξαιρετική δουλειά! Συνέχισε έτσι! 💪",
-    "Μπράβο! Η επιμονή σου αποδίδει! 🌟",
-    "Τέλεια! Είσαι πραγματικός επιχειρηματίας! 🚀",
-    "Υπέροχα! Η προσπάθειά σου φαίνεται! ⭐",
-    "Εκπληκτικό! Κάθε βήμα μετράει! 🎯",
-    "Φανταστικό! Συνεχίζεις να εξελίσσεσαι! 💡",
-    "Μεγάλη επιτυχία! Είσαι σε καλό δρόμο! 🏆",
-  ];
+  const motivationalMessages = translations.actions.motivationalMessages[language];
 
   // Initialize currentClassId once classes are loaded
   useEffect(() => {
@@ -112,7 +104,7 @@ const Actions = () => {
       if (error) {
         console.error("Error loading activities", error);
         toast({
-          title: "Σφάλμα φόρτωσης δράσεων",
+          title: translations.actions.toastLoadErrorTitle[language],
           description: error.message,
           variant: "destructive",
         });
@@ -169,7 +161,7 @@ const Actions = () => {
         if (seedError) {
           console.error("Error seeding activities", seedError);
           toast({
-            title: "Σφάλμα αρχικοποίησης δράσεων",
+            title: translations.actions.toastSeedErrorTitle[language],
             description: seedError.message,
             variant: "destructive",
           });
@@ -262,7 +254,7 @@ const Actions = () => {
       // Show motivational toast
       const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
       toast({
-        title: "Challenge Ολοκληρώθηκε!",
+        title: translations.actions.toastChallengeCompletedTitle[language],
         description: randomMessage,
         duration: 3000,
       });
@@ -311,8 +303,8 @@ const Actions = () => {
       localStorage.removeItem(`completedChallengesHistory_${cls.id}`);
     });
     toast({
-      title: "Η πρόοδος επαναφέρθηκε",
-      description: "Όλα τα challenges είναι ξανά διαθέσιμα για όλες τις τάξεις.",
+      title: translations.actions.toastResetProgressTitle[language],
+      description: translations.actions.toastResetProgressDescription[language],
       duration: 3000,
     });
   };
@@ -320,8 +312,8 @@ const Actions = () => {
   const handleDeleteActivity = async (id: string) => {
     if (!isAuthenticated) {
       toast({
-        title: "Απαιτείται σύνδεση",
-        description: "Συνδεθείτε ως εκπαιδευτικός για να διαγράψετε δράσεις.",
+        title: translations.actions.toastAuthRequiredTitle[language],
+        description: translations.actions.toastAuthRequiredDeleteDescription[language],
         variant: "destructive",
       });
       return;
@@ -331,7 +323,7 @@ const Actions = () => {
 
     if (error) {
       toast({
-        title: "Αποτυχία διαγραφής",
+        title: translations.actions.toastDeleteFailureTitle[language],
         description: error.message,
         variant: "destructive",
       });
@@ -377,8 +369,8 @@ const Actions = () => {
     });
 
     toast({
-      title: "Η δράση διαγράφηκε",
-      description: "Η δράση αφαιρέθηκε από όλες τις τάξεις.",
+      title: translations.actions.toastDeleteSuccessTitle[language],
+      description: translations.actions.toastDeleteSuccessDescription[language],
     });
   };
 
@@ -397,8 +389,8 @@ const Actions = () => {
   ) => {
     if (!isAuthenticated) {
       toast({
-        title: "Απαιτείται σύνδεση",
-        description: "Συνδεθείτε ως εκπαιδευτικός για να αποθηκεύσετε αλλαγές.",
+        title: translations.actions.toastAuthRequiredTitle[language],
+        description: translations.actions.toastAuthRequiredEditDescription[language],
         variant: "destructive",
       });
       return;
@@ -422,7 +414,7 @@ const Actions = () => {
  
     if (error) {
       toast({
-        title: "Αποτυχία ενημέρωσης",
+        title: translations.actions.toastUpdateFailureTitle[language],
         description: error.message,
         variant: "destructive",
       });
@@ -450,16 +442,16 @@ const Actions = () => {
     setEditingId(null);
  
     toast({
-      title: "Η δράση ενημερώθηκε",
-      description: "Οι αλλαγές αποθηκεύτηκαν με επιτυχία.",
+      title: translations.actions.toastUpdateSuccessTitle[language],
+      description: translations.actions.toastUpdateSuccessDescription[language],
     });
   };
 
   const handleCreateActivity = async (category: ActivityCategory) => {
     if (!isAuthenticated) {
       toast({
-        title: "Απαιτείται σύνδεση",
-        description: "Συνδεθείτε ως εκπαιδευτικός για να δημιουργήσετε νέες δράσεις.",
+        title: translations.actions.toastAuthRequiredTitle[language],
+        description: translations.actions.toastAuthRequiredCreateDescription[language],
         variant: "destructive",
       });
       return;
@@ -488,7 +480,7 @@ const Actions = () => {
 
     if (error) {
       toast({
-        title: "Αποτυχία δημιουργίας",
+        title: translations.actions.toastCreateFailureTitle[language],
         description: error.message,
         variant: "destructive",
       });
@@ -513,8 +505,8 @@ const Actions = () => {
     ]);
 
     toast({
-      title: "Νέα δράση δημιουργήθηκε",
-      description: "Μπορείτε τώρα να προσαρμόσετε τα στοιχεία της.",
+      title: translations.actions.toastCreateSuccessTitle[language],
+      description: translations.actions.toastCreateSuccessDescription[language],
     });
   };
 
@@ -611,7 +603,7 @@ const Actions = () => {
         <Breadcrumbs
           items={[
             {
-              label: language === "el" ? "Δράσεις" : "Actions",
+              label: translations.actions.breadcrumbLabel[language],
             },
           ]}
         />
@@ -620,12 +612,10 @@ const Actions = () => {
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-2">
             <div>
               <h1 className="text-4xl font-bold">
-                {language === "el" ? "Δράσεις & Challenges" : "Actions & Challenges"}
+                {translations.actions.pageTitle[language]}
               </h1>
               <p className="text-muted-foreground text-lg">
-                {language === "el"
-                  ? "Πρακτικές δραστηριότητες για εφαρμογή της γνώσης"
-                  : "Hands-on activities to put learning into practice"}
+                {translations.actions.pageSubtitle[language]}
               </p>
             </div>
             <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:justify-end">
@@ -640,20 +630,16 @@ const Actions = () => {
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button variant="ghost" size="sm" className="self-end text-xs sm:text-sm">
-                    {language === "el" ? "Επαναφορά προόδου" : "Reset progress"}
+                    {translations.actions.resetProgressButton[language]}
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
                     <AlertDialogTitle>
-                      {language === "el"
-                        ? "Επαναφορά όλων των challenges;"
-                        : "Reset all challenges?"}
+                      {translations.actions.resetDialogTitle[language]}
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                      {language === "el"
-                        ? "Αυτό θα διαγράψει όλη την έως τώρα πρόοδο (συμπεριλαμβανομένων badges και στατιστικών). Η ενέργεια δεν μπορεί να αναιρεθεί."
-                        : "This will clear all current progress (including badges and stats). This action cannot be undone."}
+                      {translations.actions.resetDialogDescription[language]}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
@@ -673,11 +659,11 @@ const Actions = () => {
           <div className="space-y-2 mt-2">
             <div className="flex items-center justify-between text-sm">
               <span className="font-medium text-foreground">
-                {language === "el" ? "Συνολική Πρόοδος" : "Overall progress"}
+                {translations.actions.overallProgressLabel[language]}
               </span>
               <span className="text-muted-foreground">
-                {completedCount} {language === "el" ? "από" : "of"} {totalChallenges}{" "}
-                {language === "el" ? "δράσεις" : "activities"}
+                {completedCount} {translations.actions.overallProgressOfLabel[language]} {totalChallenges}{" "}
+                {translations.actions.overallProgressActivitiesLabel[language]}
               </span>
             </div>
             <Progress value={completionPercentage} className="h-3" />
@@ -686,12 +672,10 @@ const Actions = () => {
           {/* Financial Literacy Legend */}
           <div className="mt-3 inline-flex items-start gap-2 rounded-lg border border-dashed border-primary/30 bg-primary/5 px-3 py-2 text-xs md:text-sm text-muted-foreground">
             <Badge variant="outline" className="text-[10px] uppercase tracking-wide mt-0.5">
-              {language === "el" ? "Χρηματοοικονομικός Γραμματισμός" : "Financial Literacy"}
+              {translations.actions.financialLiteracyBadge[language]}
             </Badge>
             <span>
-              {language === "el"
-                ? "Το badge «Χρηματοοικονομικός Γραμματισμός» εμφανίζεται δίπλα στις δράσεις Budgeting Tool, Virtual Stock Market και Pricing Simulator που ανήκουν στο Chapter 6, ώστε τα παιδιά να αναγνωρίζουν δραστηριότητες χρηματοοικονομικού γραμματισμού."
-                : "The ‘Financial Literacy’ badge appears next to the Budgeting Tool, Virtual Stock Market and Pricing Simulator activities in Chapter 6 so children can easily spot financial literacy activities."}
+              {translations.actions.financialLiteracyDescription[language]}
             </span>
           </div>
         </div>
@@ -750,7 +734,7 @@ const Actions = () => {
                       className="rounded-full px-3 py-1 h-8"
                       onClick={() => setStatusFilter("all")}
                     >
-                      {language === "el" ? "Όλα" : "All"}
+                      {translations.actions.statusFilterAll[language]}
                     </Button>
                     <Button
                       type="button"
@@ -759,7 +743,7 @@ const Actions = () => {
                       className="rounded-full px-3 py-1 h-8"
                       onClick={() => setStatusFilter("completed")}
                     >
-                      {language === "el" ? "Ολοκληρωμένα" : "Completed"}
+                      {translations.actions.statusFilterCompleted[language]}
                     </Button>
                     <Button
                       type="button"
@@ -768,7 +752,7 @@ const Actions = () => {
                       className="rounded-full px-3 py-1 h-8"
                       onClick={() => setStatusFilter("incomplete")}
                     >
-                      {language === "el" ? "Μη ολοκληρωμένα" : "Incomplete"}
+                      {translations.actions.statusFilterIncomplete[language]}
                     </Button>
                   </div>
                 </div>
