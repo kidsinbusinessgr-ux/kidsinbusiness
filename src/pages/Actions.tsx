@@ -963,11 +963,11 @@ const Actions = () => {
                           />
                         ) : (
                           <>
-                            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-3 text-xs sm:text-sm text-muted-foreground">
+                            <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mb-3 text-xs sm:text-sm text-muted-foreground">
                               {challenge.duration && (
-                                <div className="flex items-center gap-1">
-                                  <Clock className="w-4 h-4" />
-                                  {challenge.duration}
+                                <div className="inline-flex items-center gap-1">
+                                  <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
+                                  <span>{challenge.duration}</span>
                                 </div>
                               )}
                               {challenge.difficulty && (
@@ -1141,17 +1141,17 @@ const Actions = () => {
                           />
                         ) : (
                           <>
-                            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-3 text-xs sm:text-sm text-muted-foreground">
+                            <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mb-3 text-xs sm:text-sm text-muted-foreground">
                               {activity.duration && (
-                                <div className="flex items-center gap-1">
-                                  <Clock className="w-4 h-4" />
-                                  {activity.duration}
+                                <div className="inline-flex items-center gap-1">
+                                  <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
+                                  <span>{activity.duration}</span>
                                 </div>
                               )}
                               {activity.participants && (
-                                <div className="flex items-center gap-1">
-                                  <Users className="w-4 h-4" />
-                                  {activity.participants}
+                                <div className="inline-flex items-center gap-1">
+                                  <Users className="w-3 h-3 sm:w-4 sm:h-4" />
+                                  <span>{activity.participants}</span>
                                 </div>
                               )}
                             </div>
@@ -1300,11 +1300,11 @@ const Actions = () => {
                         </div>
                       </CardHeader>
                       <CardContent className="pt-0 pb-3 sm:pb-4">
-                        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-3 text-xs sm:text-sm text-muted-foreground">
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mb-3 text-xs sm:text-sm text-muted-foreground">
                           {project.duration && (
-                            <div className="flex items-center gap-1">
-                              <Clock className="w-4 h-4" />
-                              {project.duration}
+                            <div className="inline-flex items-center gap-1">
+                              <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
+                              <span>{project.duration}</span>
                             </div>
                           )}
                           {project.complexity && (
