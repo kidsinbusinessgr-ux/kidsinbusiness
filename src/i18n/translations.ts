@@ -328,4 +328,228 @@ export const translations = {
       en: "School year (optional)",
     } as LangString,
   },
+  navigation: {
+    logoAlt: {
+      el: "Kids in Business",
+      en: "Kids in Business",
+    } as LangString,
+    chapters: {
+      el: "Μαθήματα",
+      en: "Chapters",
+    } as LangString,
+    actions: {
+      el: "Δράσεις",
+      en: "Actions",
+    } as LangString,
+    teachers: {
+      el: "Για Εκπαιδευτικούς",
+      en: "For Teachers",
+    } as LangString,
+    community: {
+      el: "Κοινότητα",
+      en: "Community",
+    } as LangString,
+    signIn: {
+      el: "Σύνδεση",
+      en: "Sign in",
+    } as LangString,
+    signOut: {
+      el: "Αποσύνδεση",
+      en: "Sign out",
+    } as LangString,
+  },
+  auth: {
+    pageTitleLogin: {
+      el: "Σύνδεση Εκπαιδευτικού",
+      en: "Teacher Login",
+    } as LangString,
+    pageTitleSignup: {
+      el: "Εγγραφή Εκπαιδευτικού",
+      en: "Teacher Sign Up",
+    } as LangString,
+    pageSubtitleLogin: {
+      el: "Εισάγετε τα στοιχεία σας για να αποκτήσετε πρόσβαση στις τάξεις σας",
+      en: "Enter your credentials to access your classes",
+    } as LangString,
+    pageSubtitleSignup: {
+      el: "Δημιουργήστε λογαριασμό για να διαχειρίζεστε τις τάξεις σας",
+      en: "Create an account to manage your classes",
+    } as LangString,
+    emailLabel: {
+      el: "Email",
+      en: "Email",
+    } as LangString,
+    emailPlaceholder: {
+      el: "teacher@school.edu",
+      en: "teacher@school.edu",
+    } as LangString,
+    passwordLabel: {
+      el: "Κωδικός",
+      en: "Password",
+    } as LangString,
+    passwordPlaceholder: {
+      el: "••••••••",
+      en: "••••••••",
+    } as LangString,
+    submitLogin: {
+      el: "Σύνδεση",
+      en: "Log In",
+    } as LangString,
+    submitSignup: {
+      el: "Εγγραφή",
+      en: "Sign Up",
+    } as LangString,
+    loadingButton: {
+      el: "Παρακαλώ περιμένετε...",
+      en: "Please wait...",
+    } as LangString,
+    toggleToSignup: {
+      el: "Δεν έχετε λογαριασμό; ",
+      en: "Don't have an account? ",
+    } as LangString,
+    toggleToLogin: {
+      el: "Έχετε ήδη λογαριασμό; ",
+      en: "Already have an account? ",
+    } as LangString,
+    toggleSignupButton: {
+      el: "Εγγραφή",
+      en: "Sign up",
+    } as LangString,
+    toggleLoginButton: {
+      el: "Σύνδεση",
+      en: "Log in",
+    } as LangString,
+    toastLoginFailedTitle: {
+      el: "Αποτυχία σύνδεσης",
+      en: "Login failed",
+    } as LangString,
+    toastSignupFailedTitle: {
+      el: "Αποτυχία εγγραφής",
+      en: "Sign up failed",
+    } as LangString,
+    toastGenericErrorTitle: {
+      el: "Σφάλμα",
+      en: "Error",
+    } as LangString,
+    toastGenericErrorDescription: {
+      el: "Προέκυψε ένα απρόσμενο σφάλμα. Προσπαθήστε ξανά.",
+      en: "An unexpected error occurred. Please try again.",
+    } as LangString,
+    toastWelcomeBackTitle: {
+      el: "Καλώς ήρθατε και πάλι!",
+      en: "Welcome back!",
+    } as LangString,
+    toastWelcomeBackDescription: {
+      el: "Συνδεθήκατε με επιτυχία.",
+      en: "You've successfully logged in.",
+    } as LangString,
+    toastAccountCreatedTitle: {
+      el: "Ο λογαριασμός δημιουργήθηκε!",
+      en: "Account created!",
+    } as LangString,
+    toastAccountCreatedDescription: {
+      el: "Μπορείτε τώρα να συνδεθείτε με τα στοιχεία σας.",
+      en: "You can now log in with your credentials.",
+    } as LangString,
+  },
+  generic: {
+    indexTitle: {
+      el: "Καλώς ήρθατε στην εφαρμογή σας",
+      en: "Welcome to Your Blank App",
+    } as LangString,
+    indexSubtitle: {
+      el: "Ξεκινήστε να χτίζετε το project σας εδώ!",
+      en: "Start building your amazing project here!",
+    } as LangString,
+    notFoundSubtitle: {
+      el: "Ουπς! Η σελίδα δεν βρέθηκε",
+      en: "Oops! Page not found",
+    } as LangString,
+    notFoundBackLink: {
+      el: "Επιστροφή στην αρχική",
+      en: "Return to Home",
+    } as LangString,
+  },
+  chapterDetail: {
+    breadcrumbChapterLabel: {
+      el: "Chapter",
+      en: "Chapter",
+    } as LangString,
+    sectionOpening: {
+      el: "Opening / Brand Intro",
+      en: "Opening / Brand Intro",
+    } as LangString,
+    sectionLesson11: {
+      el: "Lesson 1.1",
+      en: "Lesson 1.1",
+    } as LangString,
+    sectionWhatIsEntrepreneurship: {
+      el: "Τι είναι η επιχειρηματικότητα;",
+      en: "What is entrepreneurship?",
+    } as LangString,
+    sectionLesson12: {
+      el: "Lesson 1.2",
+      en: "Lesson 1.2",
+    } as LangString,
+    sectionLesson13: {
+      el: "Lesson 1.3",
+      en: "Lesson 1.3",
+    } as LangString,
+    sectionMiniChallenge: {
+      el: "Mini Challenge",
+      en: "Mini Challenge",
+    } as LangString,
+    sectionClosing: {
+      el: "Closing Ritual",
+      en: "Closing Ritual",
+    } as LangString,
+    sectionReflection: {
+      el: "Chapter Reflection",
+      en: "Chapter Reflection",
+    } as LangString,
+    forTeacherLabel: {
+      el: "Για τον εκπαιδευτικό",
+      en: "For the teacher",
+    } as LangString,
+    forKidsLabel: {
+      el: "Για τα παιδιά",
+      en: "For students",
+    } as LangString,
+    miniChallengeKidsLabel: {
+      el: "Οδηγίες για τα παιδιά:",
+      en: "Instructions for students:",
+    } as LangString,
+    miniChallengeButton: {
+      el: "Δες σχετικές δράσεις",
+      en: "See related activities",
+    } as LangString,
+    worksheetsTitle: {
+      el: "Οπτικά Worksheets – Χρηματοοικονομικός Γραμματισμός",
+      en: "Visual worksheets – Financial literacy",
+    } as LangString,
+    worksheetsIntro: {
+      el: "Κατέβασε και εκτύπωσε τα παρακάτω worksheets για να δουλέψετε στην τάξη τα εργαλεία Budgeting Tool και Pricing Simulator.",
+      en: "Download and print the worksheets below to work with the Budgeting Tool and Pricing Simulator in class.",
+    } as LangString,
+    budgetingWorksheetCaption: {
+      el: "Budgeting Tool – Πίνακας Εσόδων / Εξόδων",
+      en: "Budgeting Tool – Income / Expenses table",
+    } as LangString,
+    budgetingWorksheetDownload: {
+      el: "Λήψη εικόνας",
+      en: "Download image",
+    } as LangString,
+    pricingWorksheetCaption: {
+      el: "Pricing Simulator – Πίνακας Τιμής & Κέρδους",
+      en: "Pricing Simulator – Price & Profit table",
+    } as LangString,
+    pricingWorksheetDownload: {
+      el: "Λήψη εικόνας",
+      en: "Download image",
+    } as LangString,
+    worksheetsTip: {
+      el: "Tip: Αν θέλεις σε μορφή PDF, μπορείς να εκτυπώσεις τις εικόνες ως PDF από τον υπολογιστή σου πριν τις μοιράσεις στα παιδιά.",
+      en: "Tip: If you prefer PDF, you can print the images to PDF on your computer before sharing them with students.",
+    } as LangString,
+  },
 } as const;
