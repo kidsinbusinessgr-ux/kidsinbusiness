@@ -419,17 +419,24 @@ const ChapterDetail = () => {
         />
 
         {/* Page Header */}
-        <header className="mb-6 flex items-start gap-4">
-          <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-3xl font-bold text-primary-foreground flex-shrink-0">
-            {chapterId}
-          </div>
-          <div>
-            <Badge variant="secondary" className="mb-2">
-              {translations.chapterDetail.breadcrumbChapterLabel[language]} {chapterId}
-            </Badge>
-            <h1 className="text-4xl font-bold mb-2">
-              {translations.chapterDetail.breadcrumbChapterLabel[language]} {chapterId} – {chapterTitle}
-            </h1>
+        <header className="mb-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+            <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-2xl md:text-3xl font-bold text-primary-foreground flex-shrink-0">
+              {chapterId}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
+                <Badge
+                  variant="secondary"
+                  className="text-[10px] sm:text-xs font-medium px-2 py-0.5 text-muted-foreground"
+                >
+                  {translations.chapterDetail.breadcrumbChapterLabel[language]} {chapterId}
+                </Badge>
+              </div>
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold leading-snug tracking-tight">
+                {translations.chapterDetail.breadcrumbChapterLabel[language]} {chapterId} – {chapterTitle}
+              </h1>
+            </div>
           </div>
         </header>
 
