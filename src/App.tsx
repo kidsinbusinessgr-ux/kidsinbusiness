@@ -13,6 +13,7 @@ import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import FounderDashboard from "./pages/FounderDashboard";
 import TeacherPortal from "./pages/TeacherPortal";
+import VentureBuilder from "./pages/VentureBuilder";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/founder" element={<FounderDashboard />} />
+          <Route path="/venture-builder" element={<VentureBuilder />} />
           <Route path="/teacher-portal" element={<TeacherPortal />} />
           <Route path="/chapters" element={<Chapters />} />
           <Route path="/chapter/:id" element={<ChapterDetail />} />
