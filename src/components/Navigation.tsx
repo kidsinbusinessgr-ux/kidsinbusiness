@@ -18,10 +18,10 @@ const Navigation = () => {
   const { language, setLanguage } = useLanguage();
 
   const navItems = [
-    { path: "/chapters", label: "Μαθήματα", icon: BookOpen },
-    { path: "/actions", label: "Δράσεις", icon: Zap },
-    { path: "/teachers", label: "Για Εκπαιδευτικούς", icon: GraduationCap },
-    { path: "/community", label: "Κοινότητα", icon: Users },
+    { path: "/chapters", label: translations.navigation.chapters[language], icon: BookOpen },
+    { path: "/actions", label: translations.navigation.actions[language], icon: Zap },
+    { path: "/teachers", label: translations.navigation.teachers[language], icon: GraduationCap },
+    { path: "/community", label: translations.navigation.community[language], icon: Users },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -33,7 +33,7 @@ const Navigation = () => {
           <Link to="/" className="flex items-center gap-3">
             <img
               src={logo}
-              alt="Kids in Business"
+              alt={translations.navigation.logoAlt[language]}
               className="h-10 w-auto"
             />
           </Link>
@@ -73,13 +73,13 @@ const Navigation = () => {
             {isAuthenticated ? (
               <Button variant="ghost" className="gap-2" onClick={signOut}>
                 <LogOut className="w-4 h-4" />
-                Αποσύνδεση
+                {translations.navigation.signOut[language]}
               </Button>
             ) : (
               <Link to="/auth">
                 <Button variant="ghost" className="gap-2">
                   <LogIn className="w-4 h-4" />
-                  Σύνδεση
+                  {translations.navigation.signIn[language]}
                 </Button>
               </Link>
             )}
@@ -122,13 +122,13 @@ const Navigation = () => {
                     }}
                   >
                     <LogOut className="w-4 h-4" />
-                    Αποσύνδεση
+                    {translations.navigation.signOut[language]}
                   </Button>
                 ) : (
                   <Link to="/auth" onClick={() => setOpen(false)}>
                     <Button variant="ghost" className="w-full justify-start gap-2">
                       <LogIn className="w-4 h-4" />
-                      Σύνδεση
+                      {translations.navigation.signIn[language]}
                     </Button>
                   </Link>
                 )}

@@ -390,71 +390,21 @@ const ChapterDetail = () => {
   const content = chapterContent[chapterId] ?? chapterContent["1"];
 
   const sectionAnchors = [
-    { id: "opening", label: "Opening / Brand Intro" },
-    { id: "lesson-1-1", label: "Lesson 1.1" },
-    { id: "what-is-entrepreneurship", label: "Τι είναι η επιχειρηματικότητα;" },
-    { id: "lesson-1-2", label: "Lesson 1.2" },
-    { id: "lesson-1-3", label: "Lesson 1.3" },
-    { id: "mini-challenge", label: "Mini Challenge" },
-    { id: "closing-ritual", label: "Closing Ritual" },
-    { id: "reflection", label: "Chapter Reflection" },
+    { id: "opening", label: translations.chapterDetail.sectionOpening[language] },
+    { id: "lesson-1-1", label: translations.chapterDetail.sectionLesson11[language] },
+    { id: "what-is-entrepreneurship", label: translations.chapterDetail.sectionWhatIsEntrepreneurship[language] },
+    { id: "lesson-1-2", label: translations.chapterDetail.sectionLesson12[language] },
+    { id: "lesson-1-3", label: translations.chapterDetail.sectionLesson13[language] },
+    { id: "mini-challenge", label: translations.chapterDetail.sectionMiniChallenge[language] },
+    { id: "closing-ritual", label: translations.chapterDetail.sectionClosing[language] },
+    { id: "reflection", label: translations.chapterDetail.sectionReflection[language] },
   ];
-
-  const [activeSectionId, setActiveSectionId] = useState<string>(sectionAnchors[0]?.id ?? "opening");
-  const [showBackToTop, setShowBackToTop] = useState(false);
-
-  useEffect(() => {
-    const sections = sectionAnchors
-      .map((s) => document.getElementById(s.id))
-      .filter((el): el is HTMLElement => Boolean(el));
-
-    if (!sections.length) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSectionId(entry.target.id);
-          }
-        });
-      },
-      {
-        root: null,
-        threshold: 0.4,
-        rootMargin: "0px 0px -40% 0px",
-      }
-    );
-
-    sections.forEach((section) => observer.observe(section));
-
-    return () => {
-      sections.forEach((section) => observer.unobserve(section));
-      observer.disconnect();
-    };
-  }, [chapterId]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setShowBackToTop(window.scrollY > 300);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-
+...
       <main className="container mx-auto px-4 py-8">
         <Breadcrumbs
           items={[
-            { label: "Μαθήματα", path: "/chapters" },
-            { label: `Chapter ${chapterId}` },
+            { label: translations.chapters.breadcrumbLabel[language], path: "/chapters" },
+            { label: `${translations.chapterDetail.breadcrumbChapterLabel[language]} ${chapterId}` },
           ]}
         />
 
@@ -465,10 +415,10 @@ const ChapterDetail = () => {
           </div>
           <div>
             <Badge variant="secondary" className="mb-2">
-              Chapter {chapterId}
+              {translations.chapterDetail.breadcrumbChapterLabel[language]} {chapterId}
             </Badge>
             <h1 className="text-4xl font-bold mb-2">
-              Chapter {chapterId} – {chapterTitle}
+              {translations.chapterDetail.breadcrumbChapterLabel[language]} {chapterId} – {chapterTitle}
             </h1>
           </div>
         </header>
