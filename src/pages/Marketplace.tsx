@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Heart, PiggyBank, TrendingUp, Clock, Filter, ArrowUpRight } from "lucide-react";
+import { Heart, PiggyBank, TrendingUp, Clock, Filter, ArrowUpRight, Rocket, QrCode } from "lucide-react";
 
 import Navigation from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,6 +15,51 @@ const INITIAL_COINS = 100;
 const INVEST_COST = 5;
 
 type SortMode = "trending" | "newest" | "industry";
+
+type CategoryStyle = {
+  border: string;
+  glow: string;
+  badge: string;
+};
+
+const getCategoryStyle = (category: MarketplaceVenture["category"]): CategoryStyle => {
+  switch (category) {
+    case "Social Impact":
+      return {
+        border: "border-primary/50",
+        glow: "shadow-[0_0_40px_rgba(217,119,89,0.35)]",
+        badge: "bg-primary/20 text-primary-foreground/90",
+      };
+    case "Tech":
+    case "FinTech":
+      return {
+        border: "border-secondary/60",
+        glow: "shadow-[0_0_40px_rgba(56,189,248,0.4)]",
+        badge: "bg-secondary/20 text-secondary-foreground/90",
+      };
+    case "Sustainability":
+    case "Environment":
+      return {
+        border: "border-accent/60",
+        glow: "shadow-[0_0_40px_rgba(74,222,128,0.35)]",
+        badge: "bg-accent/20 text-accent-foreground/90",
+      };
+    case "Food":
+    case "Education":
+    default:
+      return {
+        border: "border-border/70",
+        glow: "shadow-[0_0_32px_rgba(148,163,184,0.35)]",
+        badge: "bg-muted text-muted-foreground",
+      };
+  }
+};
+
+const getLevelLabel = (score: number) => {
+  if (score >= 90) return "Level 3: Builder";
+  if (score >= 75) return "Level 2: Maker";
+  return "Level 1: Explorer";
+};
 
 const Marketplace = () => {
   const navigate = useNavigate();
@@ -176,89 +221,157 @@ const Marketplace = () => {
             const isLiked = likedIds.has(venture.id);
             const isInvested = investedIds.has(venture.id);
             const canInvest = coins >= INVEST_COST;
+            const categoryStyle = getCategoryStyle(venture.category);
+
+            const launchDays = (() => {
+              const created = new Date(venture.createdAt);
+              const now = new Date();
+              const diff = Math.max(0, now.getTime() - created.getTime());
+              return Math.max(1, Math.round(diff / (1000 * 60 * 60 * 24)));
+            })();
+
+            const likesCount = venture.baseTrendingScore % 30 + (isLiked ? 3 : 0);
+            const investedCoins = (investedIds.has(venture.id) ? INVEST_COST : 0) + (venture.baseTrendingScore % 10);
 
             return (
               <Card
                 key={venture.id}
-                className="group flex h-full cursor-pointer flex-col border border-border/80 bg-card/95 shadow-md transition-shadow hover:shadow-lg animate-enter hover-scale"
+                className={`group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border bg-card/5 bg-clip-padding backdrop-blur-xl transition-transform transition-shadow duration-300 hover:-translate-y-1 hover:rotate-[0.5deg] hover:shadow-xl animate-enter ${categoryStyle.border} ${categoryStyle.glow}`}
                 onClick={() => handleOpenVenture(venture.id)}
               >
-                <CardHeader className="pb-2">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <CardTitle className="line-clamp-2 text-base font-semibold sm:text-lg">
+                <div className="pointer-events-none absolute inset-0 opacity-70 mix-blend-screen">
+                  <div className="absolute inset-[-40%] bg-[radial-gradient(circle_at_0%_0%,hsl(var(--primary)/0.2),transparent_55%),radial-gradient(circle_at_100%_0%,hsl(var(--secondary)/0.18),transparent_55%),radial-gradient(circle_at_0%_100%,hsl(var(--accent)/0.18),transparent_55%)]" />
+                </div>
+
+                <div className="relative flex flex-1 flex-col p-4 sm:p-5">
+                  <header className="mb-3 flex items-start justify-between gap-3">
+                    <div className="space-y-1">
+                      <h2 className="line-clamp-2 text-base font-semibold tracking-tight sm:text-lg">
                         {venture.ventureName}
-                      </CardTitle>
-                      <CardDescription className="mt-1 text-xs sm:text-sm">
-                        by <span className="font-medium text-foreground/80">{venture.founderName}</span>
-                      </CardDescription>
+                      </h2>
+                      <p className="text-[0.75rem] text-muted-foreground">
+                        by <span className="font-medium text-foreground/90">{venture.founderName}</span>
+                      </p>
                     </div>
-                    <Badge variant="secondary" className="shrink-0 text-[0.65rem] uppercase tracking-wide">
-                      {venture.category}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="flex flex-1 flex-col gap-3 pt-1 text-sm">
-                  <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">
-                    {venture.elevatorPitch}
-                  </p>
+                    <div className="flex flex-col items-end gap-1">
+                      <Badge
+                        variant="outline"
+                        className={`text-[0.6rem] uppercase tracking-wide backdrop-blur-sm ${categoryStyle.badge}`}
+                      >
+                        {venture.category}
+                      </Badge>
+                      <span className="rounded-full bg-background/60 px-2 py-0.5 text-[0.6rem] font-medium text-muted-foreground shadow-sm">
+                        {getLevelLabel(venture.baseTrendingScore)}
+                      </span>
+                    </div>
+                  </header>
 
-                  <div className="flex items-center justify-between text-[0.7rem] text-muted-foreground">
-                    <div className="flex items-center gap-1.5">
-                      <TrendingUp className="h-3.5 w-3.5" />
-                      <span>High student interest</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <Clock className="h-3.5 w-3.5" />
-                      <span>Added recently</span>
-                    </div>
-                  </div>
+                  <section className="mb-3 rounded-xl border border-border/60 bg-background/70 px-3 py-2.5 text-sm leading-relaxed shadow-sm">
+                    <p className="line-clamp-3 text-[0.85rem] font-medium">
+                      {venture.elevatorPitch}
+                    </p>
+                  </section>
 
-                  <div className="mt-1 flex flex-wrap items-center justify-between gap-2">
-                    <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[0.65rem] font-medium text-muted-foreground">
-                      {venture.industry}
-                    </span>
-                    <div className="flex items-center gap-1 text-[0.65rem] text-muted-foreground">
-                      <span className="hidden sm:inline">Tap for full Business Model Canvas</span>
-                      <ArrowUpRight className="h-3 w-3" />
+                  <section className="mt-auto space-y-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-background/80 text-xs font-semibold shadow-sm">
+                          {venture.founderName.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="leading-tight">
+                          <p className="text-xs font-medium text-foreground/90">{venture.founderName}</p>
+                          <p className="text-[0.7rem] text-muted-foreground">Founder &amp; CEO</p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        className="pointer-events-auto inline-flex items-center justify-center rounded-full border border-border/70 bg-background/70 p-1.5 text-[0.65rem] text-muted-foreground shadow-sm transition-colors hover:bg-muted/70"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const shareUrl = `${window.location.origin}/marketplace/${venture.id}`;
+                          if (navigator.share) {
+                            navigator
+                              .share({
+                                title: venture.ventureName,
+                                text: "Check out this student venture on KidsInBusiness Marketplace",
+                                url: shareUrl,
+                              })
+                              .catch(() => {});
+                          } else if (navigator.clipboard) {
+                            navigator.clipboard.writeText(shareUrl).catch(() => {});
+                          }
+                        }}
+                      >
+                        <QrCode className="h-3.5 w-3.5" />
+                      </button>
                     </div>
-                  </div>
 
-                  <div className="mt-2 flex flex-wrap items-center gap-2">
-                    <Button
-                      type="button"
-                      variant={isLiked ? "default" : "outline"}
-                      size="sm"
-                      className={
-                        "gap-1.5 text-xs" +
-                        (isLiked
-                          ? " bg-primary text-primary-foreground shadow-md hover:shadow-lg"
-                          : " border-border bg-background/70 text-muted-foreground hover:bg-muted/70")
-                      }
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleToggleLike(venture.id);
-                      }}
-                    >
-                      <Heart className={`h-3.5 w-3.5 ${isLiked ? "fill-current" : ""}`} />
-                      Support
-                    </Button>
-                    <Button
-                      type="button"
-                      size="sm"
-                      className="gap-1.5 bg-gradient-to-r from-primary via-accent to-secondary text-xs font-semibold text-primary-foreground shadow-md hover:shadow-lg"
-                      disabled={!canInvest}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (!canInvest) return;
-                        handleInvest(venture.id);
-                      }}
-                    >
-                      <PiggyBank className="h-3.5 w-3.5" />
-                      {isInvested ? "Invested" : `Virtual Invest (-${INVEST_COST})`}
-                    </Button>
-                  </div>
-                </CardContent>
+                    <div className="grid grid-cols-3 gap-2 rounded-xl border border-border/60 bg-background/60 px-2 py-1.5 text-center text-[0.7rem]">
+                      <div className="flex flex-col items-center gap-0.5">
+                        <Heart className="h-3.5 w-3.5 text-primary" />
+                        <span className="font-semibold">{likesCount}</span>
+                        <span className="text-[0.6rem] text-muted-foreground">Likes</span>
+                      </div>
+                      <div className="flex flex-col items-center gap-0.5">
+                        <PiggyBank className="h-3.5 w-3.5 text-secondary" />
+                        <span className="font-semibold">{investedCoins}</span>
+                        <span className="text-[0.6rem] text-muted-foreground">Coins raised</span>
+                      </div>
+                      <div className="flex flex-col items-center gap-0.5">
+                        <Rocket className="h-3.5 w-3.5 text-accent" />
+                        <span className="font-semibold">{launchDays}</span>
+                        <span className="text-[0.6rem] text-muted-foreground">Days live</span>
+                      </div>
+                    </div>
+
+                    <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Button
+                          type="button"
+                          variant={isLiked ? "default" : "outline"}
+                          size="sm"
+                          className={
+                            "pointer-events-auto gap-1.5 text-xs" +
+                            (isLiked
+                              ? " bg-primary text-primary-foreground shadow-md hover:shadow-lg"
+                              : " border-border bg-background/70 text-muted-foreground hover:bg-muted/70")
+                          }
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleToggleLike(venture.id);
+                          }}
+                        >
+                          <Heart className={`h-3.5 w-3.5 ${isLiked ? "fill-current" : ""}`} />
+                          Support
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          className="pointer-events-auto gap-1.5 bg-gradient-to-r from-primary via-accent to-secondary text-xs font-semibold text-primary-foreground shadow-md hover:shadow-lg"
+                          disabled={!canInvest}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (!canInvest) return;
+                            handleInvest(venture.id);
+                          }}
+                        >
+                          <PiggyBank className="h-3.5 w-3.5" />
+                          {isInvested ? "Invested" : `Virtual Invest (-${INVEST_COST})`}
+                        </Button>
+                      </div>
+
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="ghost"
+                        className="pointer-events-none inline-flex items-center gap-1.5 text-[0.7rem] text-muted-foreground opacity-0 transition-all duration-200 group-hover:pointer-events-auto group-hover:opacity-100 group-hover:translate-y-0 group-hover:text-foreground translate-y-1"
+                      >
+                        View Business Plan
+                        <ArrowUpRight className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </section>
+                </div>
               </Card>
             );
           })}

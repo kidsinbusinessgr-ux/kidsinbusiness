@@ -3,7 +3,7 @@ export type MarketplaceVenture = {
   ventureName: string;
   founderName: string;
   elevatorPitch: string;
-  category: "Tech" | "Social Impact" | "Food" | "Education" | "Environment";
+  category: "Tech" | "Social Impact" | "Food" | "Education" | "Environment" | "FinTech" | "Sustainability";
   industry: string;
   createdAt: string; // ISO date
   baseTrendingScore: number;
