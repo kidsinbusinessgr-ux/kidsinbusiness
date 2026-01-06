@@ -44,10 +44,11 @@ type Activity = {
   participants: string | null;
   complexity: string | null;
   category: ActivityCategory;
+  creatorId: string | null;
 };
 
 const Actions = () => {
-  const { classes, loading, isAuthenticated } = useAuthAndClasses();
+  const { classes, loading, isAuthenticated, user } = useAuthAndClasses();
   const { language } = useLanguage();
   const [currentClassId, setCurrentClassId] = useState<string>("");
   const [completedChallenges, setCompletedChallenges] = useState<Set<string>>(new Set());
@@ -98,7 +99,9 @@ const Actions = () => {
       setActivitiesLoading(true);
       const { data, error } = await supabase
         .from("actions_activities")
-        .select("id, slug, title, description, duration, chapter, chapter_id, difficulty, participants, complexity, category")
+        .select(
+          "id, slug, title, description, duration, chapter, chapter_id, difficulty, participants, complexity, category, creator_id"
+        )
         .order("created_at", { ascending: true });
 
       if (error) {
@@ -156,7 +159,9 @@ const Actions = () => {
         const { data: seeded, error: seedError } = await supabase
           .from("actions_activities")
           .insert(seedPayload)
-          .select("id, slug, title, description, duration, chapter, chapter_id, difficulty, participants, complexity, category");
+          .select(
+            "id, slug, title, description, duration, chapter, chapter_id, difficulty, participants, complexity, category, creator_id"
+          );
 
         if (seedError) {
           console.error("Error seeding activities", seedError);
@@ -182,6 +187,7 @@ const Actions = () => {
             participants: row.participants,
             complexity: row.complexity,
             category: row.category as ActivityCategory,
+            creatorId: (row as any).creator_id ?? null,
           }))
         );
         setActivitiesLoading(false);
@@ -201,13 +207,14 @@ const Actions = () => {
           participants: row.participants,
           complexity: row.complexity,
           category: row.category as ActivityCategory,
+          creatorId: (row as any).creator_id ?? null,
         }))
       );
       setActivitiesLoading(false);
     };
 
     loadActivities();
-  }, [toast]);
+  }, [toast, language]);
 
   const triggerConfetti = () => {
     const duration = 2000;
@@ -474,7 +481,7 @@ const Actions = () => {
         category,
       })
       .select(
-        "id, slug, title, description, duration, chapter, chapter_id, difficulty, participants, complexity, category"
+        "id, slug, title, description, duration, chapter, chapter_id, difficulty, participants, complexity, category, creator_id"
       )
       .single();
 
@@ -501,6 +508,7 @@ const Actions = () => {
         participants: data.participants,
         complexity: data.complexity,
         category: data.category as ActivityCategory,
+        creatorId: (data as any).creator_id ?? user?.id ?? null,
       },
     ]);
 
@@ -759,382 +767,391 @@ const Actions = () => {
               </div>
 
               <TabsContent value="mini" className="space-y-4">
-                {filterByStatus(miniChallenges).map((challenge) => (
-                  <Card
-                    key={challenge.id}
-                    className={`hover:shadow-lg transition-all duration-300 group relative ${
-                      isCompleted(challenge.id) ? "bg-primary/5 border-primary/30" : ""
-                    }`}
-                  >
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Zap className="w-5 h-5 text-primary" />
-                            {challenge.chapter && (
-                              <Badge variant="secondary">{challenge.chapter}</Badge>
-                            )}
-                            {challenge.slug === "mini-4" && (
-                              <Badge variant="outline" className="text-[10px] uppercase tracking-wide">
-                                Χρηματοοικονομικός Γραμματισμός
-                              </Badge>
-                            )}
-                            {isCompleted(challenge.id) && (
-                              <Badge className="bg-primary/20 text-primary border-primary/30">
-                                <CheckCircle2 className="w-3 h-3 mr-1" />
-                                Ολοκληρώθηκε
-                              </Badge>
+                {filterByStatus(miniChallenges).map((challenge) => {
+                  const canModify = isAuthenticated && user && challenge.creatorId === user.id;
+                  return (
+                    <Card
+                      key={challenge.id}
+                      className={`hover:shadow-lg transition-all duration-300 group relative ${
+                        isCompleted(challenge.id) ? "bg-primary/5 border-primary/30" : ""
+                      }`}
+                    >
+                      <CardHeader>
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Zap className="w-5 h-5 text-primary" />
+                              {challenge.chapter && (
+                                <Badge variant="secondary">{challenge.chapter}</Badge>
+                              )}
+                              {challenge.slug === "mini-4" && (
+                                <Badge variant="outline" className="text-[10px] uppercase tracking-wide">
+                                  Χρηματοοικονομικός Γραμματισμός
+                                </Badge>
+                              )}
+                              {isCompleted(challenge.id) && (
+                                <Badge className="bg-primary/20 text-primary border-primary/30">
+                                  <CheckCircle2 className="w-3 h-3 mr-1" />
+                                  Ολοκληρώθηκε
+                                </Badge>
+                              )}
+                            </div>
+                            <CardTitle>{challenge.title}</CardTitle>
+                            {editingId === challenge.id ? null : (
+                              challenge.description && (
+                                <CardDescription className="mt-2">
+                                  {challenge.description}
+                                </CardDescription>
+                              )
                             )}
                           </div>
-                          <CardTitle>{challenge.title}</CardTitle>
-                          {editingId === challenge.id ? null : (
-                            challenge.description && (
-                              <CardDescription className="mt-2">
-                                {challenge.description}
-                              </CardDescription>
-                            )
-                          )}
-                        </div>
-                        <div className="flex flex-col items-end gap-2">
-                          <button
-                            onClick={() => toggleChallenge(challenge.id)}
-                            className="p-2 rounded-full hover:bg-muted transition-all duration-200 hover:scale-110 active:scale-95"
-                            aria-label={
-                              isCompleted(challenge.id)
-                                ? "Mark as incomplete"
-                                : "Mark as complete"
-                            }
-                          >
-                            {isCompleted(challenge.id) ? (
-                              <CheckCircle2 className="w-6 h-6 text-primary animate-in zoom-in duration-300" />
-                            ) : (
-                              <Circle className="w-6 h-6 text-muted-foreground hover:text-primary transition-colors" />
-                            )}
-                          </button>
-                          {isAuthenticated && (
-                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-7 w-7"
-                                onClick={() => handleEditActivity(challenge.id)}
-                              >
-                                <Edit2 className="w-3 h-3" />
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      {editingId === challenge.id ? (
-                        <ActivityEditForm
-                          category={challenge.category}
-                          initialValues={{
-                            title: challenge.title,
-                            description: challenge.description,
-                            duration: challenge.duration,
-                            chapter: challenge.chapter,
-                            chapterId: challenge.chapterId,
-                            difficulty: challenge.difficulty,
-                            participants: challenge.participants,
-                            complexity: challenge.complexity,
-                          }}
-                          onSubmit={(values) => handleSaveEdit(challenge.id, values, challenge.category)}
-                          onCancel={handleCancelEdit}
-                        />
-                      ) : (
-                        <>
-                          <div className="flex items-center gap-4 mb-4 text-sm text-muted-foreground">
-                            {challenge.duration && (
-                              <div className="flex items-center gap-1">
-                                <Clock className="w-4 h-4" />
-                                {challenge.duration}
+                          <div className="flex flex-col items-end gap-2">
+                            <button
+                              onClick={() => toggleChallenge(challenge.id)}
+                              className="p-2 rounded-full hover:bg-muted transition-all duration-200 hover:scale-110 active:scale-95"
+                              aria-label={
+                                isCompleted(challenge.id)
+                                  ? "Mark as incomplete"
+                                  : "Mark as complete"
+                              }
+                            >
+                              {isCompleted(challenge.id) ? (
+                                <CheckCircle2 className="w-6 h-6 text-primary animate-in zoom-in duration-300" />
+                              ) : (
+                                <Circle className="w-6 h-6 text-muted-foreground hover:text-primary transition-colors" />
+                              )}
+                            </button>
+                            {canModify && (
+                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7"
+                                  onClick={() => handleEditActivity(challenge.id)}
+                                >
+                                  <Edit2 className="w-3 h-3" />
+                                </Button>
                               </div>
                             )}
-                            {challenge.difficulty && (
-                              <Badge variant="outline">{challenge.difficulty}</Badge>
-                            )}
                           </div>
-                          {challenge.chapterId && (
-                            <Link to={`/chapters/${challenge.chapterId}`}>
-                              <Button className="w-full">Ξεκινήστε το Challenge</Button>
-                            </Link>
-                          )}
-                        </>
-                      )}
-                    </CardContent>
-                  </Card>
-                ))}
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        {editingId === challenge.id ? (
+                          <ActivityEditForm
+                            category={challenge.category}
+                            initialValues={{
+                              title: challenge.title,
+                              description: challenge.description,
+                              duration: challenge.duration,
+                              chapter: challenge.chapter,
+                              chapterId: challenge.chapterId,
+                              difficulty: challenge.difficulty,
+                              participants: challenge.participants,
+                              complexity: challenge.complexity,
+                            }}
+                            onSubmit={(values) => handleSaveEdit(challenge.id, values, challenge.category)}
+                            onCancel={handleCancelEdit}
+                          />
+                        ) : (
+                          <>
+                            <div className="flex items-center gap-4 mb-4 text-sm text-muted-foreground">
+                              {challenge.duration && (
+                                <div className="flex items-center gap-1">
+                                  <Clock className="w-4 h-4" />
+                                  {challenge.duration}
+                                </div>
+                              )}
+                              {challenge.difficulty && (
+                                <Badge variant="outline">{challenge.difficulty}</Badge>
+                              )}
+                            </div>
+                            {challenge.chapterId && (
+                              <Link to={`/chapters/${challenge.chapterId}`}>
+                                <Button className="w-full">Ξεκινήστε το Challenge</Button>
+                              </Link>
+                            )}
+                          </>
+                        )}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </TabsContent>
 
               <TabsContent value="class" className="space-y-4">
-                {filterByStatus(classActivities).map((activity) => (
-                  <Card
-                    key={activity.id}
-                    className={`hover:shadow-lg transition-all duration-300 group relative ${
-                      isCompleted(activity.id) ? "bg-primary/5 border-primary/30" : ""
-                    }`}
-                  >
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Target className="w-5 h-5 text-secondary" />
-                            {activity.chapter && (
-                              <Badge variant="secondary">{activity.chapter}</Badge>
-                            )}
-                            {activity.slug === "class-3" && (
-                              <Badge variant="outline" className="text-[10px] uppercase tracking-wide">
-                                Χρηματοοικονομικός Γραμματισμός
-                              </Badge>
-                            )}
-                            {isCompleted(activity.id) && (
-                              <Badge className="bg-primary/20 text-primary border-primary/30">
-                                <CheckCircle2 className="w-3 h-3 mr-1" />
-                                Ολοκληρώθηκε
-                              </Badge>
-                            )}
-                          </div>
-                          <CardTitle>{activity.title}</CardTitle>
-                          {editingId === activity.id ? null : (
-                            activity.description && (
-                              <CardDescription className="mt-2">
-                                {activity.description}
-                              </CardDescription>
-                            )
-                          )}
-                        </div>
-                        <div className="flex flex-col items-end gap-2">
-                          <button
-                            onClick={() => toggleChallenge(activity.id)}
-                            className="p-2 rounded-full hover:bg-muted transition-all duration-200 hover:scale-110 active:scale-95"
-                            aria-label={
-                              isCompleted(activity.id)
-                                ? "Mark as incomplete"
-                                : "Mark as complete"
-                            }
-                          >
-                            {isCompleted(activity.id) ? (
-                              <CheckCircle2 className="w-6 h-6 text-primary animate-in zoom-in duration-300" />
-                            ) : (
-                              <Circle className="w-6 h-6 text-muted-foreground hover:text-primary transition-colors" />
-                            )}
-                          </button>
-                          {isAuthenticated && (
-                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-7 w-7"
-                                onClick={() => handleEditActivity(activity.id)}
-                              >
-                                <Edit2 className="w-3 h-3" />
-                              </Button>
-                              <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-7 w-7 text-destructive"
-                                  >
-                                    <Trash2 className="w-3 h-3" />
-                                  </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                      Διαγραφή δραστηριότητας;
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      Αυτή η ενέργεια θα αφαιρέσει τη δραστηριότητα από όλες τις
-                                      τάξεις και θα διαγράψει τυχόν πρόοδο που έχει γίνει σε αυτήν.
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel>Άκυρο</AlertDialogCancel>
-                                    <AlertDialogAction
-                                      onClick={() => handleDeleteActivity(activity.id)}
-                                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                    >
-                                      Ναι, διαγραφή
-                                    </AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
+                {filterByStatus(classActivities).map((activity) => {
+                  const canModify = isAuthenticated && user && activity.creatorId === user.id;
+                  return (
+                    <Card
+                      key={activity.id}
+                      className={`hover:shadow-lg transition-all duration-300 group relative ${
+                        isCompleted(activity.id) ? "bg-primary/5 border-primary/30" : ""
+                      }`}
+                    >
+                      <CardHeader>
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Target className="w-5 h-5 text-secondary" />
+                              {activity.chapter && (
+                                <Badge variant="secondary">{activity.chapter}</Badge>
+                              )}
+                              {activity.slug === "class-3" && (
+                                <Badge variant="outline" className="text-[10px] uppercase tracking-wide">
+                                  Χρηματοοικονομικός Γραμματισμός
+                                </Badge>
+                              )}
+                              {isCompleted(activity.id) && (
+                                <Badge className="bg-primary/20 text-primary border-primary/30">
+                                  <CheckCircle2 className="w-3 h-3 mr-1" />
+                                  Ολοκληρώθηκε
+                                </Badge>
+                              )}
                             </div>
-                          )}
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      {editingId === activity.id ? (
-                        <ActivityEditForm
-                          category={activity.category}
-                          initialValues={{
-                            title: activity.title,
-                            description: activity.description,
-                            duration: activity.duration,
-                            chapter: activity.chapter,
-                            chapterId: activity.chapterId,
-                            difficulty: activity.difficulty,
-                            participants: activity.participants,
-                            complexity: activity.complexity,
-                          }}
-                          onSubmit={(values) => handleSaveEdit(activity.id, values, activity.category)}
-                          onCancel={handleCancelEdit}
-                        />
-                      ) : (
-                        <>
-                          <div className="flex items-center gap-4 mb-4 text-sm text-muted-foreground">
-                            {activity.duration && (
-                              <div className="flex items-center gap-1">
-                                <Clock className="w-4 h-4" />
-                                {activity.duration}
-                              </div>
+                            <CardTitle>{activity.title}</CardTitle>
+                            {editingId === activity.id ? null : (
+                              activity.description && (
+                                <CardDescription className="mt-2">
+                                  {activity.description}
+                                </CardDescription>
+                              )
                             )}
-                            {activity.participants && (
-                              <div className="flex items-center gap-1">
-                                <Users className="w-4 h-4" />
-                                {activity.participants}
+                          </div>
+                          <div className="flex flex-col items-end gap-2">
+                            <button
+                              onClick={() => toggleChallenge(activity.id)}
+                              className="p-2 rounded-full hover:bg-muted transition-all duration-200 hover:scale-110 active:scale-95"
+                              aria-label={
+                                isCompleted(activity.id)
+                                  ? "Mark as incomplete"
+                                  : "Mark as complete"
+                              }
+                            >
+                              {isCompleted(activity.id) ? (
+                                <CheckCircle2 className="w-6 h-6 text-primary animate-in zoom-in duration-300" />
+                              ) : (
+                                <Circle className="w-6 h-6 text-muted-foreground hover:text-primary transition-colors" />
+                              )}
+                            </button>
+                            {canModify && (
+                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7"
+                                  onClick={() => handleEditActivity(activity.id)}
+                                >
+                                  <Edit2 className="w-3 h-3" />
+                                </Button>
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-7 w-7 text-destructive"
+                                    >
+                                      <Trash2 className="w-3 h-3" />
+                                    </Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>
+                                        Διαγραφή δραστηριότητας;
+                                      </AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        Αυτή η ενέργεια θα αφαιρέσει τη δραστηριότητα από όλες τις
+                                        τάξεις και θα διαγράψει τυχόν πρόοδο που έχει γίνει σε αυτήν.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>Άκυρο</AlertDialogCancel>
+                                      <AlertDialogAction
+                                        onClick={() => handleDeleteActivity(activity.id)}
+                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                      >
+                                        Ναι, διαγραφή
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
                               </div>
                             )}
                           </div>
-                          {activity.chapterId && (
-                            <Link to={`/chapters/${activity.chapterId}`}>
-                              <Button variant="secondary" className="w-full">
-                                Δείτε τη δραστηριότητα
-                              </Button>
-                            </Link>
-                          )}
-                        </>
-                      )}
-                    </CardContent>
-                  </Card>
-                ))}
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        {editingId === activity.id ? (
+                          <ActivityEditForm
+                            category={activity.category}
+                            initialValues={{
+                              title: activity.title,
+                              description: activity.description,
+                              duration: activity.duration,
+                              chapter: activity.chapter,
+                              chapterId: activity.chapterId,
+                              difficulty: activity.difficulty,
+                              participants: activity.participants,
+                              complexity: activity.complexity,
+                            }}
+                            onSubmit={(values) => handleSaveEdit(activity.id, values, activity.category)}
+                            onCancel={handleCancelEdit}
+                          />
+                        ) : (
+                          <>
+                            <div className="flex items-center gap-4 mb-4 text-sm text-muted-foreground">
+                              {activity.duration && (
+                                <div className="flex items-center gap-1">
+                                  <Clock className="w-4 h-4" />
+                                  {activity.duration}
+                                </div>
+                              )}
+                              {activity.participants && (
+                                <div className="flex items-center gap-1">
+                                  <Users className="w-4 h-4" />
+                                  {activity.participants}
+                                </div>
+                              )}
+                            </div>
+                            {activity.chapterId && (
+                              <Link to={`/chapters/${activity.chapterId}`}>
+                                <Button variant="secondary" className="w-full">
+                                  Δείτε τη δραστηριότητα
+                                </Button>
+                              </Link>
+                            )}
+                          </>
+                        )}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </TabsContent>
 
               <TabsContent value="projects" className="space-y-4">
-                {filterByStatus(projects).map((project) => (
-                  <Card
-                    key={project.id}
-                    className={`hover:shadow-lg transition-all duration-300 group relative ${
-                      isCompleted(project.id) ? "bg-primary/5 border-primary/30" : ""
-                    }`}
-                  >
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Rocket className="w-5 h-5 text-accent" />
-                            {project.chapter && (
-                              <Badge variant="secondary">{project.chapter}</Badge>
-                            )}
-                            {project.slug === "project-3" && (
-                              <Badge variant="outline" className="text-[10px] uppercase tracking-wide">
-                                Χρηματοοικονομικός Γραμματισμός
-                              </Badge>
-                            )}
-                            {isCompleted(project.id) && (
-                              <Badge className="bg-primary/20 text-primary border-primary/30">
-                                <CheckCircle2 className="w-3 h-3 mr-1" />
-                                Ολοκληρώθηκε
-                              </Badge>
+                {filterByStatus(projects).map((project) => {
+                  const canModify = isAuthenticated && user && project.creatorId === user.id;
+                  return (
+                    <Card
+                      key={project.id}
+                      className={`hover:shadow-lg transition-all duration-300 group relative ${
+                        isCompleted(project.id) ? "bg-primary/5 border-primary/30" : ""
+                      }`}
+                    >
+                      <CardHeader>
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Rocket className="w-5 h-5 text-accent" />
+                              {project.chapter && (
+                                <Badge variant="secondary">{project.chapter}</Badge>
+                              )}
+                              {project.slug === "project-3" && (
+                                <Badge variant="outline" className="text-[10px] uppercase tracking-wide">
+                                  Χρηματοοικονομικός Γραμματισμός
+                                </Badge>
+                              )}
+                              {isCompleted(project.id) && (
+                                <Badge className="bg-primary/20 text-primary border-primary/30">
+                                  <CheckCircle2 className="w-3 h-3 mr-1" />
+                                  Ολοκληρώθηκε
+                                </Badge>
+                              )}
+                            </div>
+                            <CardTitle>{project.title}</CardTitle>
+                            {project.description && (
+                              <CardDescription className="mt-2">
+                                {project.description}
+                              </CardDescription>
                             )}
                           </div>
-                          <CardTitle>{project.title}</CardTitle>
-                          {project.description && (
-                            <CardDescription className="mt-2">
-                              {project.description}
-                            </CardDescription>
-                          )}
-                        </div>
-                        <div className="flex flex-col items-end gap-2">
-                          <button
-                            onClick={() => toggleChallenge(project.id)}
-                            className="p-2 rounded-full hover:bg-muted transition-all duration-200 hover:scale-110 active:scale-95"
-                            aria-label={
-                              isCompleted(project.id)
-                                ? "Mark as incomplete"
-                                : "Mark as complete"
-                            }
-                          >
-                            {isCompleted(project.id) ? (
-                              <CheckCircle2 className="w-6 h-6 text-primary animate-in zoom-in duration-300" />
-                            ) : (
-                              <Circle className="w-6 h-6 text-muted-foreground hover:text-primary transition-colors" />
-                            )}
-                          </button>
-                          {isAuthenticated && (
-                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-7 w-7"
-                                onClick={() => handleEditActivity(project.id)}
-                              >
-                                <Edit2 className="w-3 h-3" />
-                              </Button>
-                              <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-7 w-7 text-destructive"
-                                  >
-                                    <Trash2 className="w-3 h-3" />
-                                  </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                      Διαγραφή project;
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      Αυτή η ενέργεια θα αφαιρέσει το project από όλες τις τάξεις και
-                                      θα διαγράψει τυχόν πρόοδο που έχει γίνει σε αυτό.
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel>Άκυρο</AlertDialogCancel>
-                                    <AlertDialogAction
-                                      onClick={() => handleDeleteActivity(project.id)}
-                                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          <div className="flex flex-col items-end gap-2">
+                            <button
+                              onClick={() => toggleChallenge(project.id)}
+                              className="p-2 rounded-full hover:bg-muted transition-all duration-200 hover:scale-110 active:scale-95"
+                              aria-label={
+                                isCompleted(project.id)
+                                  ? "Mark as incomplete"
+                                  : "Mark as complete"
+                              }
+                            >
+                              {isCompleted(project.id) ? (
+                                <CheckCircle2 className="w-6 h-6 text-primary animate-in zoom-in duration-300" />
+                              ) : (
+                                <Circle className="w-6 h-6 text-muted-foreground hover:text-primary transition-colors" />
+                              )}
+                            </button>
+                            {canModify && (
+                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7"
+                                  onClick={() => handleEditActivity(project.id)}
+                                >
+                                  <Edit2 className="w-3 h-3" />
+                                </Button>
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-7 w-7 text-destructive"
                                     >
-                                      Ναι, διαγραφή
-                                    </AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
+                                      <Trash2 className="w-3 h-3" />
+                                    </Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>
+                                        Διαγραφή project;
+                                      </AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        Αυτή η ενέργεια θα αφαιρέσει το project από όλες τις τάξεις και
+                                        θα διαγράψει τυχόν πρόοδο που έχει γίνει σε αυτό.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>Άκυρο</AlertDialogCancel>
+                                      <AlertDialogAction
+                                        onClick={() => handleDeleteActivity(project.id)}
+                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                      >
+                                        Ναι, διαγραφή
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="flex items-center gap-4 mb-4 text-sm text-muted-foreground">
+                          {project.duration && (
+                            <div className="flex items-center gap-1">
+                              <Clock className="w-4 h-4" />
+                              {project.duration}
                             </div>
                           )}
+                          {project.complexity && (
+                            <Badge variant="outline">
+                              Πολυπλοκότητα: {project.complexity}
+                            </Badge>
+                          )}
                         </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex items-center gap-4 mb-4 text-sm text-muted-foreground">
-                        {project.duration && (
-                          <div className="flex items-center gap-1">
-                            <Clock className="w-4 h-4" />
-                            {project.duration}
-                          </div>
+                        {project.chapterId && (
+                          <Link to={`/chapters/${project.chapterId}`}>
+                            <Button variant="default" className="w-full">
+                              Ξεκινήστε το Project
+                            </Button>
+                          </Link>
                         )}
-                        {project.complexity && (
-                          <Badge variant="outline">
-                            Πολυπλοκότητα: {project.complexity}
-                          </Badge>
-                        )}
-                      </div>
-                      {project.chapterId && (
-                        <Link to={`/chapters/${project.chapterId}`}>
-                          <Button variant="default" className="w-full">
-                            Ξεκινήστε το Project
-                          </Button>
-                        </Link>
-                      )}
-                    </CardContent>
-                  </Card>
-                ))}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </TabsContent>
             </Tabs>
           </div>
