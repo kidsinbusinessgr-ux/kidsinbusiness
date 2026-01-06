@@ -55,6 +55,7 @@ const Actions = () => {
   const [completedChallenges, setCompletedChallenges] = useState<Set<string>>(new Set());
   const [statusFilter, setStatusFilter] = useState<"all" | "completed" | "incomplete">("all");
   const [ownershipFilter, setOwnershipFilter] = useState<"all" | "mine">("all");
+  const [sortOption, setSortOption] = useState<"default" | "chapter" | "duration" | "createdAt">("default");
   const [activities, setActivities] = useState<Activity[]>([]);
   const [activitiesLoading, setActivitiesLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -102,7 +103,7 @@ const Actions = () => {
       const { data, error } = await supabase
         .from("actions_activities")
         .select(
-          "id, slug, title, description, duration, chapter, chapter_id, difficulty, participants, complexity, category, creator_id"
+          "id, slug, title, description, duration, chapter, chapter_id, difficulty, participants, complexity, category, creator_id, created_at"
         )
         .order("created_at", { ascending: true });
 
@@ -158,46 +159,25 @@ const Actions = () => {
           })),
         ];
 
-        const { data: seeded, error: seedError } = await supabase
-          .from("actions_activities")
-          .insert(seedPayload)
-          .select(
-            "id, slug, title, description, duration, chapter, chapter_id, difficulty, participants, complexity, category, creator_id"
-          );
-
-        if (seedError) {
-          console.error("Error seeding activities", seedError);
-          toast({
-            title: translations.actions.toastSeedErrorTitle[language],
-            description: seedError.message,
-            variant: "destructive",
-          });
-          setActivitiesLoading(false);
-          return;
-        }
-
-        setActivities(
-          (seeded || []).map((row) => ({
-            id: row.id,
-            slug: row.slug,
-            title: row.title,
-            description: row.description,
-            duration: row.duration,
-            chapter: row.chapter,
-            chapterId: row.chapter_id,
-            difficulty: row.difficulty,
-            participants: row.participants,
-            complexity: row.complexity,
-            category: row.category as ActivityCategory,
-            creatorId: (row as any).creator_id ?? null,
-          }))
+      const { data, error } = await supabase
+        .from("actions_activities")
+        .insert(seedPayload)
+        .select(
+          "id, slug, title, description, duration, chapter, chapter_id, difficulty, participants, complexity, category, creator_id, created_at"
         );
+      if (error) {
+        console.error("Error seeding activities", error);
+        toast({
+          title: translations.actions.toastSeedErrorTitle[language],
+          description: error.message,
+          variant: "destructive",
+        });
         setActivitiesLoading(false);
         return;
       }
-
+ 
       setActivities(
-        data.map((row) => ({
+        (data || []).map((row: any) => ({
           id: row.id,
           slug: row.slug,
           title: row.title,
@@ -209,10 +189,11 @@ const Actions = () => {
           participants: row.participants,
           complexity: row.complexity,
           category: row.category as ActivityCategory,
-          creatorId: (row as any).creator_id ?? null,
+          creatorId: row.creator_id ?? null,
         }))
       );
       setActivitiesLoading(false);
+      return;
     };
 
     loadActivities();
@@ -493,7 +474,7 @@ const Actions = () => {
         category,
       })
       .select(
-        "id, slug, title, description, duration, chapter, chapter_id, difficulty, participants, complexity, category, creator_id"
+        "id, slug, title, description, duration, chapter, chapter_id, difficulty, participants, complexity, category, creator_id, created_at"
       )
       .single();
 
