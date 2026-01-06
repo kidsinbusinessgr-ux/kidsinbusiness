@@ -50,25 +50,26 @@ const Teachers = () => {
               <CardContent className="space-y-4">
                 <div className="prose prose-sm max-w-none">
                   <p>
-                    Το Kids in Business είναι σχεδιασμένο να κάνει τη διδασκαλία της
-                    επιχειρηματικότητας εύκολη και αποτελεσματική, ακόμα κι αν δεν έχετε
-                    προηγούμενη εμπειρία στον τομέα.
+                    {translations.teachers.howItWorksIntro[language]}
                   </p>
-                  
-                  <h3 className="font-bold mt-6 mb-3">Δομή Προγράμματος</h3>
+                  <h3 className="font-bold mt-6 mb-3">
+                    {translations.teachers.programStructureTitle[language]}
+                  </h3>
                   <ul className="space-y-2">
-                    <li><strong>5 Chapters</strong> - Κάθε ένα καλύπτει βασική έννοια</li>
-                    <li><strong>Πρακτικές δραστηριότητες</strong> - Άμεση εφαρμογή της γνώσης</li>
-                    <li><strong>Ευέλικτος ρυθμός</strong> - Προσαρμόστε το στις ανάγκες σας</li>
+                    <li>{translations.teachers.programStructureItem1[language]}</li>
+                    <li>{translations.teachers.programStructureItem2[language]}</li>
+                    <li>{translations.teachers.programStructureItem3[language]}</li>
                   </ul>
 
-                  <h3 className="font-bold mt-6 mb-3">Τι περιλαμβάνεται</h3>
+                  <h3 className="font-bold mt-6 mb-3">
+                    {translations.teachers.includesTitle[language]}
+                  </h3>
                   <ul className="space-y-2">
-                    <li>Έτοιμα σχέδια μαθημάτων</li>
-                    <li>Οδηγίες βήμα προς βήμα</li>
-                    <li>Δραστηριότητες και challenges</li>
-                    <li>Υλικό παρουσίασης</li>
-                    <li>Υποστήριξη και tips</li>
+                    <li>{translations.teachers.includesItem1[language]}</li>
+                    <li>{translations.teachers.includesItem2[language]}</li>
+                    <li>{translations.teachers.includesItem3[language]}</li>
+                    <li>{translations.teachers.includesItem4[language]}</li>
+                    <li>{translations.teachers.includesItem5[language]}</li>
                   </ul>
                 </div>
               </CardContent>
@@ -87,26 +88,31 @@ const Teachers = () => {
               <CardContent className="space-y-4">
                 <div className="prose prose-sm max-w-none">
                   <p>
-                    Η προσέγγισή μας βασίζεται σε τρεις πυλώνες:
+                    {translations.teachers.philosophyIntro[language]}
                   </p>
-                  
                   <div className="grid md:grid-cols-3 gap-4 not-prose mt-4">
                     <div className="p-4 bg-card rounded-lg border">
-                      <h4 className="font-bold mb-2">Βιωματική Μάθηση</h4>
+                      <h4 className="font-bold mb-2">
+                        {translations.teachers.philosophyPillar1Title[language]}
+                      </h4>
                       <p className="text-sm text-muted-foreground">
-                        Τα παιδιά μαθαίνουν κάνοντας, όχι ακούγοντας
+                        {translations.teachers.philosophyPillar1Description[language]}
                       </p>
                     </div>
                     <div className="p-4 bg-card rounded-lg border">
-                      <h4 className="font-bold mb-2">Ομαδική Εργασία</h4>
+                      <h4 className="font-bold mb-2">
+                        {translations.teachers.philosophyPillar2Title[language]}
+                      </h4>
                       <p className="text-sm text-muted-foreground">
-                        Συνεργασία και ανταλλαγή ιδεών
+                        {translations.teachers.philosophyPillar2Description[language]}
                       </p>
                     </div>
                     <div className="p-4 bg-card rounded-lg border">
-                      <h4 className="font-bold mb-2">Δημιουργικότητα</h4>
+                      <h4 className="font-bold mb-2">
+                        {translations.teachers.philosophyPillar3Title[language]}
+                      </h4>
                       <p className="text-sm text-muted-foreground">
-                        Ενθάρρυνση της ελεύθερης σκέψης
+                        {translations.teachers.philosophyPillar3Description[language]}
                       </p>
                     </div>
                   </div>
@@ -128,54 +134,46 @@ const Teachers = () => {
                 <Accordion type="single" collapsible className="w-full">
                   <AccordionItem value="item-1">
                     <AccordionTrigger>
-                      Πόσος χρόνος χρειάζεται ανά εβδομάδα;
+                      {translations.teachers.faqItem1Question[language]}
                     </AccordionTrigger>
                     <AccordionContent>
-                      Συνιστούμε 2-3 ώρες την εβδομάδα, αλλά μπορείτε να προσαρμόσετε το
-                      πρόγραμμα ανάλογα με το ωρολόγιό σας. Κάθε μάθημα είναι σχεδιασμένο να
-                      διαρκεί 45-60 λεπτά.
+                      {translations.teachers.faqItem1Answer[language]}
                     </AccordionContent>
                   </AccordionItem>
 
                   <AccordionItem value="item-2">
                     <AccordionTrigger>
-                      Χρειάζομαι εμπειρία στην επιχειρηματικότητα;
+                      {translations.teachers.faqItem2Question[language]}
                     </AccordionTrigger>
                     <AccordionContent>
-                      Όχι! Το πρόγραμμα είναι σχεδιασμένο για εκπαιδευτικούς όλων των
-                      επιπέδων. Κάθε μάθημα περιλαμβάνει αναλυτικές οδηγίες και υποστήριξη.
+                      {translations.teachers.faqItem2Answer[language]}
                     </AccordionContent>
                   </AccordionItem>
 
                   <AccordionItem value="item-3">
                     <AccordionTrigger>
-                      Για ποιες ηλικίες είναι κατάλληλο;
+                      {translations.teachers.faqItem3Question[language]}
                     </AccordionTrigger>
                     <AccordionContent>
-                      Το πρόγραμμα είναι σχεδιασμένο για μαθητές δημοτικού (8-12 ετών), αλλά
-                      μπορεί να προσαρμοστεί και για μεγαλύτερες ηλικίες.
+                      {translations.teachers.faqItem3Answer[language]}
                     </AccordionContent>
                   </AccordionItem>
 
                   <AccordionItem value="item-4">
                     <AccordionTrigger>
-                      {language === "el" ? "Τι υλικά χρειάζομαι;" : "What materials do I need?"}
+                      {translations.teachers.faqItem4Question[language]}
                     </AccordionTrigger>
                     <AccordionContent>
-                      {language === "el"
-                        ? "Τα περισσότερα μαθήματα χρειάζονται μόνο βασικά υλικά (χαρτί, μαρκαδόροι, post-its). Συγκεκριμένα υλικά αναφέρονται σε κάθε δραστηριότητα."
-                        : "Most lessons only need basic materials (paper, markers, post-its). Specific materials are listed in each activity."}
+                      {translations.teachers.faqItem4Answer[language]}
                     </AccordionContent>
                   </AccordionItem>
  
                   <AccordionItem value="item-5">
                     <AccordionTrigger>
-                      {language === "el" ? "Μπορώ να προσαρμόσω το περιεχόμενο;" : "Can I adapt the content?"}
+                      {translations.teachers.faqItem5Question[language]}
                     </AccordionTrigger>
                     <AccordionContent>
-                      {language === "el"
-                        ? "Απολύτως! Ενθαρρύνουμε την προσαρμογή του περιεχομένου στις ανάγκες και τα ενδιαφέροντα της τάξης σας."
-                        : "Absolutely! We encourage you to adapt the content to your class needs and interests."}
+                      {translations.teachers.faqItem5Answer[language]}
                     </AccordionContent>
                   </AccordionItem>
                 </Accordion>
@@ -190,26 +188,34 @@ const Teachers = () => {
               <CardHeader>
                 <div className="flex items-center gap-2 mb-2">
                   <GraduationCap className="w-5 h-5 text-primary" />
-                  <CardTitle className="text-lg">Οδηγός Τάξης</CardTitle>
+                  <CardTitle className="text-lg">
+                    {translations.teachers.classGuideTitle[language]}
+                  </CardTitle>
                 </div>
               </CardHeader>
               <CardContent className="space-y-3 text-sm">
                 <div>
-                  <h4 className="font-semibold mb-1">Πριν το μάθημα</h4>
+                  <h4 className="font-semibold mb-1">
+                    {translations.teachers.classGuideBeforeTitle[language]}
+                  </h4>
                   <p className="text-muted-foreground">
-                    Διαβάστε το μάθημα και προετοιμάστε τα υλικά
+                    {translations.teachers.classGuideBeforeText[language]}
                   </p>
                 </div>
                 <div>
-                  <h4 className="font-semibold mb-1">Κατά τη διάρκεια</h4>
+                  <h4 className="font-semibold mb-1">
+                    {translations.teachers.classGuideDuringTitle[language]}
+                  </h4>
                   <p className="text-muted-foreground">
-                    Ακολουθήστε τις οδηγίες και προσαρμόστε αν χρειάζεται
+                    {translations.teachers.classGuideDuringText[language]}
                   </p>
                 </div>
                 <div>
-                  <h4 className="font-semibold mb-1">Μετά το μάθημα</h4>
+                  <h4 className="font-semibold mb-1">
+                    {translations.teachers.classGuideAfterTitle[language]}
+                  </h4>
                   <p className="text-muted-foreground">
-                    Κάντε αναλογισμό με τους μαθητές
+                    {translations.teachers.classGuideAfterText[language]}
                   </p>
                 </div>
               </CardContent>
@@ -217,16 +223,18 @@ const Teachers = () => {
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Χρειάζεστε βοήθεια;</CardTitle>
+                <CardTitle className="text-lg">
+                  {translations.teachers.helpTitle[language]}
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 text-sm">
                 <p className="text-muted-foreground">
-                  Επικοινωνήστε μαζί μας για υποστήριξη και συμβουλές:
+                  {translations.teachers.helpIntro[language]}
                 </p>
                 <div className="space-y-2 text-muted-foreground">
-                  <div>📧 support@kidsinbusiness.gr</div>
-                  <div>💬 Community Forum</div>
-                  <div>📚 Βιβλιοθήκη Πόρων</div>
+                  <div>{translations.teachers.helpEmail[language]}</div>
+                  <div>{translations.teachers.helpCommunity[language]}</div>
+                  <div>{translations.teachers.helpLibrary[language]}</div>
                 </div>
               </CardContent>
             </Card>

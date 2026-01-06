@@ -177,17 +177,177 @@ export const translations = {
       el: "Μια πλήρης πλατφόρμα για τη διδασκαλία επιχειρηματικότητας",
       en: "A complete platform for teaching entrepreneurship",
     } as LangString,
+    howItWorksIntro: {
+      el: "Το Kids in Business είναι σχεδιασμένο να κάνει τη διδασκαλία της επιχειρηματικότητας εύκολη και αποτελεσματική, ακόμα κι αν δεν έχετε προηγούμενη εμπειρία στον τομέα.",
+      en: "Kids in Business is designed to make teaching entrepreneurship easy and effective, even if you have no prior experience in the field.",
+    } as LangString,
+    programStructureTitle: {
+      el: "Δομή Προγράμματος",
+      en: "Program structure",
+    } as LangString,
+    programStructureItem1: {
+      el: "5 Chapters - Κάθε ένα καλύπτει βασική έννοια",
+      en: "5 chapters – each covers a core concept",
+    } as LangString,
+    programStructureItem2: {
+      el: "Πρακτικές δραστηριότητες - Άμεση εφαρμογή της γνώσης",
+      en: "Practical activities – immediate application of knowledge",
+    } as LangString,
+    programStructureItem3: {
+      el: "Ευέλικτος ρυθμός - Προσαρμόστε το στις ανάγκες σας",
+      en: "Flexible pacing – adapt it to your needs",
+    } as LangString,
+    includesTitle: {
+      el: "Τι περιλαμβάνεται",
+      en: "What’s included",
+    } as LangString,
+    includesItem1: {
+      el: "Έτοιμα σχέδια μαθημάτων",
+      en: "Ready-to-use lesson plans",
+    } as LangString,
+    includesItem2: {
+      el: "Οδηγίες βήμα προς βήμα",
+      en: "Step-by-step guidance",
+    } as LangString,
+    includesItem3: {
+      el: "Δραστηριότητες και challenges",
+      en: "Activities and challenges",
+    } as LangString,
+    includesItem4: {
+      el: "Υλικό παρουσίασης",
+      en: "Presentation materials",
+    } as LangString,
+    includesItem5: {
+      el: "Υποστήριξη και tips",
+      en: "Support and tips",
+    } as LangString,
     philosophyTitle: {
       el: "Παιδαγωγική Φιλοσοφία",
       en: "Pedagogical philosophy",
+    } as LangString,
+    philosophyIntro: {
+      el: "Η προσέγγισή μας βασίζεται σε τρεις πυλώνες:",
+      en: "Our approach is built on three pillars:",
+    } as LangString,
+    philosophyPillar1Title: {
+      el: "Βιωματική Μάθηση",
+      en: "Experiential learning",
+    } as LangString,
+    philosophyPillar1Description: {
+      el: "Τα παιδιά μαθαίνουν κάνοντας, όχι ακούγοντας",
+      en: "Students learn by doing, not just by listening",
+    } as LangString,
+    philosophyPillar2Title: {
+      el: "Ομαδική Εργασία",
+      en: "Teamwork",
+    } as LangString,
+    philosophyPillar2Description: {
+      el: "Συνεργασία και ανταλλαγή ιδεών",
+      en: "Collaboration and idea sharing",
+    } as LangString,
+    philosophyPillar3Title: {
+      el: "Δημιουργικότητα",
+      en: "Creativity",
+    } as LangString,
+    philosophyPillar3Description: {
+      el: "Ενθάρρυνση της ελεύθερης σκέψης",
+      en: "Encouraging free thinking",
     } as LangString,
     faqTitle: {
       el: "Συχνές Ερωτήσεις",
       en: "Frequently asked questions",
     } as LangString,
+    faqItem1Question: {
+      el: "Πόσος χρόνος χρειάζεται ανά εβδομάδα;",
+      en: "How much time is needed per week?",
+    } as LangString,
+    faqItem1Answer: {
+      el: "Συνιστούμε 2-3 ώρες την εβδομάδα, αλλά μπορείτε να προσαρμόσετε το πρόγραμμα ανάλογα με το ωρολόγιό σας. Κάθε μάθημα είναι σχεδιασμένο να διαρκεί 45-60 λεπτά.",
+      en: "We recommend 2–3 hours per week, but you can adapt the schedule to your timetable. Each lesson is designed to last 45–60 minutes.",
+    } as LangString,
+    faqItem2Question: {
+      el: "Χρειάζομαι εμπειρία στην επιχειρηματικότητα;",
+      en: "Do I need experience in entrepreneurship?",
+    } as LangString,
+    faqItem2Answer: {
+      el: "Όχι! Το πρόγραμμα είναι σχεδιασμένο για εκπαιδευτικούς όλων των επιπέδων. Κάθε μάθημα περιλαμβάνει αναλυτικές οδηγίες και υποστήριξη.",
+      en: "No! The program is designed for teachers of all levels. Each lesson includes detailed guidance and support.",
+    } as LangString,
+    faqItem3Question: {
+      el: "Για ποιες ηλικίες είναι κατάλληλο;",
+      en: "What ages is it suitable for?",
+    } as LangString,
+    faqItem3Answer: {
+      el: "Το πρόγραμμα είναι σχεδιασμένο για μαθητές δημοτικού (8-12 ετών), αλλά μπορεί να προσαρμοστεί και για μεγαλύτερες ηλικίες.",
+      en: "The program is designed for primary students (8–12 years old), but it can be adapted for older ages as well.",
+    } as LangString,
+    faqItem4Question: {
+      el: "Τι υλικά χρειάζομαι;",
+      en: "What materials do I need?",
+    } as LangString,
+    faqItem4Answer: {
+      el: "Τα περισσότερα μαθήματα χρειάζονται μόνο βασικά υλικά (χαρτί, μαρκαδόροι, post-its). Συγκεκριμένα υλικά αναφέρονται σε κάθε δραστηριότητα.",
+      en: "Most lessons only need basic materials (paper, markers, post-its). Specific materials are listed in each activity.",
+    } as LangString,
+    faqItem5Question: {
+      el: "Μπορώ να προσαρμόσω το περιεχόμενο;",
+      en: "Can I adapt the content?",
+    } as LangString,
+    faqItem5Answer: {
+      el: "Απολύτως! Ενθαρρύνουμε την προσαρμογή του περιεχομένου στις ανάγκες και τα ενδιαφέροντα της τάξης σας.",
+      en: "Absolutely! We encourage you to adapt the content to your class needs and interests.",
+    } as LangString,
     globalTip: {
       el: "Η καλύτερη συμβουλή για νέους εκπαιδευτικούς: Ξεκινήστε απλά! Δεν χρειάζεται να είστε expert - το πάθος και η περιέργεια είναι αρκετά.",
       en: "Top tip for new teachers: start simple! You don't need to be an expert – passion and curiosity are enough.",
+    } as LangString,
+    classGuideTitle: {
+      el: "Οδηγός Τάξης",
+      en: "Class guide",
+    } as LangString,
+    classGuideBeforeTitle: {
+      el: "Πριν το μάθημα",
+      en: "Before the lesson",
+    } as LangString,
+    classGuideBeforeText: {
+      el: "Διαβάστε το μάθημα και προετοιμάστε τα υλικά",
+      en: "Read through the lesson and prepare materials",
+    } as LangString,
+    classGuideDuringTitle: {
+      el: "Κατά τη διάρκεια",
+      en: "During the lesson",
+    } as LangString,
+    classGuideDuringText: {
+      el: "Ακολουθήστε τις οδηγίες και προσαρμόστε αν χρειάζεται",
+      en: "Follow the guidance and adapt where needed",
+    } as LangString,
+    classGuideAfterTitle: {
+      el: "Μετά το μάθημα",
+      en: "After the lesson",
+    } as LangString,
+    classGuideAfterText: {
+      el: "Κάντε αναλογισμό με τους μαθητές",
+      en: "Reflect together with your students",
+    } as LangString,
+    helpTitle: {
+      el: "Χρειάζεστε βοήθεια;",
+      en: "Need help?",
+    } as LangString,
+    helpIntro: {
+      el: "Επικοινωνήστε μαζί μας για υποστήριξη και συμβουλές:",
+      en: "Get in touch with us for support and guidance:",
+    } as LangString,
+    helpEmail: {
+      el: "📧 support@kidsinbusiness.gr",
+      en: "📧 support@kidsinbusiness.gr",
+    } as LangString,
+    helpCommunity: {
+      el: "💬 Community Forum",
+      en: "💬 Community Forum",
+    } as LangString,
+    helpLibrary: {
+      el: "📚 Βιβλιοθήκη Πόρων",
+      en: "📚 Resource Library",
     } as LangString,
   },
   chapters: {
@@ -206,6 +366,30 @@ export const translations = {
     globalTip: {
       el: "Κάθε chapter είναι σχεδιασμένο να διαρκεί 1-2 εβδομάδες. Προσαρμόστε το ρυθμό ανάλογα με τις ανάγκες της τάξης σας!",
       en: "Each chapter is designed to last 1–2 weeks. Adjust the pace to your class needs!",
+    } as LangString,
+    lessonsLabel: {
+      el: "μαθήματα",
+      en: "lessons",
+    } as LangString,
+    progressCompleteLabel: {
+      el: "ολοκληρωμένο",
+      en: "complete",
+    } as LangString,
+    howToUseTitle: {
+      el: "Πώς να χρησιμοποιήσετε τα Chapters",
+      en: "How to use the chapters",
+    } as LangString,
+    howToUseStep1: {
+      el: "Ξεκινήστε με μια εισαγωγική συζήτηση",
+      en: "Start with an introductory discussion",
+    } as LangString,
+    howToUseStep2: {
+      el: "Ακολουθήστε τα μαθήματα με τη σειρά",
+      en: "Follow the lessons in order",
+    } as LangString,
+    howToUseStep3: {
+      el: "Ολοκληρώστε με τις δραστηριότητες",
+      en: "Finish with the activities",
     } as LangString,
   },
   community: {
