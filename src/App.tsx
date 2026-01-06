@@ -12,6 +12,7 @@ import Community from "./pages/Community";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import FounderDashboard from "./pages/FounderDashboard";
+import TeacherPortal from "./pages/TeacherPortal";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/founder" element={<FounderDashboard />} />
+          <Route path="/teacher-portal" element={<TeacherPortal />} />
           <Route path="/chapters" element={<Chapters />} />
           <Route path="/chapter/:id" element={<ChapterDetail />} />
           <Route path="/actions" element={<Actions />} />
@@ -39,4 +41,5 @@ const App = () => (
 );
 
 export default App;
+
 
