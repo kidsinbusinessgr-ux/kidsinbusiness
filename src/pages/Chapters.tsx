@@ -122,13 +122,12 @@ const Chapters = () => {
                     <div className="space-y-4">
                       <div className="flex gap-4 text-sm text-muted-foreground">
                         <Badge variant="secondary">
-                          {chapter.lessons} {language === "el" ? "μαθήματα" : "lessons"}
+                          {chapter.lessons} {translations.chapters.lessonsLabel[language]}
                         </Badge>
                         <span>
                           ⏱️ {chapter.duration}
                         </span>
                       </div>
-                      
                       {chapter.progress > 0 && (
                         <div>
                           <div className="w-full bg-muted rounded-full h-2 mb-2">
@@ -138,7 +137,7 @@ const Chapters = () => {
                             ></div>
                           </div>
                           <p className="text-sm text-muted-foreground">
-                            {chapter.progress}% {language === "el" ? "ολοκληρωμένο" : "complete"}
+                            {chapter.progress}% {translations.chapters.progressCompleteLabel[language]}
                           </p>
                         </div>
                       )}
@@ -167,7 +166,9 @@ const Chapters = () => {
             
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Πώς να χρησιμοποιήσετε τα Chapters</CardTitle>
+                <CardTitle className="text-lg">
+                  {translations.chapters.howToUseTitle[language]}
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 text-sm">
                 <div className="flex gap-3">
@@ -175,7 +176,7 @@ const Chapters = () => {
                     1
                   </div>
                   <p className="text-muted-foreground">
-                    Ξεκινήστε με μια εισαγωγική συζήτηση
+                    {translations.chapters.howToUseStep1[language]}
                   </p>
                 </div>
                 <div className="flex gap-3">
@@ -183,7 +184,7 @@ const Chapters = () => {
                     2
                   </div>
                   <p className="text-muted-foreground">
-                    Ακολουθήστε τα μαθήματα με τη σειρά
+                    {translations.chapters.howToUseStep2[language]}
                   </p>
                 </div>
                 <div className="flex gap-3">
@@ -191,7 +192,7 @@ const Chapters = () => {
                     3
                   </div>
                   <p className="text-muted-foreground">
-                    Ολοκληρώστε με τις δραστηριότητες
+                    {translations.chapters.howToUseStep3[language]}
                   </p>
                 </div>
               </CardContent>
