@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Zap, Target, Rocket, Clock, Users, CheckCircle2, Circle, Edit2, Trash2 } from "lucide-react";
+import { Zap, Target, Rocket, Clock, Users, CheckCircle2, Circle, Edit2, Trash2, Lock } from "lucide-react";
 import confetti from "canvas-confetti";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -31,6 +31,7 @@ import { normalizeNullable } from "@/lib/activityValidation";
 import { ActivityEditForm, ActivityEditFormValues, ActivityCategory } from "@/components/actions/ActivityEditForm";
 import { useLanguage } from "@/context/LanguageContext";
 import { translations } from "@/i18n/translations";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 type Activity = {
   id: string;
@@ -821,7 +822,7 @@ const Actions = () => {
                                 <Circle className="w-6 h-6 text-muted-foreground hover:text-primary transition-colors" />
                               )}
                             </button>
-                            {canModify && (
+                            {canModify ? (
                               <div className="flex items-center gap-1 text-xs text-muted-foreground">
                                 <Button
                                   variant="ghost"
@@ -832,6 +833,25 @@ const Actions = () => {
                                   <Edit2 className="w-3 h-3" />
                                 </Button>
                               </div>
+                            ) : (
+                              isAuthenticated &&
+                              user &&
+                              challenge.creatorId && (
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                        <Lock className="w-3 h-3" />
+                                      </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      {language === "el"
+                                        ? "Μόνο ο/η δημιουργός μπορεί να επεξεργαστεί αυτή τη δράση."
+                                        : "Only the creator can edit this activity."}
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              )
                             )}
                           </div>
                         </div>
@@ -934,7 +954,7 @@ const Actions = () => {
                                 <Circle className="w-6 h-6 text-muted-foreground hover:text-primary transition-colors" />
                               )}
                             </button>
-                            {canModify && (
+                            {canModify ? (
                               <div className="flex items-center gap-1 text-xs text-muted-foreground">
                                 <Button
                                   variant="ghost"
@@ -976,6 +996,25 @@ const Actions = () => {
                                   </AlertDialogContent>
                                 </AlertDialog>
                               </div>
+                            ) : (
+                              isAuthenticated &&
+                              user &&
+                              activity.creatorId && (
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                        <Lock className="w-3 h-3" />
+                                      </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      {language === "el"
+                                        ? "Μόνο ο/η δημιουργός μπορεί να επεξεργαστεί ή να διαγράψει αυτή τη δραστηριότητα."
+                                        : "Only the creator can edit or delete this activity."}
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              )
                             )}
                           </div>
                         </div>
@@ -1081,7 +1120,7 @@ const Actions = () => {
                                 <Circle className="w-6 h-6 text-muted-foreground hover:text-primary transition-colors" />
                               )}
                             </button>
-                            {canModify && (
+                            {canModify ? (
                               <div className="flex items-center gap-1 text-xs text-muted-foreground">
                                 <Button
                                   variant="ghost"
@@ -1123,6 +1162,25 @@ const Actions = () => {
                                   </AlertDialogContent>
                                 </AlertDialog>
                               </div>
+                            ) : (
+                              isAuthenticated &&
+                              user &&
+                              project.creatorId && (
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                        <Lock className="w-3 h-3" />
+                                      </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      {language === "el"
+                                        ? "Μόνο ο/η δημιουργός μπορεί να επεξεργαστεί ή να διαγράψει αυτό το project."
+                                        : "Only the creator can edit or delete this project."}
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              )
                             )}
                           </div>
                         </div>
