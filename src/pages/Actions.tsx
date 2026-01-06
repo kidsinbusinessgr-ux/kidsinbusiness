@@ -856,7 +856,7 @@ const Actions = () => {
                       }`}
                     >
                       <CardHeader className="pb-3 sm:pb-4">
-                        <div className="flex items-start justify-between gap-3 sm:gap-4">
+                        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                           <div className="flex-1 min-w-0">
                             <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
                               <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
@@ -1003,7 +1003,7 @@ const Actions = () => {
                       }`}
                     >
                       <CardHeader className="pb-3 sm:pb-4">
-                        <div className="flex items-start justify-between gap-3 sm:gap-4">
+                        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                           <div className="flex-1 min-w-0">
                             <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
                               <Target className="w-4 h-4 sm:w-5 sm:h-5 text-secondary" />
@@ -1182,7 +1182,7 @@ const Actions = () => {
                       }`}
                     >
                       <CardHeader className="pb-3 sm:pb-4">
-                        <div className="flex items-start justify-between gap-3 sm:gap-4">
+                        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                           <div className="flex-1 min-w-0">
                             <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
                               <Rocket className="w-4 h-4 sm:w-5 sm:h-5 text-accent" />
