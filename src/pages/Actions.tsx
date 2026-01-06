@@ -863,7 +863,7 @@ const Actions = () => {
                               {challenge.chapter && (
                                 <Badge
                                   variant="secondary"
-                                  className="text-[10px] sm:text-xs font-medium px-2 py-0.5"
+                                  className="text-[10px] sm:text-xs font-medium px-2 py-0.5 text-muted-foreground"
                                 >
                                   {challenge.chapter}
                                 </Badge>
@@ -871,25 +871,25 @@ const Actions = () => {
                               {challenge.slug === "mini-4" && (
                                 <Badge
                                   variant="outline"
-                                  className="text-[9px] sm:text-[10px] uppercase tracking-wide px-2 py-0.5"
+                                  className="text-[9px] sm:text-[10px] uppercase tracking-wide px-2 py-0.5 text-muted-foreground"
                                 >
                                   Χρηματοοικονομικός Γραμματισμός
                                 </Badge>
                               )}
                               {isCompleted(challenge.id) && (
-                                <Badge className="bg-primary/10 text-primary border-primary/40 text-[10px] sm:text-xs font-medium">
+                                <Badge className="bg-primary/10 text-primary border-primary/50 text-[10px] sm:text-xs font-semibold uppercase tracking-wide">
                                   <CheckCircle2 className="w-3 h-3 mr-1" />
                                   Ολοκληρώθηκε
                                 </Badge>
                               )}
                             </div>
-                            <CardTitle className="text-base sm:text-lg font-semibold leading-snug truncate">
+                            <CardTitle className="text-sm sm:text-base font-semibold leading-snug tracking-tight line-clamp-2">
                               {challenge.title}
                             </CardTitle>
                             {editingId === challenge.id
                               ? null
                               : challenge.description && (
-                                  <CardDescription className="mt-1.5 text-sm sm:text-base line-clamp-2">
+                                  <CardDescription className="mt-1 text-xs sm:text-sm text-muted-foreground line-clamp-3">
                                     {challenge.description}
                                   </CardDescription>
                                 )}
@@ -1010,7 +1010,7 @@ const Actions = () => {
                               {activity.chapter && (
                                 <Badge
                                   variant="secondary"
-                                  className="text-[10px] sm:text-xs font-medium px-2 py-0.5"
+                                  className="text-[10px] sm:text-xs font-medium px-2 py-0.5 text-muted-foreground"
                                 >
                                   {activity.chapter}
                                 </Badge>
@@ -1018,25 +1018,25 @@ const Actions = () => {
                               {activity.slug === "class-3" && (
                                 <Badge
                                   variant="outline"
-                                  className="text-[9px] sm:text-[10px] uppercase tracking-wide px-2 py-0.5"
+                                  className="text-[9px] sm:text-[10px] uppercase tracking-wide px-2 py-0.5 text-muted-foreground"
                                 >
                                   Χρηματοοικονομικός Γραμματισμός
                                 </Badge>
                               )}
                               {isCompleted(activity.id) && (
-                                <Badge className="bg-primary/10 text-primary border-primary/40 text-[10px] sm:text-xs font-medium">
+                                <Badge className="bg-primary/10 text-primary border-primary/50 text-[10px] sm:text-xs font-semibold uppercase tracking-wide">
                                   <CheckCircle2 className="w-3 h-3 mr-1" />
                                   Ολοκληρώθηκε
                                 </Badge>
                               )}
                             </div>
-                            <CardTitle className="text-base sm:text-lg font-semibold leading-snug truncate">
+                            <CardTitle className="text-sm sm:text-base font-semibold leading-snug tracking-tight line-clamp-2">
                               {activity.title}
                             </CardTitle>
                             {editingId === activity.id
                               ? null
                               : activity.description && (
-                                  <CardDescription className="mt-1.5 text-sm sm:text-base line-clamp-2">
+                                  <CardDescription className="mt-1 text-xs sm:text-sm text-muted-foreground line-clamp-3">
                                     {activity.description}
                                   </CardDescription>
                                 )}
@@ -1189,7 +1189,7 @@ const Actions = () => {
                               {project.chapter && (
                                 <Badge
                                   variant="secondary"
-                                  className="text-[10px] sm:text-xs font-medium px-2 py-0.5"
+                                  className="text-[10px] sm:text-xs font-medium px-2 py-0.5 text-muted-foreground"
                                 >
                                   {project.chapter}
                                 </Badge>
@@ -1197,23 +1197,23 @@ const Actions = () => {
                               {project.slug === "project-3" && (
                                 <Badge
                                   variant="outline"
-                                  className="text-[9px] sm:text-[10px] uppercase tracking-wide px-2 py-0.5"
+                                  className="text-[9px] sm:text-[10px] uppercase tracking-wide px-2 py-0.5 text-muted-foreground"
                                 >
                                   Χρηματοοικονομικός Γραμματισμός
                                 </Badge>
                               )}
                               {isCompleted(project.id) && (
-                                <Badge className="bg-primary/10 text-primary border-primary/40 text-[10px] sm:text-xs font-medium">
+                                <Badge className="bg-primary/10 text-primary border-primary/50 text-[10px] sm:text-xs font-semibold uppercase tracking-wide">
                                   <CheckCircle2 className="w-3 h-3 mr-1" />
                                   Ολοκληρώθηκε
                                 </Badge>
                               )}
                             </div>
-                            <CardTitle className="text-base sm:text-lg font-semibold leading-snug truncate">
+                            <CardTitle className="text-sm sm:text-base font-semibold leading-snug tracking-tight line-clamp-2">
                               {project.title}
                             </CardTitle>
                             {project.description && (
-                              <CardDescription className="mt-1.5 text-sm sm:text-base line-clamp-2">
+                              <CardDescription className="mt-1 text-xs sm:text-sm text-muted-foreground line-clamp-3">
                                 {project.description}
                               </CardDescription>
                             )}
