@@ -547,6 +547,35 @@ const Actions = () => {
   const visibleClassOwned = isAuthenticated && user ? visibleClass.filter((a) => a.creatorId === user.id).length : 0;
   const visibleProjectsOwned = isAuthenticated && user ? visibleProjects.filter((a) => a.creatorId === user.id).length : 0;
 
+  const getCurrentSummary = () => {
+    if (activeTab === "mini") {
+      return {
+        label: language === "el" ? "Mini Challenges" : "Mini challenges",
+        total: visibleMini.length,
+        completed: visibleMiniCompleted,
+        owned: isAuthenticated && user ? visibleMiniOwned : null,
+      };
+    }
+
+    if (activeTab === "class") {
+      return {
+        label: language === "el" ? "Δραστηριότητες Τάξης" : "Class activities",
+        total: visibleClass.length,
+        completed: visibleClassCompleted,
+        owned: isAuthenticated && user ? visibleClassOwned : null,
+      };
+    }
+
+    return {
+      label: "Projects",
+      total: visibleProjects.length,
+      completed: visibleProjectsCompleted,
+      owned: isAuthenticated && user ? visibleProjectsOwned : null,
+    };
+  };
+
+  const { label: currentLabel, total: currentTotal, completed: currentCompleted, owned: currentOwned } =
+    getCurrentSummary();
 
   const stats = [
     {
@@ -1287,12 +1316,33 @@ const Actions = () => {
           <div className="space-y-6">
             <GlobalTip tip="Οι Mini Challenges είναι ιδανικά για warm-up ή για γεμίσματα χρόνου. Τα Projects απαιτούν προγραμματισμό και συνέχεια." />
 
-            {/* Statistics Card */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Στατιστικά Προόδου</CardTitle>
+                <CardTitle className="text-lg">
+                  {language === "el" ? "Επισκόπηση Δράσεων" : "Activity insights"}
+                </CardTitle>
+                <CardDescription className="text-sm text-muted-foreground">
+                  {language === "el"
+                    ? "Τα παρακάτω στατιστικά αφορούν τις δράσεις που βλέπετε στην επιλεγμένη καρτέλα."
+                    : "Stats below reflect the activities currently visible in the selected tab."}
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
+                <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-card/70 px-3 py-2 text-xs md:text-sm text-muted-foreground">
+                  <span className="font-medium text-foreground">{currentLabel}</span>
+                  <span>
+                    {language === "el" ? "Σύνολο:" : "Total:"} {currentTotal}
+                  </span>
+                  <span>
+                    {language === "el" ? "Ολοκληρωμένες:" : "Completed:"} {currentCompleted}
+                  </span>
+                  {currentOwned !== null && (
+                    <span>
+                      {language === "el" ? "Δικές μου:" : "Owned by me:"} {currentOwned}
+                    </span>
+                  )}
+                </div>
+
                 {stats.map((stat) => {
                   const Icon = stat.icon;
                   return (
