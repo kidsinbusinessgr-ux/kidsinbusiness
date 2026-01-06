@@ -29,6 +29,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { miniChallenges as seedMini, classActivities as seedClass, projects as seedProjects } from "@/config/actionsConfig";
 import { normalizeNullable } from "@/lib/activityValidation";
 import { ActivityEditForm, ActivityEditFormValues, ActivityCategory } from "@/components/actions/ActivityEditForm";
+import { useLanguage } from "@/context/LanguageContext";
 
 type Activity = {
   id: string;
@@ -46,6 +47,7 @@ type Activity = {
 
 const Actions = () => {
   const { classes, loading, isAuthenticated } = useAuthAndClasses();
+  const { language } = useLanguage();
   const [currentClassId, setCurrentClassId] = useState<string>("");
   const [completedChallenges, setCompletedChallenges] = useState<Set<string>>(new Set());
   const [statusFilter, setStatusFilter] = useState<"all" | "completed" | "incomplete">("all");
@@ -606,20 +608,30 @@ const Actions = () => {
       <Navigation />
       
       <main className="container mx-auto px-4 py-8">
-        <Breadcrumbs items={[{ label: "Δράσεις" }]} />
+        <Breadcrumbs
+          items={[
+            {
+              label: language === "el" ? "Δράσεις" : "Actions",
+            },
+          ]}
+        />
         
         <div className="mb-8">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-2">
             <div>
-              <h1 className="text-4xl font-bold">Δράσεις & Challenges</h1>
+              <h1 className="text-4xl font-bold">
+                {language === "el" ? "Δράσεις & Challenges" : "Actions & Challenges"}
+              </h1>
               <p className="text-muted-foreground text-lg">
-                Πρακτικές δραστηριότητες για εφαρμογή της γνώσης
+                {language === "el"
+                  ? "Πρακτικές δραστηριότητες για εφαρμογή της γνώσης"
+                  : "Hands-on activities to put learning into practice"}
               </p>
             </div>
             <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:justify-end">
               <div className="flex items-center gap-3">
                 <Badge variant="secondary" className="text-base px-4 py-2">
-                  {completedCount}/{totalChallenges} ολοκληρώθηκε
+                  {completedCount}/{totalChallenges} {language === "el" ? "ολοκληρώθηκε" : "completed"}
                 </Badge>
                 <Badge variant="outline" className="text-base px-4 py-2">
                   {completionPercentage}%
@@ -628,20 +640,29 @@ const Actions = () => {
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button variant="ghost" size="sm" className="self-end text-xs sm:text-sm">
-                    Επαναφορά προόδου
+                    {language === "el" ? "Επαναφορά προόδου" : "Reset progress"}
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Επαναφορά όλων των challenges;</AlertDialogTitle>
+                    <AlertDialogTitle>
+                      {language === "el"
+                        ? "Επαναφορά όλων των challenges;"
+                        : "Reset all challenges?"}
+                    </AlertDialogTitle>
                     <AlertDialogDescription>
-                      Αυτό θα διαγράψει όλη την έως τώρα πρόοδο (συμπεριλαμβανομένων badges και στατιστικών).
-                      Η ενέργεια δεν μπορεί να αναιρεθεί.
+                      {language === "el"
+                        ? "Αυτό θα διαγράψει όλη την έως τώρα πρόοδο (συμπεριλαμβανομένων badges και στατιστικών). Η ενέργεια δεν μπορεί να αναιρεθεί."
+                        : "This will clear all current progress (including badges and stats). This action cannot be undone."}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Άκυρο</AlertDialogCancel>
-                    <AlertDialogAction onClick={resetProgress}>Ναι, επαναφορά</AlertDialogAction>
+                    <AlertDialogCancel>
+                      {language === "el" ? "Άκυρο" : "Cancel"}
+                    </AlertDialogCancel>
+                    <AlertDialogAction onClick={resetProgress}>
+                      {language === "el" ? "Ναι, επαναφορά" : "Yes, reset"}
+                    </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
@@ -651,8 +672,13 @@ const Actions = () => {
           {/* Progress Bar */}
           <div className="space-y-2 mt-2">
             <div className="flex items-center justify-between text-sm">
-              <span className="font-medium text-foreground">Συνολική Πρόοδος</span>
-              <span className="text-muted-foreground">{completedCount} από {totalChallenges} δράσεις</span>
+              <span className="font-medium text-foreground">
+                {language === "el" ? "Συνολική Πρόοδος" : "Overall progress"}
+              </span>
+              <span className="text-muted-foreground">
+                {completedCount} {language === "el" ? "από" : "of"} {totalChallenges}{" "}
+                {language === "el" ? "δράσεις" : "activities"}
+              </span>
             </div>
             <Progress value={completionPercentage} className="h-3" />
           </div>
@@ -660,23 +686,27 @@ const Actions = () => {
           {/* Financial Literacy Legend */}
           <div className="mt-3 inline-flex items-start gap-2 rounded-lg border border-dashed border-primary/30 bg-primary/5 px-3 py-2 text-xs md:text-sm text-muted-foreground">
             <Badge variant="outline" className="text-[10px] uppercase tracking-wide mt-0.5">
-              Χρηματοοικονομικός Γραμματισμός
+              {language === "el" ? "Χρηματοοικονομικός Γραμματισμός" : "Financial Literacy"}
             </Badge>
             <span>
-              Το badge «Χρηματοοικονομικός Γραμματισμός» εμφανίζεται δίπλα στις δράσεις Budgeting Tool, Virtual Stock Market και Pricing Simulator που ανήκουν στο Chapter 6, ώστε τα παιδιά να αναγνωρίζουν δραστηριότητες χρηματοοικονομικού γραμματισμού.
+              {language === "el"
+                ? "Το badge «Χρηματοοικονομικός Γραμματισμός» εμφανίζεται δίπλα στις δράσεις Budgeting Tool, Virtual Stock Market και Pricing Simulator που ανήκουν στο Chapter 6, ώστε τα παιδιά να αναγνωρίζουν δραστηριότητες χρηματοοικονομικού γραμματισμού."
+                : "The ‘Financial Literacy’ badge appears next to the Budgeting Tool, Virtual Stock Market and Pricing Simulator activities in Chapter 6 so children can easily spot financial literacy activities."}
             </span>
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <Tabs defaultValue="mini" className="space-y-6">
-            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-              <TabsList className="grid w-full md:w-auto grid-cols-3">
-                <TabsTrigger value="mini">Mini Challenges</TabsTrigger>
-                <TabsTrigger value="class">Δραστηριότητες Τάξης</TabsTrigger>
-                <TabsTrigger value="projects">Projects</TabsTrigger>
-              </TabsList>
+          <div className="grid lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              <Tabs defaultValue="mini" className="space-y-6">
+                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                  <TabsList className="grid w-full md:w-auto grid-cols-3">
+                    <TabsTrigger value="mini">Mini Challenges</TabsTrigger>
+                    <TabsTrigger value="class">
+                      {language === "el" ? "Δραστηριότητες Τάξης" : "Class activities"}
+                    </TabsTrigger>
+                    <TabsTrigger value="projects">Projects</TabsTrigger>
+                  </TabsList>
 
               {isAuthenticated && (
                 <div className="flex flex-wrap gap-2 justify-end">
@@ -720,7 +750,7 @@ const Actions = () => {
                       className="rounded-full px-3 py-1 h-8"
                       onClick={() => setStatusFilter("all")}
                     >
-                      Όλα
+                      {language === "el" ? "Όλα" : "All"}
                     </Button>
                     <Button
                       type="button"
@@ -729,7 +759,7 @@ const Actions = () => {
                       className="rounded-full px-3 py-1 h-8"
                       onClick={() => setStatusFilter("completed")}
                     >
-                      Ολοκληρωμένα
+                      {language === "el" ? "Ολοκληρωμένα" : "Completed"}
                     </Button>
                     <Button
                       type="button"
@@ -738,7 +768,7 @@ const Actions = () => {
                       className="rounded-full px-3 py-1 h-8"
                       onClick={() => setStatusFilter("incomplete")}
                     >
-                      Μη ολοκληρωμένα
+                      {language === "el" ? "Μη ολοκληρωμένα" : "Incomplete"}
                     </Button>
                   </div>
                 </div>
