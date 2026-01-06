@@ -5,6 +5,7 @@ import Navigation from "@/components/Navigation";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import GlobalTip from "@/components/GlobalTip";
 import { useLanguage } from "@/context/LanguageContext";
+import { translations } from "@/i18n/translations";
 
 const Teachers = () => {
   const { language } = useLanguage();
@@ -17,19 +18,17 @@ const Teachers = () => {
         <Breadcrumbs
           items={[
             {
-              label: language === "el" ? "Για Εκπαιδευτικούς" : "For Teachers",
+              label: translations.teachers.breadcrumbLabel[language],
             },
           ]}
         />
         
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">
-            {language === "el" ? "Υποστήριξη Εκπαιδευτικών" : "Teacher Support"}
+            {translations.teachers.pageTitle[language]}
           </h1>
           <p className="text-muted-foreground text-lg">
-            {language === "el"
-              ? "Όλα όσα χρειάζεστε για να διδάξετε επιχειρηματικότητα με εμπιστοσύνη"
-              : "Everything you need to teach entrepreneurship with confidence"}
+            {translations.teachers.pageSubtitle[language]}
           </p>
         </div>
 
@@ -42,10 +41,10 @@ const Teachers = () => {
                   <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
                     <Compass className="w-5 h-5 text-primary-foreground" />
                   </div>
-                  <CardTitle>Πώς λειτουργεί το Kids in Business</CardTitle>
+                  <CardTitle>{translations.teachers.howItWorksTitle[language]}</CardTitle>
                 </div>
                 <CardDescription>
-                  Μια πλήρης πλατφόρμα για τη διδασκαλία επιχειρηματικότητας
+                  {translations.teachers.howItWorksDescription[language]}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -82,7 +81,7 @@ const Teachers = () => {
                   <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-secondary to-accent flex items-center justify-center">
                     <BookOpen className="w-5 h-5 text-primary-foreground" />
                   </div>
-                  <CardTitle>Παιδαγωγική Φιλοσοφία</CardTitle>
+                  <CardTitle>{translations.teachers.philosophyTitle[language]}</CardTitle>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -122,7 +121,7 @@ const Teachers = () => {
                   <div className="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center">
                     <HelpCircle className="w-5 h-5 text-accent-foreground" />
                   </div>
-                  <CardTitle>Συχνές Ερωτήσεις</CardTitle>
+                  <CardTitle>{translations.teachers.faqTitle[language]}</CardTitle>
                 </div>
               </CardHeader>
               <CardContent>
@@ -185,7 +184,7 @@ const Teachers = () => {
           </div>
 
           <div className="space-y-6">
-            <GlobalTip tip="Η καλύτερη συμβουλή για νέους εκπαιδευτικούς: Ξεκινήστε απλά! Δεν χρειάζεται να είστε expert - το πάθος και η περιέργεια είναι αρκετά." />
+            <GlobalTip tip={translations.teachers.globalTip[language]} />
 
             <Card className="bg-primary/5 border-primary/20">
               <CardHeader>

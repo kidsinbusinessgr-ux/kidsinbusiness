@@ -7,6 +7,7 @@ import Navigation from "@/components/Navigation";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import GlobalTip from "@/components/GlobalTip";
 import { useLanguage } from "@/context/LanguageContext";
+import { translations } from "@/i18n/translations";
 
 const chapters = [
   {
@@ -79,16 +80,14 @@ const Chapters = () => {
       <Navigation />
       
       <main className="container mx-auto px-4 py-8">
-        <Breadcrumbs items={[{ label: language === "el" ? "Μαθήματα" : "Chapters" }]} />
+        <Breadcrumbs items={[{ label: translations.chapters.breadcrumbLabel[language] }]} />
         
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">
-            {language === "el" ? "Μαθήματα Επιχειρηματικότητας" : "Entrepreneurship Lessons"}
+            {translations.chapters.pageTitle[language]}
           </h1>
           <p className="text-muted-foreground text-lg">
-            {language === "el"
-              ? "6 Chapters που θα μετατρέψουν τους μαθητές σε επιχειρηματικούς στοχαστές"
-              : "6 chapters that help students think like young entrepreneurs"}
+            {translations.chapters.pageSubtitle[language]}
           </p>
         </div>
 
@@ -164,7 +163,7 @@ const Chapters = () => {
           </div>
 
           <div className="space-y-6">
-            <GlobalTip tip="Κάθε chapter είναι σχεδιασμένο να διαρκεί 1-2 εβδομάδες. Προσαρμόστε το ρυθμό ανάλογα με τις ανάγκες της τάξης σας!" />
+            <GlobalTip tip={translations.chapters.globalTip[language]} />
             
             <Card>
               <CardHeader>
