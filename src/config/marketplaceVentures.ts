@@ -7,6 +7,7 @@ export type MarketplaceVenture = {
   industry: string;
   createdAt: string; // ISO date
   baseTrendingScore: number;
+  pitchVideoId?: string;
   canvas: {
     problem: string;
     solution: string;
@@ -25,8 +26,10 @@ export const MARKETPLACE_VENTURES: MarketplaceVenture[] = [
     industry: "Food & Beverage",
     createdAt: "2025-09-01T10:00:00.000Z",
     baseTrendingScore: 95,
+    pitchVideoId: "rokGy0huYEA",
     canvas: {
-      problem: "Students and parents walking home after school are hot, thirsty, and don’t have a fun, affordable drink option nearby.",
+      problem:
+        "Students and parents walking home after school are hot, thirsty, and don’t have a fun, affordable drink option nearby.",
       solution:
         "A colourful student-run lemonade stand just outside school selling cold, flavoured lemonade and small snacks.",
       revenueStreams:
@@ -43,6 +46,7 @@ export const MARKETPLACE_VENTURES: MarketplaceVenture[] = [
     industry: "EdTech / Tutoring",
     createdAt: "2025-09-03T15:30:00.000Z",
     baseTrendingScore: 88,
+    pitchVideoId: "dQw4w9WgXcQ",
     canvas: {
       problem:
         "Younger students often feel stuck with homework at home, while older students want leadership experience but don’t have an easy way to help.",
@@ -62,6 +66,7 @@ export const MARKETPLACE_VENTURES: MarketplaceVenture[] = [
     industry: "Environment & Community",
     createdAt: "2025-09-05T09:15:00.000Z",
     baseTrendingScore: 78,
+    pitchVideoId: "rokGy0huYEA",
     canvas: {
       problem:
         "Local parks and playgrounds are often messy and full of litter, making them less safe and enjoyable for families.",
