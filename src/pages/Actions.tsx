@@ -54,6 +54,7 @@ const Actions = () => {
   const [currentClassId, setCurrentClassId] = useState<string>("");
   const [completedChallenges, setCompletedChallenges] = useState<Set<string>>(new Set());
   const [statusFilter, setStatusFilter] = useState<"all" | "completed" | "incomplete">("all");
+  const [ownershipFilter, setOwnershipFilter] = useState<"all" | "mine">("all");
   const [activities, setActivities] = useState<Activity[]>([]);
   const [activitiesLoading, setActivitiesLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -293,8 +294,8 @@ const Actions = () => {
   };
 
   const isCompleted = (id: string) => completedChallenges.has(id);
-
-  const filterByStatus = <T extends { id: string }>(items: T[]): T[] => {
+ 
+  const filterByStatus = (items: Activity[]): Activity[] => {
     if (statusFilter === "completed") {
       return items.filter((item) => isCompleted(item.id));
     }
@@ -302,6 +303,16 @@ const Actions = () => {
       return items.filter((item) => !isCompleted(item.id));
     }
     return items;
+  };
+ 
+  const filterActivities = (items: Activity[]): Activity[] => {
+    let filtered = filterByStatus(items);
+ 
+    if (ownershipFilter === "mine" && isAuthenticated && user) {
+      filtered = filtered.filter((item) => item.creatorId === user.id);
+    }
+ 
+    return filtered;
   };
 
   const resetProgress = () => {
@@ -678,14 +689,22 @@ const Actions = () => {
             <Progress value={completionPercentage} className="h-3" />
           </div>
 
-          {/* Financial Literacy Legend */}
-          <div className="mt-3 inline-flex items-start gap-2 rounded-lg border border-dashed border-primary/30 bg-primary/5 px-3 py-2 text-xs md:text-sm text-muted-foreground">
-            <Badge variant="outline" className="text-[10px] uppercase tracking-wide mt-0.5">
-              {translations.actions.financialLiteracyBadge[language]}
-            </Badge>
-            <span>
-              {translations.actions.financialLiteracyDescription[language]}
-            </span>
+          {/* Ownership & financial literacy legend */}
+          <div className="mt-3 flex flex-col gap-2 text-xs md:text-sm text-muted-foreground">
+            <div className="inline-flex items-start gap-2 rounded-lg border border-dashed border-primary/30 bg-primary/5 px-3 py-2">
+              <Badge variant="outline" className="text-[10px] uppercase tracking-wide mt-0.5">
+                {translations.actions.financialLiteracyBadge[language]}
+              </Badge>
+              <span>{translations.actions.financialLiteracyDescription[language]}</span>
+            </div>
+            <div className="inline-flex items-center gap-2 rounded-lg border border-dashed border-border bg-card/80 px-3 py-2">
+              <Lock className="w-3 h-3 text-muted-foreground" />
+              <span>
+                {language === "el"
+                  ? "Οι κοινές δραστηριότητες είναι ορατές σε όλους, αλλά μόνο ο/η δημιουργός τους μπορεί να τις επεξεργαστεί ή να τις διαγράψει."
+                  : "Shared activities are visible to everyone, but only their creator can edit or delete them."}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -733,7 +752,7 @@ const Actions = () => {
                       </Button>
                     ))}
                   </div>
-
+ 
                   {/* Status Filter Buttons */}
                   <div className="inline-flex items-center gap-1 rounded-full border border-border bg-card/80 p-1 text-xs md:text-sm">
                     <Button
@@ -764,11 +783,35 @@ const Actions = () => {
                       {translations.actions.statusFilterIncomplete[language]}
                     </Button>
                   </div>
+ 
+                  {/* Ownership Filter Buttons */}
+                  {isAuthenticated && user && (
+                    <div className="inline-flex items-center gap-1 rounded-full border border-border bg-card/80 p-1 text-xs md:text-sm">
+                      <Button
+                        type="button"
+                        variant={ownershipFilter === "all" ? "default" : "ghost"}
+                        size="sm"
+                        className="rounded-full px-3 py-1 h-8"
+                        onClick={() => setOwnershipFilter("all")}
+                      >
+                        {language === "el" ? "Όλες οι δραστηριότητες" : "All activities"}
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={ownershipFilter === "mine" ? "default" : "ghost"}
+                        size="sm"
+                        className="rounded-full px-3 py-1 h-8"
+                        onClick={() => setOwnershipFilter("mine")}
+                      >
+                        {language === "el" ? "Οι δραστηριότητές μου" : "My activities"}
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
 
               <TabsContent value="mini" className="space-y-4">
-                {filterByStatus(miniChallenges).map((challenge) => {
+                {filterActivities(miniChallenges).map((challenge) => {
                   const canModify = isAuthenticated && user && challenge.creatorId === user.id;
                   return (
                     <Card
@@ -900,7 +943,7 @@ const Actions = () => {
               </TabsContent>
 
               <TabsContent value="class" className="space-y-4">
-                {filterByStatus(classActivities).map((activity) => {
+                {filterActivities(classActivities).map((activity) => {
                   const canModify = isAuthenticated && user && activity.creatorId === user.id;
                   return (
                     <Card
@@ -1068,7 +1111,7 @@ const Actions = () => {
               </TabsContent>
 
               <TabsContent value="projects" className="space-y-4">
-                {filterByStatus(projects).map((project) => {
+                {filterActivities(projects).map((project) => {
                   const canModify = isAuthenticated && user && project.creatorId === user.id;
                   return (
                     <Card
