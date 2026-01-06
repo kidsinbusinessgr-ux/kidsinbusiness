@@ -527,6 +527,11 @@ const Actions = () => {
   const classCompleted = classActivities.filter((c) => isCompleted(c.id)).length;
   const projectsCompleted = projects.filter((c) => isCompleted(c.id)).length;
 
+  const visibleMini = filterActivities(miniChallenges);
+  const visibleClass = filterActivities(classActivities);
+  const visibleProjects = filterActivities(projects);
+
+
   const stats = [
     {
       type: "Mini Challenges",
@@ -813,6 +818,22 @@ const Actions = () => {
               </div>
 
               <TabsContent value="mini" className="space-y-4">
+                <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-card/70 px-3 py-2 text-xs md:text-sm text-muted-foreground">
+                  <span className="font-medium text-foreground">
+                    {language === "el" ? "Mini Challenges:" : "Mini challenges:"}
+                  </span>
+                  <span>
+                    {language === "el" ? "Σύνολο:" : "Total:"} {visibleMini.length}
+                  </span>
+                  <span>
+                    {language === "el" ? "Ολοκληρωμένες:" : "Completed:"} {visibleMini.filter((a) => isCompleted(a.id)).length}
+                  </span>
+                  {isAuthenticated && user && (
+                    <span>
+                      {language === "el" ? "Δικές μου:" : "Owned by me:"} {visibleMini.filter((a) => a.creatorId === user.id).length}
+                    </span>
+                  )}
+                </div>
                 {filterActivities(miniChallenges).map((challenge) => {
                   const canModify = isAuthenticated && user && challenge.creatorId === user.id;
                   return (
@@ -945,6 +966,22 @@ const Actions = () => {
               </TabsContent>
 
               <TabsContent value="class" className="space-y-4">
+                <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-card/70 px-3 py-2 text-xs md:text-sm text-muted-foreground">
+                  <span className="font-medium text-foreground">
+                    {language === "el" ? "Δραστηριότητες τάξης:" : "Class activities:"}
+                  </span>
+                  <span>
+                    {language === "el" ? "Σύνολο:" : "Total:"} {visibleClass.length}
+                  </span>
+                  <span>
+                    {language === "el" ? "Ολοκληρωμένες:" : "Completed:"} {visibleClass.filter((a) => isCompleted(a.id)).length}
+                  </span>
+                  {isAuthenticated && user && (
+                    <span>
+                      {language === "el" ? "Δικές μου:" : "Owned by me:"} {visibleClass.filter((a) => a.creatorId === user.id).length}
+                    </span>
+                  )}
+                </div>
                 {filterActivities(classActivities).map((activity) => {
                   const canModify = isAuthenticated && user && activity.creatorId === user.id;
                   return (
@@ -1113,6 +1150,22 @@ const Actions = () => {
               </TabsContent>
 
               <TabsContent value="projects" className="space-y-4">
+                <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-card/70 px-3 py-2 text-xs md:text-sm text-muted-foreground">
+                  <span className="font-medium text-foreground">
+                    {language === "el" ? "Projects:" : "Projects:"}
+                  </span>
+                  <span>
+                    {language === "el" ? "Σύνολο:" : "Total:"} {visibleProjects.length}
+                  </span>
+                  <span>
+                    {language === "el" ? "Ολοκληρωμένα:" : "Completed:"} {visibleProjects.filter((a) => isCompleted(a.id)).length}
+                  </span>
+                  {isAuthenticated && user && (
+                    <span>
+                      {language === "el" ? "Δικά μου:" : "Owned by me:"} {visibleProjects.filter((a) => a.creatorId === user.id).length}
+                    </span>
+                  )}
+                </div>
                 {filterActivities(projects).map((project) => {
                   const canModify = isAuthenticated && user && project.creatorId === user.id;
                   return (
