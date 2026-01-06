@@ -10,6 +10,7 @@ import {
 import { useState } from "react";
 import logo from "@/assets/kids-in-business-logo.png";
 import { useLanguage } from "@/context/LanguageContext";
+import { translations } from "@/i18n/translations";
 
 const Navigation = () => {
   const location = useLocation();

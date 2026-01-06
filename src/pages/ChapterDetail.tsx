@@ -493,9 +493,13 @@ const ChapterDetail = () => {
             </section>
 
             <section id="what-is-entrepreneurship" className="scroll-mt-20">
-              <h3 className="text-xl font-semibold mb-2">{translations.chapterDetail.definitionForKids[language]}</h3>
+              <h3 className="text-xl font-semibold mb-2">
+                {translations.chapterDetail.forKidsLabel[language]}
+              </h3>
               <p className="mb-4">{content.definitionKids}</p>
-              <h3 className="text-xl font-semibold mb-2">{translations.chapterDetail.definitionForTeachers[language]}</h3>
+              <h3 className="text-xl font-semibold mb-2">
+                {translations.chapterDetail.forTeacherLabel[language]}
+              </h3>
               <p className="mb-4">{content.definitionTeacher}</p>
             </section>
 
@@ -548,7 +552,7 @@ const ChapterDetail = () => {
 
             <Card>
               <CardHeader>
-                <CardTitle>{translations.chapterDetail.sidebarWorksheetsTitle[language]}</CardTitle>
+                <CardTitle>{translations.chapterDetail.worksheetsTitle[language]}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <a
@@ -557,7 +561,7 @@ const ChapterDetail = () => {
                   rel="noopener noreferrer"
                   className="flex items-center justify-between rounded-md border border-border p-3 hover:bg-accent hover:text-accent-foreground"
                 >
-                  {translations.chapterDetail.budgetingWorksheet[language]}
+                  {translations.chapterDetail.budgetingWorksheetCaption[language]}
                   <ArrowRight className="h-4 w-4" />
                 </a>
                 <a
@@ -566,7 +570,7 @@ const ChapterDetail = () => {
                   rel="noopener noreferrer"
                   className="flex items-center justify-between rounded-md border border-border p-3 hover:bg-accent hover:text-accent-foreground"
                 >
-                  {translations.chapterDetail.pricingWorksheet[language]}
+                  {translations.chapterDetail.pricingWorksheetCaption[language]}
                   <ArrowRight className="h-4 w-4" />
                 </a>
               </CardContent>
@@ -574,18 +578,18 @@ const ChapterDetail = () => {
 
             <Card>
               <CardHeader>
-                <CardTitle>{translations.chapterDetail.sidebarAdditionalResourcesTitle[language]}</CardTitle>
+                <CardTitle>{translations.navigation.teachers[language]}</CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="list-disc list-inside space-y-2">
                   <li>
                     <Link to="/teachers" className="text-primary hover:underline">
-                      {translations.chapterDetail.teachersPageLink[language]}
+                      {translations.navigation.teachers[language]}
                     </Link>
                   </li>
                   <li>
                     <Link to="/chapters" className="text-primary hover:underline">
-                      {translations.chapterDetail.chaptersPageLink[language]}
+                      {translations.navigation.chapters[language]}
                     </Link>
                   </li>
                 </ul>
