@@ -579,7 +579,7 @@ const Dashboard = () => {
         <Card className="bg-gradient-to-br from-primary/10 via-secondary/5 to-accent/10 border-primary/20">
           <CardHeader>
             <CardTitle>Προτεινόμενο Chapter</CardTitle>
-            <CardDescription>Συνιστώμενο για την εβδομάδα</CardDescription>
+            <CardDescription>Προτεινόμενο για την εβδμάδα</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-4">
