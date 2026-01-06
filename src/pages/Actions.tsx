@@ -851,8 +851,8 @@ const Actions = () => {
                   return (
                     <Card
                       key={challenge.id}
-                      className={`group relative border border-border/80 hover:border-primary/50 hover:shadow-md transition-all duration-200 ${
-                        isCompleted(challenge.id) ? "bg-primary/5 border-primary/60" : "bg-card"
+                      className={`group relative border border-border/80 hover:border-primary/50 hover:shadow-md hover-scale active:scale-95 transition-all duration-200 ${
+                        isCompleted(challenge.id) ? "bg-primary/5 border-primary/60 animate-enter" : "bg-card"
                       }`}
                     >
                       <CardHeader className="pb-3 sm:pb-4">
@@ -998,8 +998,8 @@ const Actions = () => {
                   return (
                     <Card
                       key={activity.id}
-                      className={`group relative border border-border/80 hover:border-secondary/50 hover:shadow-md transition-all duration-200 ${
-                        isCompleted(activity.id) ? "bg-primary/5 border-primary/60" : "bg-card"
+                      className={`group relative border border-border/80 hover:border-secondary/50 hover:shadow-md hover-scale active:scale-95 transition-all duration-200 ${
+                        isCompleted(activity.id) ? "bg-primary/5 border-primary/60 animate-enter" : "bg-card"
                       }`}
                     >
                       <CardHeader className="pb-3 sm:pb-4">
@@ -1177,8 +1177,8 @@ const Actions = () => {
                   return (
                     <Card
                       key={project.id}
-                      className={`group relative border border-border/80 hover:border-accent/50 hover:shadow-md transition-all duration-200 ${
-                        isCompleted(project.id) ? "bg-primary/5 border-primary/60" : "bg-card"
+                      className={`group relative border border-border/80 hover:border-accent/50 hover:shadow-md hover-scale active:scale-95 transition-all duration-200 ${
+                        isCompleted(project.id) ? "bg-primary/5 border-primary/60 animate-enter" : "bg-card"
                       }`}
                     >
                       <CardHeader className="pb-3 sm:pb-4">
