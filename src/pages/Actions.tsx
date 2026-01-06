@@ -845,8 +845,6 @@ const Actions = () => {
                   )}
                 </div>
 
-              </div>
-
               <TabsContent value="mini" className="space-y-4">
                 {filterActivities(miniChallenges).map((challenge) => {
                   const canModify = isAuthenticated && user && challenge.creatorId === user.id;
