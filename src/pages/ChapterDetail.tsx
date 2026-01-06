@@ -513,22 +513,87 @@ const ChapterDetail = () => {
             </section>
 
             <section id="lesson-1-3" className="scroll-mt-20">
-              <h2 className="text-2xl font-bold mb-4">{content.activityTitle}</h2>
-              <ol className="list-decimal list-inside mb-4 space-y-2">
-                {content.activitySteps.map((step, idx) => (
-                  <li key={idx}>{step}</li>
-                ))}
-              </ol>
-              <p className="italic text-sm text-muted-foreground">{content.activityTeacherNote}</p>
+              <Card className="border border-border/80 bg-card/60 shadow-sm">
+                <CardHeader className="pb-2 sm:pb-3">
+                  <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <Badge
+                        variant="secondary"
+                        className="mb-1 text-[10px] sm:text-xs font-medium px-2 py-0.5 text-muted-foreground"
+                      >
+                        {language === "el" ? "Δραστηριότητα τάξης" : "Class activity"}
+                      </Badge>
+                      <CardTitle className="text-sm sm:text-base font-semibold leading-snug tracking-tight">
+                        {content.activityTitle}
+                      </CardTitle>
+                    </div>
+                    <div className="text-xs sm:text-sm text-muted-foreground mt-1 sm:mt-0">
+                      {language === "el"
+                        ? "Χρησιμοποιήστε τη δραστηριότητα ως κεντρικό μέρος του μαθήματος."
+                        : "Use this activity as the core of your lesson."}
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <ol className="list-decimal list-inside mb-4 space-y-2 text-sm sm:text-base">
+                    {content.activitySteps.map((step, idx) => (
+                      <li key={idx}>{step}</li>
+                    ))}
+                  </ol>
+                  <p className="italic text-xs sm:text-sm text-muted-foreground">
+                    {content.activityTeacherNote}
+                  </p>
+                  <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <p className="text-xs sm:text-sm text-muted-foreground">
+                      {language === "el"
+                        ? "Έτοιμοι να περάσετε στις πρακτικές Δράσεις;"
+                        : "Ready to move into practical challenges?"}
+                    </p>
+                    <Link to="/actions">
+                      <Button size="sm" className="w-full sm:w-auto">
+                        {language === "el" ? "Δείτε τις Δράσεις" : "View Challenges"}
+                      </Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
             </section>
-
+ 
             <section id="mini-challenge" className="scroll-mt-20">
-              <h2 className="text-2xl font-bold mb-4">{content.miniChallengeTitle}</h2>
-              <ol className="list-decimal list-inside mb-4 space-y-2">
-                {content.miniChallengeInstructions.map((inst, idx) => (
-                  <li key={idx}>{inst}</li>
-                ))}
-              </ol>
+              <Card className="border border-border/80 bg-card/60 shadow-sm">
+                <CardHeader className="pb-2 sm:pb-3">
+                  <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <Badge
+                        variant="outline"
+                        className="mb-1 text-[10px] sm:text-xs uppercase tracking-wide px-2 py-0.5 text-muted-foreground"
+                      >
+                        Mini Challenge
+                      </Badge>
+                      <CardTitle className="text-sm sm:text-base font-semibold leading-snug tracking-tight">
+                        {content.miniChallengeTitle}
+                      </CardTitle>
+                    </div>
+                    <div className="text-xs sm:text-sm text-muted-foreground mt-1 sm:mt-0">
+                      {language === "el"
+                        ? "Σύντομη πρόκληση για να κλείσετε το μάθημα με ενέργεια."
+                        : "Short challenge to end the lesson with energy."}
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <ol className="list-decimal list-inside mb-4 space-y-2 text-sm sm:text-base">
+                    {content.miniChallengeInstructions.map((inst, idx) => (
+                      <li key={idx}>{inst}</li>
+                    ))}
+                  </ol>
+                  <div className="mt-2 text-xs sm:text-sm text-muted-foreground">
+                    {language === "el"
+                      ? "Μπορείτε να χρησιμοποιήσετε αυτό το mini challenge ως γρήγορη δραστηριότητα στην αρχή ή στο τέλος της ώρας."
+                      : "You can use this mini challenge as a quick warm-up or closing activity."}
+                  </div>
+                </CardContent>
+              </Card>
             </section>
 
             <section id="closing-ritual" className="scroll-mt-20">
