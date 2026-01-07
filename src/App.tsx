@@ -17,6 +17,7 @@ import VentureBuilder from "./pages/VentureBuilder";
 import Marketplace from "./pages/Marketplace";
 import MarketplaceDetail from "./pages/MarketplaceDetail";
 import StudentReview from "./pages/StudentReview";
+import MentorReview from './components/MentorReview';
 
 const queryClient = new QueryClient();
 
