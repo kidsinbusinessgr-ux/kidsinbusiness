@@ -17,7 +17,7 @@ import VentureBuilder from "./pages/VentureBuilder";
 import Marketplace from "./pages/Marketplace";
 import MarketplaceDetail from "./pages/MarketplaceDetail";
 import StudentReview from "./pages/StudentReview";
-import MentorReview from './components/MentorReview';
+import MentorReview from './components/MentorReview'; // Our new tool
 
 const queryClient = new QueryClient();
 
@@ -33,7 +33,10 @@ const App = () => (
           <Route path="/venture-builder" element={<VentureBuilder />} />
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/marketplace/:id" element={<MarketplaceDetail />} />
-          <Route path="/teacher-portal" element={<TeacherPortal />} />
+          
+          {/* UPDATED ROUTE BELOW TO USE MENTOR REVIEW */}
+          <Route path="/teacher-portal" element={<MentorReview />} />
+          
           <Route path="/teacher/review/:studentId" element={<StudentReview />} />
           <Route path="/chapters" element={<Chapters />} />
           <Route path="/chapter/:id" element={<ChapterDetail />} />
@@ -41,7 +44,6 @@ const App = () => (
           <Route path="/teachers" element={<Teachers />} />
           <Route path="/community" element={<Community />} />
           <Route path="/auth" element={<Auth />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
