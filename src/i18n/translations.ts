@@ -42,11 +42,11 @@ export const translations = {
       en: "activities",
     } as LangString,
     financialLiteracyBadge: {
-      el: "Χρηματοοικονομικός Γραμματισμός",
+      el: "Χρηματοοικονομικός Αλφαβητισμός",
       en: "Financial Literacy",
     } as LangString,
     financialLiteracyDescription: {
-      el: "Το badge «Χρηματοοικονομικός Γραμματισμός» εμφανίζεται δίπλα στις δράσεις Budgeting Tool, Virtual Stock Market και Pricing Simulator που ανήκουν στο Chapter 6, ώστε τα παιδιά να αναγνωρίζουν δραστηριότητες χρηματοοικονομικού γραμματισμού.",
+      el: "Το badge «Χρηματοοικονομικός Αλφαβητισμός» εμφανίζεται δίπλα στις δράσεις Budgeting Tool, Virtual Stock Market και Pricing Simulator που ανήκουν στο Chapter 6, ώστε τα παιδιά να αναγνωρίζουν δραστηριότητες χρηματοοικονομικού αλφαβητισμού.",
       en: "The ‘Financial Literacy’ badge appears next to the Budgeting Tool, Virtual Stock Market and Pricing Simulator activities in Chapter 6 so children can easily spot financial literacy activities.",
     } as LangString,
     statusFilterAll: {
@@ -708,7 +708,7 @@ export const translations = {
       en: "See related activities",
     } as LangString,
     worksheetsTitle: {
-      el: "Οπτικά Worksheets – Χρηματοοικονομικός Γραμματισμός",
+      el: "Οπτικά Worksheets – Χρηματοοικονομικός Αλφαβητισμός",
       en: "Visual worksheets – Financial literacy",
     } as LangString,
     worksheetsIntro: {

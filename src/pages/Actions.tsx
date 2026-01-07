@@ -873,7 +873,7 @@ const Actions = () => {
                                   variant="outline"
                                   className="text-[9px] sm:text-[10px] uppercase tracking-wide px-2 py-0.5 text-muted-foreground"
                                 >
-                                  Χρηματοοικονομικός Γραμματισμός
+                                  Χρηματοοικονομικός Αλφαβητισμός
                                 </Badge>
                               )}
                               {isCompleted(challenge.id) && (
@@ -1020,7 +1020,7 @@ const Actions = () => {
                                   variant="outline"
                                   className="text-[9px] sm:text-[10px] uppercase tracking-wide px-2 py-0.5 text-muted-foreground"
                                 >
-                                  Χρηματοοικονομικός Γραμματισμός
+                                  Χρηματοοικονομικός Αλφαβητισμός
                                 </Badge>
                               )}
                               {isCompleted(activity.id) && (
@@ -1199,7 +1199,7 @@ const Actions = () => {
                                   variant="outline"
                                   className="text-[9px] sm:text-[10px] uppercase tracking-wide px-2 py-0.5 text-muted-foreground"
                                 >
-                                  Χρηματοοικονομικός Γραμματισμός
+                                  Χρηματοοικονομικός Αλφαβητισμός
                                 </Badge>
                               )}
                               {isCompleted(project.id) && (
