@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { BarChart3, AlertTriangle, Users, Settings, BookOpenCheck, Layers3, CheckCircle2 } from "lucide-react";
 import {
   SidebarProvider,
@@ -80,6 +81,7 @@ const statusVariant: Record<StudentStatus, "outline" | "default" | "secondary"> 
 };
 
 const TeacherPortal = () => {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
   const [feedback, setFeedback] = useState("");
@@ -291,7 +293,7 @@ const TeacherPortal = () => {
                               size="sm"
                               variant="outline"
                               className="text-xs"
-                              onClick={() => handleOpenDrawer(student.id)}
+                              onClick={() => navigate(`/teacher/review/${student.id}`)}
                             >
                               Review &amp; Approve
                             </Button>
