@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
-import { BookOpen, Zap, GraduationCap, Users, Menu, LogIn, LogOut } from "lucide-react";
+// 1. ADD "Coins" HERE:
+import { BookOpen, Zap, GraduationCap, Users, Menu, LogIn, LogOut, Coins } from "lucide-react";
 import { useAuthAndClasses } from "@/hooks/useAuthAndClasses";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,11 +19,18 @@ const Navigation = () => {
   const { isAuthenticated, signOut } = useAuthAndClasses();
   const { language, setLanguage } = useLanguage();
 
+  // 2. ADD YOUR NEW BUTTONS HERE:
   const navItems = [
     { path: "/chapters", label: translations.navigation.chapters[language], icon: BookOpen },
     { path: "/actions", label: translations.navigation.actions[language], icon: Zap },
     { path: "/teachers", label: translations.navigation.teachers[language], icon: GraduationCap },
     { path: "/community", label: translations.navigation.community[language], icon: Users },
+    
+    // The Teacher Portal (using your translation)
+    { path: "/teacher-portal", label: translations.navigation.teacherPortal[language], icon: GraduationCap },
+    
+    // The Student Wallet (Direct text for now so it works instantly)
+    { path: "/wallet", label: "My Wallet", icon: Coins }, 
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -136,8 +144,7 @@ const Navigation = () => {
                 <div className="flex items-center gap-2 mt-4">
                   <button
                     type="button"
-                    className={`px-3 py-1 rounded-full text-xs border ${language === "el" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
-                    onClick={() => setLanguage("el")}
+                    className={`px-3 py-1 rounded-full text-xs border ${language === "el" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}<br>                    onClick={() => setLanguage("el")}
                   >
                     GR
                   </button>
