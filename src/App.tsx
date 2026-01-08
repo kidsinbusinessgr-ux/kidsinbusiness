@@ -1,4 +1,5 @@
 import StudentWallet from './components/StudentWallet';
+import MentorReview from './components/MentorReview'; // ADDED THIS
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -13,7 +14,6 @@ import Community from "./pages/Community";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import FounderDashboard from "./pages/FounderDashboard";
-import TeacherPortal from "./pages/TeacherPortal";
 import VentureBuilder from "./pages/VentureBuilder";
 import Marketplace from "./pages/Marketplace";
 import MarketplaceDetail from "./pages/MarketplaceDetail";
@@ -28,14 +28,16 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/wallet" element={<StudentWallet />} />
           <Route path="/" element={<Dashboard />} />
+          <Route path="/wallet" element={<StudentWallet />} />
           <Route path="/founder" element={<FounderDashboard />} />
           <Route path="/venture-builder" element={<VentureBuilder />} />
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/marketplace/:id" element={<MarketplaceDetail />} />
-          {/* Teacher administration portal */}
-          <Route path="/teacher-portal" element={<TeacherPortal />} />
+          
+          {/* We point the path to our NEW MentorReview component */}
+          <Route path="/teacher-portal" element={<MentorReview />} />
+          
           <Route path="/teacher/review/:studentId" element={<StudentReview />} />
           <Route path="/chapters" element={<Chapters />} />
           <Route path="/chapter/:id" element={<ChapterDetail />} />
@@ -51,5 +53,3 @@ const App = () => (
 );
 
 export default App;
-
-
