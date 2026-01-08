@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { BarChart3, AlertTriangle, Users, Settings, BookOpenCheck, Layers3, CheckCircle2 } from "lucide-react";
 import {
@@ -85,6 +85,47 @@ const TeacherPortal = () => {
   const [search, setSearch] = useState("");
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
   const [feedback, setFeedback] = useState("");
+  const [reviewHistory, setReviewHistory] = useState<
+    {
+      studentId: string;
+      studentName: string;
+      ventureName: string;
+      lastSavedAt: string;
+    }[]
+  >([]);
+
+  useEffect(() => {
+    const entries: {
+      studentId: string;
+      studentName: string;
+      ventureName: string;
+      lastSavedAt: string;
+    }[] = [];
+
+    for (const student of mockStudents) {
+      const stored = localStorage.getItem(`review_final_${student.id}`);
+      if (stored) {
+        try {
+          const data = JSON.parse(stored) as { lastSavedAt?: string; status?: string };
+          if (data.status === "finalized" && data.lastSavedAt) {
+            entries.push({
+              studentId: student.id,
+              studentName: student.name,
+              ventureName: student.ventureName,
+              lastSavedAt: data.lastSavedAt,
+            });
+          }
+        } catch {
+          // ignore invalid entries
+        }
+      }
+    }
+
+    entries.sort(
+      (a, b) => new Date(b.lastSavedAt).getTime() - new Date(a.lastSavedAt).getTime(),
+    );
+    setReviewHistory(entries);
+  }, []);
 
   const filteredStudents = useMemo(() => {
     const term = search.toLowerCase();
