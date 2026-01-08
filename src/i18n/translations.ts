@@ -735,5 +735,64 @@ export const translations = {
       el: "Tip: Αν θέλεις σε μορφή PDF, μπορείς να εκτυπώσεις τις εικόνες ως PDF από τον υπολογιστή σου πριν τις μοιράσεις στα παιδιά.",
       en: "Tip: If you prefer PDF, you can print the images to PDF on your computer before sharing them with students.",
     } as LangString,
+  },wallet: {
+    pageTitle: {
+      el: "Το KIB Πορτοφόλι μου",
+      en: "My KIB Wallet",
+    } as LangString,
+    pageSubtitle: {
+      el: "Διαχείριση κερδών και ανταμοιβών",
+      en: "Manage your earnings and rewards",
+    } as LangString,
+    totalBalance: {
+      el: "Συνολικό Υπόλοιπο",
+      en: "Total Balance",
+    } as LangString,
+    spendButton: {
+      el: "Εξαργύρωση",
+      en: "Spend Coins",
+    } as LangString,
+    nextGoal: {
+      el: "Επόμενος Στόχος",
+      en: "Next Goal",
+    } as LangString,
+    recentEarnings: {
+      el: "Πρόσφατα Κέρδη",
+      en: "Recent Earnings",
+    } as LangString,
+    noTransactions: {
+      el: "Δεν υπάρχουν συναλλαγές. Ζήτησε από τον μέντορά σου μια αξιολόγηση!",
+      en: "No transactions yet. Ask your mentor for a review!",
+    } as LangString,
+  },
+  mentorReview: {
+    pageTitle: {
+      el: "Πίνακας Αξιολόγησης Μέντορα",
+      en: "Mentor Review Panel",
+    } as LangString,
+    reviewing: {
+      el: "Αξιολόγηση της ιδέας του/της",
+      en: "Reviewing the venture of",
+    } as LangString,
+    innovationScore: {
+      el: "Βαθμολογία Καινοτομίας",
+      en: "Innovation Score",
+    } as LangString,
+    feedbackLabel: {
+      el: "Σχόλια Μέντορα",
+      en: "Mentor Feedback",
+    } as LangString,
+    feedbackPlaceholder: {
+      el: "Τι πήγε καλά; Ποια είναι τα επόμενα βήματα;",
+      en: "What did the student do well? What are the next steps?",
+    } as LangString,
+    saveButton: {
+      el: "Οριστικοποίηση & Επιβράβευση 50 Νομισμάτων",
+      en: "Finalize Review & Award 50 Coins",
+    } as LangString,
+    recentEvaluations: {
+      el: "Πρόσφατες Αξιολογήσεις",
+      en: "Recent Evaluations",
+    } as LangString,
   },
 } as const;
