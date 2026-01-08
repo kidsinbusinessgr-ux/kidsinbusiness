@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/drawer";
 import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
+import { supabase } from "@/integrations/supabase/client";
 
 const mockStudents = [
   {
@@ -87,44 +88,47 @@ const TeacherPortal = () => {
   const [feedback, setFeedback] = useState("");
   const [reviewHistory, setReviewHistory] = useState<
     {
+      id: string;
       studentId: string;
       studentName: string;
       ventureName: string;
-      lastSavedAt: string;
+      createdAt: string;
     }[]
   >([]);
+  const [dateFilter, setDateFilter] = useState<"all" | "7" | "30">("all");
 
   useEffect(() => {
-    const entries: {
-      studentId: string;
-      studentName: string;
-      ventureName: string;
-      lastSavedAt: string;
-    }[] = [];
+    const loadReviews = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-    for (const student of mockStudents) {
-      const stored = localStorage.getItem(`review_final_${student.id}`);
-      if (stored) {
-        try {
-          const data = JSON.parse(stored) as { lastSavedAt?: string; status?: string };
-          if (data.status === "finalized" && data.lastSavedAt) {
-            entries.push({
-              studentId: student.id,
-              studentName: student.name,
-              ventureName: student.ventureName,
-              lastSavedAt: data.lastSavedAt,
-            });
-          }
-        } catch {
-          // ignore invalid entries
-        }
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from("mentor_reviews")
+        .select("id, student_id, student_name, venture_name, created_at")
+        .eq("teacher_id", user.id)
+        .eq("status", "finalized")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Error loading review history", error);
+        return;
       }
-    }
 
-    entries.sort(
-      (a, b) => new Date(b.lastSavedAt).getTime() - new Date(a.lastSavedAt).getTime(),
-    );
-    setReviewHistory(entries);
+      const mapped = (data ?? []).map((row) => ({
+        id: row.id as string,
+        studentId: row.student_id as string,
+        studentName: row.student_name as string,
+        ventureName: row.venture_name as string,
+        createdAt: row.created_at as string,
+      }));
+
+      setReviewHistory(mapped);
+    };
+
+    loadReviews();
   }, []);
 
   const filteredStudents = useMemo(() => {
@@ -134,6 +138,14 @@ const TeacherPortal = () => {
       (s) => s.name.toLowerCase().includes(term) || s.ventureName.toLowerCase().includes(term),
     );
   }, [search]);
+
+  const filteredReviewHistory = useMemo(() => {
+    if (dateFilter === "all") return reviewHistory;
+    const days = dateFilter === "7" ? 7 : 30;
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - days);
+    return reviewHistory.filter((entry) => new Date(entry.createdAt) >= cutoff);
+  }, [dateFilter, reviewHistory]);
 
   const totalActiveProjects = mockStudents.filter((s) => s.status !== "Ideating").length;
   const averageProgress =

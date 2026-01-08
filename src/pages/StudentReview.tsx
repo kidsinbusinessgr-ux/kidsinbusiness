@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 type ReviewScores = {
   innovation: number;
@@ -56,9 +57,12 @@ const MOCK_STUDENTS: Record<string, StudentData> = {
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Maria",
     venture: {
       ventureName: "EcoBottle Refill Station",
-      problem: "Students buy plastic bottles daily, creating waste and spending money unnecessarily.",
-      solution: "A smart refill station near the school that dispenses filtered water with flavor options into reusable bottles.",
-      revenueStreams: "Sell branded reusable bottles, charge per refill with a loyalty program, and offer premium flavors.",
+      problem:
+        "Students buy plastic bottles daily, creating waste and spending money unnecessarily.",
+      solution:
+        "A smart refill station near the school that dispenses filtered water with flavor options into reusable bottles.",
+      revenueStreams:
+        "Sell branded reusable bottles, charge per refill with a loyalty program, and offer premium flavors.",
     },
   },
   "2": {
@@ -67,9 +71,12 @@ const MOCK_STUDENTS: Record<string, StudentData> = {
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Dimitris",
     venture: {
       ventureName: "Tech Tutors Club",
-      problem: "Younger students struggle with technology homework and parents can't always help them.",
-      solution: "A peer-to-peer tutoring service where older students help younger ones with coding, apps, and digital skills.",
-      revenueStreams: "Charge per session, offer package deals, and create online tutorial videos for extra income.",
+      problem:
+        "Younger students struggle with technology homework and parents can't always help them.",
+      solution:
+        "A peer-to-peer tutoring service where older students help younger ones with coding, apps, and digital skills.",
+      revenueStreams:
+        "Charge per session, offer package deals, and create online tutorial videos for extra income.",
     },
   },
 };
@@ -78,31 +85,74 @@ const StudentReview = () => {
   const { studentId } = useParams<{ studentId: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
-  
-  const [student] = useState<StudentData | null>(() => 
-    studentId ? MOCK_STUDENTS[studentId] || null : null
+  const [teacherId, setTeacherId] = useState<string | null>(null);
+
+  const [student] = useState<StudentData | null>(() =>
+    studentId ? MOCK_STUDENTS[studentId] || null : null,
   );
-  
-  const [review, setReview] = useState<ReviewData>(() => {
-    // Try to load draft from localStorage
-    if (studentId) {
-      const stored = localStorage.getItem(`review_draft_${studentId}`);
-      if (stored) {
-        try {
-          return JSON.parse(stored);
-        } catch {
-          // ignore invalid JSON
-        }
-      }
-    }
-    return {
-      scores: { innovation: 3, feasibility: 3, clarity: 3 },
-      selectedTags: [],
-      feedbackText: "",
-      status: "draft",
-      lastSavedAt: null,
-    };
+
+  const [review, setReview] = useState<ReviewData>({
+    scores: { innovation: 3, feasibility: 3, clarity: 3 },
+    selectedTags: [],
+    feedbackText: "",
+    status: "draft",
+    lastSavedAt: null,
   });
+
+  useEffect(() => {
+    const loadUserAndReview = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        toast({
+          title: "Sign in required",
+          description: "You need to be logged in to review student ventures.",
+          variant: "destructive",
+        });
+        navigate("/auth");
+        return;
+      }
+
+      setTeacherId(user.id);
+
+      if (!studentId) return;
+
+      const { data, error } = await supabase
+        .from("mentor_reviews")
+        .select("scores, selected_tags, feedback_text, status, created_at")
+        .eq("teacher_id", user.id)
+        .eq("student_id", studentId)
+        .maybeSingle();
+
+      if (error && (error as any).code !== "PGRST116") {
+        console.error("Error loading review", error);
+        toast({
+          title: "Could not load existing review",
+          description: "You can still create a new review.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (data) {
+        setReview({
+          scores: (data.scores as ReviewScores) ?? {
+            innovation: 3,
+            feasibility: 3,
+            clarity: 3,
+          },
+          selectedTags: (data.selected_tags as string[]) ?? [],
+          feedbackText: (data.feedback_text as string) ?? "",
+          status: (data.status as "draft" | "finalized") ?? "draft",
+          lastSavedAt: (data.created_at as string) ?? null,
+        });
+      }
+    };
+
+    loadUserAndReview();
+  }, [navigate, studentId, toast]);
 
   useEffect(() => {
     if (!student) {
@@ -115,14 +165,39 @@ const StudentReview = () => {
     }
   }, [student, navigate, toast]);
 
-  const saveDraft = () => {
-    if (!studentId) return;
+  const saveDraft = async () => {
+    if (!teacherId || !studentId || !student) return;
+
     const draftData: ReviewData = {
       ...review,
       status: "draft",
       lastSavedAt: new Date().toISOString(),
     };
-    localStorage.setItem(`review_draft_${studentId}`, JSON.stringify(draftData));
+
+    const { error } = await supabase.from("mentor_reviews").upsert(
+      {
+        teacher_id: teacherId,
+        student_id: studentId,
+        student_name: student.name,
+        venture_name: student.venture.ventureName,
+        scores: draftData.scores,
+        selected_tags: draftData.selectedTags,
+        feedback_text: draftData.feedbackText,
+        status: draftData.status,
+      },
+      { onConflict: "teacher_id,student_id" },
+    );
+
+    if (error) {
+      console.error("Error saving draft", error);
+      toast({
+        title: "Could not save draft",
+        description: "Please try again.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setReview(draftData);
     toast({
       title: "Draft saved",
@@ -133,7 +208,7 @@ const StudentReview = () => {
   const generateAISummary = () => {
     const { innovation, feasibility, clarity } = review.scores;
     const avgScore = ((innovation + feasibility + clarity) / 3).toFixed(1);
-    
+
     let tone = "good";
     if (parseFloat(avgScore) >= 4.5) tone = "excellent";
     else if (parseFloat(avgScore) >= 3.5) tone = "strong";
@@ -145,13 +220,37 @@ const StudentReview = () => {
 
     let summary = "";
     if (tone === "excellent") {
-      summary = `Outstanding work! Your venture shows exceptional ${hasStrongUSP ? "unique value proposition and " : ""}creativity with a clear path to implementation. ${hasGreatResearch ? "Your market research is particularly impressive." : "Keep refining your approach with real-world feedback."}`;
+      summary = `Outstanding work! Your venture shows exceptional ${
+        hasStrongUSP ? "unique value proposition and " : ""
+      }creativity with a clear path to implementation. ${
+        hasGreatResearch
+          ? "Your market research is particularly impressive."
+          : "Keep refining your approach with real-world feedback."
+      }`;
     } else if (tone === "strong") {
-      summary = `Great effort! Your idea has ${innovation >= 4 ? "strong innovative potential" : "solid foundations"} and ${feasibility >= 4 ? "realistic execution plans" : "good feasibility"}. ${needsDetail ? "Consider adding more specific details to strengthen your proposal." : "Focus on clarifying your key value propositions."}`;
+      summary = `Great effort! Your idea has ${
+        innovation >= 4 ? "strong innovative potential" : "solid foundations"
+      } and ${feasibility >= 4 ? "realistic execution plans" : "good feasibility"}. ${
+        needsDetail
+          ? "Consider adding more specific details to strengthen your proposal."
+          : "Focus on clarifying your key value propositions."
+      }`;
     } else if (tone === "needs improvement") {
-      summary = `You're on the right track! ${needsDetail ? "Adding more detail to your plan" : "Refining your core idea"} will help strengthen your venture. ${clarity < 3 ? "Work on making your pitch clearer and more focused." : "Consider researching similar solutions to understand your competitive advantage better."}`;
+      summary = `You're on the right track! ${
+        needsDetail ? "Adding more detail to your plan" : "Refining your core idea"
+      } will help strengthen your venture. ${
+        clarity < 3
+          ? "Work on making your pitch clearer and more focused."
+          : "Consider researching similar solutions to understand your competitive advantage better."
+      }`;
     } else {
-      summary = `Solid work! Your venture shows ${innovation >= 4 ? "creative thinking" : "practical potential"} with room to grow. ${hasGreatResearch ? "Your research foundation is strong." : "Consider deeper market research to validate your assumptions."}`;
+      summary = `Solid work! Your venture shows ${
+        innovation >= 4 ? "creative thinking" : "practical potential"
+      } with room to grow. ${
+        hasGreatResearch
+          ? "Your research foundation is strong."
+          : "Consider deeper market research to validate your assumptions."
+      }`;
     }
 
     setReview((prev) => ({ ...prev, feedbackText: summary }));
@@ -161,7 +260,7 @@ const StudentReview = () => {
     });
   };
 
-  const finalizeReview = () => {
+  const finalizeReview = async () => {
     if (!review.feedbackText.trim()) {
       toast({
         title: "Missing feedback",
@@ -171,15 +270,36 @@ const StudentReview = () => {
       return;
     }
 
+    if (!teacherId || !studentId || !student) return;
+
     const finalData: ReviewData = {
       ...review,
       status: "finalized",
       lastSavedAt: new Date().toISOString(),
     };
-    
-    if (studentId) {
-      localStorage.setItem(`review_final_${studentId}`, JSON.stringify(finalData));
-      localStorage.removeItem(`review_draft_${studentId}`);
+
+    const { error } = await supabase.from("mentor_reviews").upsert(
+      {
+        teacher_id: teacherId,
+        student_id: studentId,
+        student_name: student.name,
+        venture_name: student.venture.ventureName,
+        scores: finalData.scores,
+        selected_tags: finalData.selectedTags,
+        feedback_text: finalData.feedbackText,
+        status: finalData.status,
+      },
+      { onConflict: "teacher_id,student_id" },
+    );
+
+    if (error) {
+      console.error("Error finalizing review", error);
+      toast({
+        title: "Could not finalize review",
+        description: "Please try again.",
+        variant: "destructive",
+      });
+      return;
     }
 
     toast({

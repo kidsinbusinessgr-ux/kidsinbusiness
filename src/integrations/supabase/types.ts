@@ -98,6 +98,59 @@ export type Database = {
         }
         Relationships: []
       }
+      mentor_reviews: {
+        Row: {
+          class_id: string | null
+          class_name: string | null
+          created_at: string
+          feedback_text: string
+          id: string
+          scores: Json
+          selected_tags: string[]
+          status: string
+          student_id: string
+          student_name: string
+          teacher_id: string
+          venture_name: string
+        }
+        Insert: {
+          class_id?: string | null
+          class_name?: string | null
+          created_at?: string
+          feedback_text: string
+          id?: string
+          scores: Json
+          selected_tags?: string[]
+          status: string
+          student_id: string
+          student_name: string
+          teacher_id: string
+          venture_name: string
+        }
+        Update: {
+          class_id?: string | null
+          class_name?: string | null
+          created_at?: string
+          feedback_text?: string
+          id?: string
+          scores?: Json
+          selected_tags?: string[]
+          status?: string
+          student_id?: string
+          student_name?: string
+          teacher_id?: string
+          venture_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mentor_reviews_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
