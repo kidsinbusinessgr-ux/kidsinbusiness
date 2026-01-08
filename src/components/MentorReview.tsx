@@ -1,60 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Star, Save, Award, MessageSquare } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Save, Award, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Dashboard from "./pages/Dashboard";
-import Chapters from "./pages/Chapters";
-import ChapterDetail from "./pages/ChapterDetail";
-import Actions from "./pages/Actions";
-import Teachers from "./pages/Teachers";
-import Community from "./pages/Community";
-import Auth from "./pages/Auth";
-import NotFound from "./pages/NotFound";
-import FounderDashboard from "./pages/FounderDashboard";
-import TeacherPortal from "./pages/TeacherPortal";
-import VentureBuilder from "./pages/VentureBuilder";
-import Marketplace from "./pages/Marketplace";
-import MarketplaceDetail from "./pages/MarketplaceDetail";
-import StudentReview from "./pages/StudentReview";
-import MentorReview from './components/MentorReview'; // Our new tool
-
-const queryClient = new QueryClient();
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/founder" element={<FounderDashboard />} />
-          <Route path="/venture-builder" element={<VentureBuilder />} />
-          <Route path="/marketplace" element={<Marketplace />} />
-          <Route path="/marketplace/:id" element={<MarketplaceDetail />} />
-          
-          {/* UPDATED ROUTE BELOW TO USE MENTOR REVIEW */}
-          <Route path="/teacher-portal" element={<MentorReview />} />
-          
-          <Route path="/teacher/review/:studentId" element={<StudentReview />} />
-          <Route path="/chapters" element={<Chapters />} />
-          <Route path="/chapter/:id" element={<ChapterDetail />} />
-          <Route path="/actions" element={<Actions />} />
-          <Route path="/teachers" element={<Teachers />} />
-          <Route path="/community" element={<Community />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
-
-export default App;
 
 const MentorReview = () => {
   const [reviews, setReviews] = useState<any[]>([]);
@@ -62,9 +8,9 @@ const MentorReview = () => {
   const [score, setScore] = useState(5);
   const [studentName, setStudentName] = useState("Avgerinos");
 
-  // Load reviews from free localStorage on mount
+  // Load reviews from localStorage on mount
   useEffect(() => {
-    const savedReviews = localStorage.getItem('kib_reviews');
+    const savedReviews = localStorage.getItem("kib_reviews");
     if (savedReviews) setReviews(JSON.parse(savedReviews));
   }, []);
 
@@ -74,20 +20,20 @@ const MentorReview = () => {
       return;
     }
 
-    const newReview = { 
+    const newReview = {
       id: Date.now(),
-      studentName, 
-      score, 
-      note, 
-      date: new Date().toLocaleDateString() 
+      studentName,
+      score,
+      note,
+      date: new Date().toLocaleDateString(),
     };
-    
+
     const updatedReviews = [newReview, ...reviews];
     setReviews(updatedReviews);
-    localStorage.setItem('kib_reviews', JSON.stringify(updatedReviews));
-    
+    localStorage.setItem("kib_reviews", JSON.stringify(updatedReviews));
+
     alert(`Review saved! 50 KIB Coins awarded to ${studentName}.`);
-    setNote(""); 
+    setNote("");
   };
 
   return (
@@ -98,20 +44,26 @@ const MentorReview = () => {
         </div>
         <h1 className="text-3xl font-bold tracking-tight">Mentor Review Panel</h1>
       </div>
-      
+
       {/* Review Form */}
       <div className="bg-card border rounded-xl p-6 shadow-sm">
-        <div className="flex items-center gap-2 mb-6 text-blue-600">
+        <div className="flex items-center gap-2 mb-6 text-primary">
           <MessageSquare className="w-5 h-5" />
-          <h2 className="text-xl font-semibold text-foreground">Reviewing: {studentName}'s Venture</h2>
+          <h2 className="text-xl font-semibold text-foreground">
+            Reviewing: {studentName}'s Venture
+          </h2>
         </div>
-        
+
         <div className="space-y-6">
           <div>
-            <label className="block text-sm font-medium mb-2">Innovation Score: {score}/10</label>
-            <input 
-              type="range" min="1" max="10" 
-              value={score} 
+            <label className="block text-sm font-medium mb-2">
+              Innovation Score: {score}/10
+            </label>
+            <input
+              type="range"
+              min="1"
+              max="10"
+              value={score}
               onChange={(e) => setScore(parseInt(e.target.value))}
               className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
             />
@@ -123,16 +75,16 @@ const MentorReview = () => {
 
           <div>
             <label className="block text-sm font-medium mb-2">Mentor Feedback</label>
-            <textarea 
+            <textarea
               className="w-full p-4 border rounded-lg bg-background focus:ring-2 focus:ring-primary outline-none transition"
               rows={4}
               placeholder="What did the student do well? What are the next steps?"
               value={note}
               onChange={(e) => setNote(e.target.value)}
-            ></textarea>
+            />
           </div>
 
-          <Button 
+          <Button
             onClick={saveReview}
             className="w-full md:w-auto gap-2 py-6 text-lg shadow-lg hover:shadow-xl transition-all"
           >
@@ -145,21 +97,28 @@ const MentorReview = () => {
       {/* History Section */}
       <div className="space-y-4">
         <h3 className="text-lg font-bold flex items-center gap-2 text-muted-foreground">
-          <Save className="w-4 h-4" /> 
+          <Save className="w-4 h-4" />
           Recent Evaluations
         </h3>
-        
+
         {reviews.length === 0 ? (
-          <p className="text-sm text-muted-foreground italic">No reviews submitted yet.</p>
+          <p className="text-sm text-muted-foreground italic">
+            No reviews submitted yet.
+          </p>
         ) : (
           reviews.map((r) => (
-            <div key={r.id} className="bg-white p-4 rounded-lg border-l-4 border-primary shadow-sm flex justify-between items-center">
+            <div
+              key={r.id}
+              className="bg-background p-4 rounded-lg border-l-4 border-primary shadow-sm flex justify-between items-center"
+            >
               <div>
-                <p className="font-bold text-slate-800">{r.studentName}</p>
-                <p className="text-sm text-slate-600 italic">"{r.note}"</p>
-                <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-wider">{r.date}</p>
+                <p className="font-bold text-foreground">{r.studentName}</p>
+                <p className="text-sm text-muted-foreground italic">"{r.note}"</p>
+                <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-wider">
+                  {r.date}
+                </p>
               </div>
-              <div className="bg-blue-50 px-3 py-1 rounded-full text-blue-700 font-bold">
+              <div className="bg-primary/10 px-3 py-1 rounded-full text-primary font-bold">
                 {r.score}/10
               </div>
             </div>
@@ -170,9 +129,22 @@ const MentorReview = () => {
   );
 };
 
-// Add this helper for the icon if GraduationCap isn't imported
-const GraduationCap = ({className}: {className?: string}) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+const GraduationCap = ({ className }: { className?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+    <path d="M6 12v5c3 3 9 3 12 0v-5" />
+  </svg>
 );
 
 export default MentorReview;
