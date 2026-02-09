@@ -93,6 +93,15 @@ const TeacherPortal = () => {
       studentName: string;
       ventureName: string;
       createdAt: string;
+      scores: {
+        innovation?: number;
+        feasibility?: number;
+        clarity?: number;
+        Innovation?: number;
+        Feasibility?: number;
+        Clarity?: number;
+        [key: string]: unknown;
+      };
     }[]
   >([]);
   const [dateFilter, setDateFilter] = useState<"all" | "7" | "30">("all");
@@ -107,7 +116,7 @@ const TeacherPortal = () => {
 
       const { data, error } = await supabase
         .from("mentor_reviews")
-        .select("id, student_id, student_name, venture_name, created_at")
+        .select("id, student_id, student_name, venture_name, created_at, scores")
         .eq("teacher_id", user.id)
         .eq("status", "finalized")
         .order("created_at", { ascending: false });
@@ -123,6 +132,15 @@ const TeacherPortal = () => {
         studentName: row.student_name as string,
         ventureName: row.venture_name as string,
         createdAt: row.created_at as string,
+        scores: (row.scores ?? {}) as {
+          innovation?: number;
+          feasibility?: number;
+          clarity?: number;
+          Innovation?: number;
+          Feasibility?: number;
+          Clarity?: number;
+          [key: string]: unknown;
+        },
       }));
 
       setReviewHistory(mapped);
@@ -146,6 +164,52 @@ const TeacherPortal = () => {
     cutoff.setDate(cutoff.getDate() - days);
     return reviewHistory.filter((entry) => new Date(entry.createdAt) >= cutoff);
   }, [dateFilter, reviewHistory]);
+
+  const pillarAverages = useMemo(() => {
+    const getScore = (scores: Record<string, unknown>, key: string) => {
+      const raw = (scores[key] ?? scores[key[0].toUpperCase() + key.slice(1)]) as unknown;
+      return typeof raw === "number" && Number.isFinite(raw) ? raw : null;
+    };
+
+    const values = filteredReviewHistory.reduce(
+      (acc, entry) => {
+        const innovation = getScore(entry.scores, "innovation");
+        const feasibility = getScore(entry.scores, "feasibility");
+        const clarity = getScore(entry.scores, "clarity");
+
+        if (innovation !== null) {
+          acc.innovationSum += innovation;
+          acc.innovationCount += 1;
+        }
+        if (feasibility !== null) {
+          acc.feasibilitySum += feasibility;
+          acc.feasibilityCount += 1;
+        }
+        if (clarity !== null) {
+          acc.claritySum += clarity;
+          acc.clarityCount += 1;
+        }
+        return acc;
+      },
+      {
+        innovationSum: 0,
+        innovationCount: 0,
+        feasibilitySum: 0,
+        feasibilityCount: 0,
+        claritySum: 0,
+        clarityCount: 0,
+      },
+    );
+
+    return {
+      innovation:
+        values.innovationCount > 0 ? values.innovationSum / values.innovationCount : null,
+      feasibility:
+        values.feasibilityCount > 0 ? values.feasibilitySum / values.feasibilityCount : null,
+      clarity: values.clarityCount > 0 ? values.claritySum / values.clarityCount : null,
+      sampleSize: filteredReviewHistory.length,
+    };
+  }, [filteredReviewHistory]);
 
   const totalActiveProjects = mockStudents.filter((s) => s.status !== "Ideating").length;
   const averageProgress =
@@ -357,6 +421,140 @@ const TeacherPortal = () => {
                         <tr>
                           <td colSpan={6} className="px-4 py-6 text-center text-sm text-muted-foreground">
                             No students match this search.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+
+              {/* Review History */}
+              <section className="space-y-4 animate-enter">
+                <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+                  <div>
+                    <h2 className="text-lg sm:text-xl font-semibold tracking-tight">Review History</h2>
+                    <p className="text-sm text-muted-foreground">
+                      Finalized mentor reviews stored in the backend.
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={dateFilter === "all" ? "default" : "outline"}
+                      className="text-xs"
+                      onClick={() => setDateFilter("all")}
+                    >
+                      All time
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={dateFilter === "7" ? "default" : "outline"}
+                      className="text-xs"
+                      onClick={() => setDateFilter("7")}
+                    >
+                      7 days
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={dateFilter === "30" ? "default" : "outline"}
+                      className="text-xs"
+                      onClick={() => setDateFilter("30")}
+                    >
+                      30 days
+                    </Button>
+                  </div>
+                </div>
+
+                {/* KPI row */}
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <Card className="border border-border/80 bg-card/95">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm">Avg Innovation</CardTitle>
+                      <CardDescription className="text-xs">Across {pillarAverages.sampleSize} reviews</CardDescription>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <div className="text-2xl font-semibold tabular-nums">
+                        {pillarAverages.innovation === null ? "—" : pillarAverages.innovation.toFixed(1)}
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="border border-border/80 bg-card/95">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm">Avg Feasibility</CardTitle>
+                      <CardDescription className="text-xs">Across {pillarAverages.sampleSize} reviews</CardDescription>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <div className="text-2xl font-semibold tabular-nums">
+                        {pillarAverages.feasibility === null ? "—" : pillarAverages.feasibility.toFixed(1)}
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="border border-border/80 bg-card/95">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm">Avg Clarity</CardTitle>
+                      <CardDescription className="text-xs">Across {pillarAverages.sampleSize} reviews</CardDescription>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <div className="text-2xl font-semibold tabular-nums">
+                        {pillarAverages.clarity === null ? "—" : pillarAverages.clarity.toFixed(1)}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <div className="overflow-x-auto rounded-lg border border-border/80 bg-card/95 shadow-sm">
+                  <table className="w-full text-sm">
+                    <thead className="bg-muted/60 text-xs uppercase tracking-wide text-muted-foreground">
+                      <tr>
+                        <th className="px-4 py-2 text-left">Student</th>
+                        <th className="px-4 py-2 text-left">Venture</th>
+                        <th className="px-4 py-2 text-left">Date</th>
+                        <th className="px-4 py-2 text-right">Innovation</th>
+                        <th className="px-4 py-2 text-right">Feasibility</th>
+                        <th className="px-4 py-2 text-right">Clarity</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredReviewHistory.map((entry) => {
+                        const innovation =
+                          (entry.scores.innovation ?? entry.scores.Innovation) as number | undefined;
+                        const feasibility =
+                          (entry.scores.feasibility ?? entry.scores.Feasibility) as number | undefined;
+                        const clarity = (entry.scores.clarity ?? entry.scores.Clarity) as number | undefined;
+
+                        return (
+                          <tr key={entry.id} className="border-t border-border/60">
+                            <td className="px-4 py-2 align-middle">
+                              <span className="font-medium">{entry.studentName}</span>
+                            </td>
+                            <td className="px-4 py-2 align-middle">
+                              <span className="text-muted-foreground">{entry.ventureName}</span>
+                            </td>
+                            <td className="px-4 py-2 align-middle text-muted-foreground text-xs">
+                              {new Date(entry.createdAt).toLocaleDateString()}
+                            </td>
+                            <td className="px-4 py-2 align-middle text-right tabular-nums">
+                              {typeof innovation === "number" ? innovation.toFixed(1) : "—"}
+                            </td>
+                            <td className="px-4 py-2 align-middle text-right tabular-nums">
+                              {typeof feasibility === "number" ? feasibility.toFixed(1) : "—"}
+                            </td>
+                            <td className="px-4 py-2 align-middle text-right tabular-nums">
+                              {typeof clarity === "number" ? clarity.toFixed(1) : "—"}
+                            </td>
+                          </tr>
+                        );
+                      })}
+
+                      {filteredReviewHistory.length === 0 && (
+                        <tr>
+                          <td colSpan={6} className="px-4 py-6 text-center text-sm text-muted-foreground">
+                            No reviews found for this time range.
                           </td>
                         </tr>
                       )}
