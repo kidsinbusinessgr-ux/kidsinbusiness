@@ -289,6 +289,18 @@ const StudentWorkspace = () => {
           </div>
         </div>
 
+        {/* Workbook CTA */}
+        <Link to="/workbook" className="block">
+          <div className="rounded-2xl border-2 border-violet-300 bg-gradient-to-r from-violet-500 to-pink-500 text-white p-5 flex items-center gap-4 shadow-sm hover:shadow-md transition-shadow">
+            <span className="text-5xl">📓</span>
+            <div className="flex-1">
+              <h2 className="font-bold text-lg">Business Plan Workbook</h2>
+              <p className="text-white/80 text-sm">Συμπλήρωσε το ψηφιακό workbook και χτίσε την επιχείρησή σου βήμα-βήμα!</p>
+            </div>
+            <ArrowRight className="w-6 h-6 shrink-0" />
+          </div>
+        </Link>
+
         {/* Badges */}
         <div className="bg-white rounded-2xl p-5 shadow-sm border">
           <h2 className="font-semibold text-lg mb-4 flex items-center gap-2">

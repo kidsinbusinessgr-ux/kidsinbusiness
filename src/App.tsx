@@ -20,6 +20,7 @@ import StudentWallet from "@/components/StudentWallet";
 import MentorReview from "@/components/MentorReview";
 import StudentWorkspace from "@/pages/StudentWorkspace";
 import Programs from "@/pages/Programs";
+import StudentWorkbook from "@/pages/StudentWorkbook";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/student" element={<StudentWorkspace />} />
+          <Route path="/workbook" element={<StudentWorkbook />} />
           <Route path="/wallet" element={<StudentWallet />} />
           <Route path="/founder" element={<FounderDashboard />} />
           <Route path="/venture-builder" element={<VentureBuilder />} />
