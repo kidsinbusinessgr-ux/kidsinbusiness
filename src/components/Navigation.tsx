@@ -1,5 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
-import { BookOpen, Zap, GraduationCap, Users, Menu, LogIn, LogOut, Coins } from "lucide-react";
+import {
+  BookOpen, Zap, GraduationCap, Users, Menu,
+  LogIn, LogOut, Coins, LayoutGrid,
+} from "lucide-react";
 import { useState } from "react";
 import { useAuthAndClasses } from "@/hooks/useAuthAndClasses";
 import { Button } from "@/components/ui/button";
@@ -14,13 +17,29 @@ const Navigation = () => {
   const { isAuthenticated, signOut } = useAuthAndClasses();
   const { language, setLanguage } = useLanguage();
 
-  const navItems = [
+  // Core nav — visible to everyone
+  const coreItems = [
+    { path: "/programs", label: language === "el" ? "Προγράμματα" : "Programs", icon: LayoutGrid },
     { path: "/chapters", label: translations.navigation.chapters[language], icon: BookOpen },
     { path: "/actions", label: translations.navigation.actions[language], icon: Zap },
-    { path: "/teachers", label: translations.navigation.teachers[language], icon: GraduationCap },
     { path: "/community", label: translations.navigation.community[language], icon: Users },
-    { path: "/teacher-portal", label: translations.teachers.breadcrumbLabel[language], icon: GraduationCap },
+  ];
+
+  // Teacher items — always visible (platform is currently teacher-facing)
+  const teacherItems = [
+    { path: "/teachers", label: translations.navigation.teachers[language], icon: GraduationCap },
+    { path: "/teacher-portal", label: language === "el" ? "Αξιολόγηση" : "Reviews", icon: GraduationCap },
+  ];
+
+  // Items only for authenticated users
+  const authItems = [
     { path: "/wallet", label: translations.wallet.pageTitle[language], icon: Coins },
+  ];
+
+  const navItems = [
+    ...coreItems,
+    ...teacherItems,
+    ...(isAuthenticated ? authItems : []),
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -39,29 +58,30 @@ const Navigation = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-4">
+            {/* Language switcher */}
             <div className="flex items-center gap-1 border rounded-full px-2 py-1 text-xs">
               <button
                 type="button"
-                className={`px-2 py-0.5 rounded-full ${language === "el" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
+                className={`px-2 py-0.5 rounded-full transition-colors ${language === "el" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
                 onClick={() => setLanguage("el")}
               >
                 GR
               </button>
               <button
                 type="button"
-                className={`px-2 py-0.5 rounded-full ${language === "en" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
+                className={`px-2 py-0.5 rounded-full transition-colors ${language === "en" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
                 onClick={() => setLanguage("en")}
               >
                 EN
               </button>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               {navItems.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-sm transition-colors ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm transition-colors ${
                     isActive(item.path)
                       ? "bg-primary text-primary-foreground"
                       : "text-muted-foreground hover:bg-muted"
@@ -76,18 +96,14 @@ const Navigation = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="gap-2 text-xs"
+                  className="gap-2 text-xs ml-2"
                   onClick={signOut}
                 >
                   <LogOut className="w-4 h-4" />
                   {translations.navigation.signOut[language]}
                 </Button>
               ) : (
-                <Button
-                  asChild
-                  size="sm"
-                  className="gap-2 text-xs"
-                >
+                <Button asChild size="sm" className="gap-2 text-xs ml-2">
                   <Link to="/auth">
                     <LogIn className="w-4 h-4" />
                     {translations.navigation.signIn[language]}
@@ -115,12 +131,12 @@ const Navigation = () => {
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="flex flex-col gap-4 pt-10">
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-1">
                   {navItems.map((item) => (
                     <Link
                       key={item.path}
                       to={item.path}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm ${
+                      className={`flex items-center gap-2 px-3 py-2.5 rounded-md text-sm transition-colors ${
                         isActive(item.path)
                           ? "bg-primary text-primary-foreground"
                           : "text-muted-foreground hover:bg-muted"
@@ -133,27 +149,19 @@ const Navigation = () => {
                   ))}
                 </div>
 
-                <div className="mt-auto flex flex-col gap-2">
+                <div className="mt-auto">
                   {isAuthenticated ? (
                     <Button
                       variant="outline"
                       size="sm"
-                      className="gap-2 text-xs"
-                      onClick={() => {
-                        signOut();
-                        setOpen(false);
-                      }}
+                      className="gap-2 text-xs w-full"
+                      onClick={() => { signOut(); setOpen(false); }}
                     >
                       <LogOut className="w-4 h-4" />
                       {translations.navigation.signOut[language]}
                     </Button>
                   ) : (
-                    <Button
-                      asChild
-                      size="sm"
-                      className="gap-2 text-xs"
-                      onClick={() => setOpen(false)}
-                    >
+                    <Button asChild size="sm" className="gap-2 text-xs w-full" onClick={() => setOpen(false)}>
                       <Link to="/auth">
                         <LogIn className="w-4 h-4" />
                         {translations.navigation.signIn[language]}
@@ -171,4 +179,3 @@ const Navigation = () => {
 };
 
 export default Navigation;
-

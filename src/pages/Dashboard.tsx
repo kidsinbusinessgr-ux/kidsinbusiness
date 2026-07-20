@@ -10,6 +10,7 @@ import GlobalTip from "@/components/GlobalTip";
 import { useAuthAndClasses } from "@/hooks/useAuthAndClasses";
 import { useLanguage } from "@/context/LanguageContext";
 import { translations } from "@/i18n/translations";
+import { BUSINESS_PLAN_CHAPTERS as BUSINESS_CHAPTERS } from "@/config/chaptersConfig";
 const MINI_IDS = ["mini-1", "mini-2", "mini-3", "mini-4"] as const;
 const CLASS_IDS = ["class-1", "class-2", "class-3"] as const;
 const PROJECT_IDS = ["project-1", "project-2", "project-3"] as const;
@@ -572,30 +573,47 @@ const Dashboard = () => {
           </Card>
         )}
 
-        {/* Recommended Chapter */}
+        {/* Recommended Chapter — dynamic */}
         <Card className="bg-gradient-to-br from-primary/10 via-secondary/5 to-accent/10 border-primary/20">
           <CardHeader>
-            <CardTitle>Προτεινόμενο Chapter</CardTitle>
-            <CardDescription>Προτεινόμενο για την εβδμάδα</CardDescription>
+            <CardTitle>
+              {language === "el" ? "Προτεινόμενο Κεφάλαιο" : "Recommended Chapter"}
+            </CardTitle>
+            <CardDescription>
+              {language === "el" ? "Συνεχίστε από εκεί που σταματήσατε" : "Continue from where you left off"}
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-4">
-              <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-secondary to-accent flex items-center justify-center text-2xl font-bold text-primary-foreground">
-                2
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-bold mb-2">Ιδέες & Δημιουργικότητα</h3>
-                <p className="text-muted-foreground mb-4">
-                  Βοηθήστε τους μαθητές να ανακαλύψουν τη δημιουργική τους σκέψη
-                </p>
-                <Link to="/chapters">
-                  <Button variant="secondary" className="group">
-                    Εξερεύνηση
-                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                </Link>
-              </div>
-            </div>
+            {(() => {
+              const completedCount = completedIds.size;
+              // Suggest next chapter based on challenge completion (10 challenges → ~1 chapter)
+              const chapterIdx = Math.min(Math.floor(completedCount / 4), BUSINESS_CHAPTERS.length - 1);
+              const ch = BUSINESS_CHAPTERS[chapterIdx];
+              return (
+                <div className="flex items-center gap-4">
+                  <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-secondary to-accent flex items-center justify-center text-4xl">
+                    {ch.emoji}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-xs font-medium text-muted-foreground mb-1">
+                      {language === "el" ? `Κεφάλαιο ${ch.id}` : `Chapter ${ch.id}`}
+                    </p>
+                    <h3 className="text-xl font-bold mb-2">
+                      {language === "el" ? ch.titleEl : ch.titleEn}
+                    </h3>
+                    <p className="text-muted-foreground mb-4 text-sm">
+                      {language === "el" ? ch.descriptionEl : ch.descriptionEn}
+                    </p>
+                    <Link to="/chapters">
+                      <Button variant="secondary" className="group">
+                        {language === "el" ? "Εξερεύνηση" : "Explore"}
+                        <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              );
+            })()}
           </CardContent>
         </Card>
       </main>

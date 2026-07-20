@@ -1,23 +1,25 @@
-import StudentWallet from './components/StudentWallet';
-import MentorReview from './components/MentorReview'; // ADDED THIS
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Dashboard from "./pages/Dashboard";
-import Chapters from "./pages/Chapters";
-import ChapterDetail from "./pages/ChapterDetail";
-import Actions from "./pages/Actions";
-import Teachers from "./pages/Teachers";
-import Community from "./pages/Community";
-import Auth from "./pages/Auth";
-import NotFound from "./pages/NotFound";
-import FounderDashboard from "./pages/FounderDashboard";
-import VentureBuilder from "./pages/VentureBuilder";
-import Marketplace from "./pages/Marketplace";
-import MarketplaceDetail from "./pages/MarketplaceDetail";
-import StudentReview from "./pages/StudentReview";
+import Dashboard from "@/pages/Dashboard";
+import Chapters from "@/pages/Chapters";
+import ChapterDetail from "@/pages/ChapterDetail";
+import Actions from "@/pages/Actions";
+import Teachers from "@/pages/Teachers";
+import Community from "@/pages/Community";
+import Auth from "@/pages/Auth";
+import NotFound from "@/pages/NotFound";
+import FounderDashboard from "@/pages/FounderDashboard";
+import VentureBuilder from "@/pages/VentureBuilder";
+import Marketplace from "@/pages/Marketplace";
+import MarketplaceDetail from "@/pages/MarketplaceDetail";
+import StudentReview from "@/pages/StudentReview";
+import StudentWallet from "@/components/StudentWallet";
+import MentorReview from "@/components/MentorReview";
+import StudentWorkspace from "@/pages/StudentWorkspace";
+import Programs from "@/pages/Programs";
 
 const queryClient = new QueryClient();
 
@@ -29,16 +31,15 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Dashboard />} />
+          <Route path="/student" element={<StudentWorkspace />} />
           <Route path="/wallet" element={<StudentWallet />} />
           <Route path="/founder" element={<FounderDashboard />} />
           <Route path="/venture-builder" element={<VentureBuilder />} />
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/marketplace/:id" element={<MarketplaceDetail />} />
-          
-          {/* We point the path to our NEW MentorReview component */}
           <Route path="/teacher-portal" element={<MentorReview />} />
-          
           <Route path="/teacher/review/:studentId" element={<StudentReview />} />
+          <Route path="/programs" element={<Programs />} />
           <Route path="/chapters" element={<Chapters />} />
           <Route path="/chapter/:id" element={<ChapterDetail />} />
           <Route path="/actions" element={<Actions />} />
