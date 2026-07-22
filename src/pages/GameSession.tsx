@@ -49,6 +49,7 @@ export default function GameSession() {
   // Teacher sales state
   const [salesInput, setSalesInput] = useState<Record<string, string>>({});
   const [salesMsg, setSalesMsg] = useState("");
+  const [advanceError, setAdvanceError] = useState("");
 
   const loadData = useCallback(async () => {
     if (!code) return;
@@ -128,8 +129,13 @@ export default function GameSession() {
 
   const handleAdvanceRound = async () => {
     if (!session) return;
-    await advanceRound(session.id, session.current_round + 1);
-    await loadData();
+    setAdvanceError("");
+    try {
+      await advanceRound(session.id, session.current_round + 1);
+      await loadData();
+    } catch (e: any) {
+      setAdvanceError("❌ " + (e.message || "Σφάλμα κατά την αλλαγή γύρου"));
+    }
   };
 
   if (loading) return (
@@ -174,7 +180,15 @@ export default function GameSession() {
             </div>
           )}
           {isTeacher && (
-            <Badge variant="outline" className="text-xs">👩‍🏫 Εκπαιδευτικός</Badge>
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="text-xs">👩‍🏫 Εκπαιδευτικός</Badge>
+              {session.current_round < 4 && (
+                <Button size="sm" onClick={handleAdvanceRound} className="text-xs h-7 gap-1">
+                  Γύρος {session.current_round + 1} <ChevronRight className="w-3 h-3" />
+                </Button>
+              )}
+              {advanceError && <span className="text-xs text-red-500">{advanceError}</span>}
+            </div>
           )}
 
           <Button variant="ghost" size="sm" onClick={loadData}>
