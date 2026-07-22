@@ -22,6 +22,8 @@ import StudentWorkspace from "@/pages/StudentWorkspace";
 import Programs from "@/pages/Programs";
 import StudentWorkbook from "@/pages/StudentWorkbook";
 import ProgramDetail from "@/pages/ProgramDetail";
+import GameLanding from "@/pages/GameLanding";
+import GameSession from "@/pages/GameSession";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +46,8 @@ const App = () => (
           <Route path="/teacher/review/:studentId" element={<StudentReview />} />
           <Route path="/programs" element={<Programs />} />
           <Route path="/programs/:id" element={<ProgramDetail />} />
+          <Route path="/game" element={<GameLanding />} />
+          <Route path="/game/:code" element={<GameSession />} />
           <Route path="/chapters" element={<Chapters />} />
           <Route path="/chapter/:id" element={<ChapterDetail />} />
           <Route path="/actions" element={<Actions />} />
