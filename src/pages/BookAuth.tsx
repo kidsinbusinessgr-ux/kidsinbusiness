@@ -52,6 +52,7 @@ export default function BookAuth() {
         id: data.user.id,
         full_name: fullName.trim(),
         age: age ? parseInt(age) : null,
+        email: email.trim(),
       });
 
       if (!data.session) {

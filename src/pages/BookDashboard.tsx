@@ -182,7 +182,7 @@ export default function BookDashboard() {
               <div className="flex-1">
                 <h2 className="font-bold text-lg mb-1">Ξεκλείδωσε όλα τα κεφάλαια!</h2>
                 <p className="text-sm opacity-90 mb-3">
-                  Βρες τον κωδικό <strong>ependitis2026</strong> στο εσωτερικό εξώφυλλο του βιβλίου σου.
+                  Βρες τον κωδικό στο εσωτερικό εξώφυλλο του βιβλίου σου.
                 </p>
                 <button
                   onClick={() => navigate("/activate")}
