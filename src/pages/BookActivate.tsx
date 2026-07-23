@@ -43,19 +43,20 @@ export default function BookActivate() {
     setError("");
 
     // Check code exists
-    const { data: codeData } = await supabase
+    const { data: codeRows, error: codeError } = await supabase
       .from("book_codes" as any)
       .select("code, edition, max_uses, use_count")
-      .eq("code", trimmed)
-      .single();
+      .eq("code", trimmed);
 
-    if (!codeData) {
+    if (codeError || !codeRows || codeRows.length === 0) {
       setError("Ο κωδικός δεν βρέθηκε. Έλεγξε ότι τον έγραψες σωστά.");
       setLoading(false);
       return;
     }
 
-    if ((codeData as any).use_count >= (codeData as any).max_uses) {
+    const codeData = codeRows[0] as any;
+
+    if (codeData.use_count >= codeData.max_uses) {
       setError("Αυτός ο κωδικός έχει φτάσει τον μέγιστο αριθμό χρήσεων.");
       setLoading(false);
       return;
@@ -76,7 +77,7 @@ export default function BookActivate() {
     // Increment use count
     await supabase
       .from("book_codes" as any)
-      .update({ use_count: (codeData as any).use_count + 1 })
+      .update({ use_count: codeData.use_count + 1 })
       .eq("code", trimmed);
 
     setLoading(false);
