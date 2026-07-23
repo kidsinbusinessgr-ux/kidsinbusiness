@@ -187,6 +187,19 @@ export default function BookDashboard() {
           </div>
         )}
 
+        {/* Market Game CTA — always visible */}
+        <div className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl p-5 text-white text-center">
+          <div className="text-4xl mb-2">🏪</div>
+          <h3 className="font-black text-lg mb-1">Η Μικρή Αγορά</h3>
+          <p className="text-sm opacity-90 mb-4">Εφάρμοσε αυτά που έμαθες σε πραγματικές καταστάσεις!</p>
+          <button
+            onClick={() => navigate("/market-game")}
+            className="bg-white text-emerald-700 font-bold px-6 py-2 rounded-xl hover:bg-emerald-50 transition-colors"
+          >
+            Παίξε τώρα! 🚀
+          </button>
+        </div>
+
         <div className="text-center text-xs text-gray-400 pb-4">
           Βιβλίο: "Μικροί Επενδυτές, Μεγάλο Μέλλον" • Σταυρούλα Αρνηθινού
         </div>

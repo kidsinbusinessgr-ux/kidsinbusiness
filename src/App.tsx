@@ -26,6 +26,7 @@ import GameLanding from "@/pages/GameLanding";
 import GameSession from "@/pages/GameSession";
 import BookDashboard from "@/pages/BookDashboard";
 import BookChapter from "@/pages/BookChapter";
+import MarketGame from "@/pages/MarketGame";
 
 const queryClient = new QueryClient();
 
@@ -58,6 +59,7 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/book" element={<BookDashboard />} />
           <Route path="/book/:id" element={<BookChapter />} />
+          <Route path="/market-game" element={<MarketGame />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
