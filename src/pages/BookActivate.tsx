@@ -85,7 +85,7 @@ export default function BookActivate() {
       .eq("code", trimmed);
 
     setLoading(false);
-    navigate("/book");
+    window.location.href = "/book";
   };
 
   return (
