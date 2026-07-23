@@ -201,7 +201,7 @@ export default function BookDashboard() {
         </div>
 
         <div className="text-center text-xs text-gray-400 pb-4">
-          Βιβλίο: "Μικροί Επενδυτές, Μεγάλο Μέλλον" • Σταυρούλα Αρνηθινού
+          Βιβλίο: "Μικροί Επενδυτές, Μεγάλο Μέλλον" • Αρνιθενού Σταυρούλα, Μαθηματικός MSc
         </div>
       </div>
     </div>
