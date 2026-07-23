@@ -384,15 +384,21 @@ export default function MarketGame() {
           <h3 className="font-bold text-gray-800 mb-3">Οι αποφάσεις σου:</h3>
           <div className="space-y-2">
             {results.map((r, i) => (
-              <div key={i} className="flex items-center gap-3 text-sm">
-                <span className="text-xl">{r.choice.emoji}</span>
-                <div className="flex-1">
-                  <span className="text-gray-700">{SCENARIOS[i].emoji} {r.choice.text.slice(0, 35)}{r.choice.text.length > 35 ? "…" : ""}</span>
+              <div key={i} className={`rounded-xl p-3 ${r.choice.wisdomPoints >= 2 ? "bg-green-50" : "bg-orange-50"}`}>
+                <div className="flex items-start justify-between gap-2 mb-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">{SCENARIOS[i].emoji}</span>
+                    <span className="text-xs text-gray-400 font-medium">Κατάσταση {i + 1}</span>
+                  </div>
+                  <div className="flex gap-0.5 shrink-0">
+                    {[1,2,3].map(p => (
+                      <span key={p} className={`text-sm ${p <= r.choice.wisdomPoints ? "text-yellow-500" : "text-gray-200"}`}>⭐</span>
+                    ))}
+                  </div>
                 </div>
-                <div className="flex gap-0.5">
-                  {[1,2,3].map(p => (
-                    <span key={p} className={`text-sm ${p <= r.choice.wisdomPoints ? "text-yellow-500" : "text-gray-200"}`}>⭐</span>
-                  ))}
+                <div className="flex items-start gap-2">
+                  <span className="text-base">{r.choice.emoji}</span>
+                  <span className="text-sm text-gray-700 leading-snug">{r.choice.text}</span>
                 </div>
               </div>
             ))}
