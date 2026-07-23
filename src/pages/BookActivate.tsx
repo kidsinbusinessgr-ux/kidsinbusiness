@@ -113,8 +113,8 @@ export default function BookActivate() {
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleActivate()}
-                placeholder="π.χ. ependitis2026"
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-purple-300 uppercase tracking-wider"
+                placeholder="Γράψε τον κωδικό σου"
+                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-purple-300"
                 autoCapitalize="none"
                 autoCorrect="off"
               />
