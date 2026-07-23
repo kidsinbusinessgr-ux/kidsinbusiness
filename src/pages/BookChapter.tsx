@@ -24,6 +24,20 @@ export default function BookChapter() {
   const [coinsEarned, setCoinsEarned] = useState(0);
   const [celebrating, setCelebrating] = useState(false);
 
+  // Reset all state when chapter id changes
+  useEffect(() => {
+    setPhase("intro");
+    setQuizAnswers([null, null, null, null, null]);
+    setQuizSubmitted(false);
+    setQuizScore(0);
+    setCurrentQ(0);
+    setActivityChoice(null);
+    setMathAnswers(["", ""]);
+    setMathChecked([false, false]);
+    setCoinsEarned(0);
+    setCelebrating(false);
+  }, [id]);
+
   useEffect(() => {
     if (!chapter) return;
     // Initialize sort activity
