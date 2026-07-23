@@ -68,11 +68,15 @@ export default function BookActivate() {
       return;
     }
 
-    // Update user profile
+    // Upsert user profile (handles both existing and missing rows)
     await supabase
       .from("user_profiles" as any)
-      .update({ book_code: trimmed, activated_at: new Date().toISOString() })
-      .eq("id", user.id);
+      .upsert({
+        id: user.id,
+        full_name: user.user_metadata?.full_name || user.email?.split("@")[0] || "Επενδυτής",
+        book_code: trimmed,
+        activated_at: new Date().toISOString(),
+      }, { onConflict: "id" });
 
     // Increment use count
     await supabase
