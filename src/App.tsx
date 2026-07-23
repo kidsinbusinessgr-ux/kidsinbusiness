@@ -27,6 +27,9 @@ import GameSession from "@/pages/GameSession";
 import BookDashboard from "@/pages/BookDashboard";
 import BookChapter from "@/pages/BookChapter";
 import MarketGame from "@/pages/MarketGame";
+import BookAuth from "@/pages/BookAuth";
+import BookActivate from "@/pages/BookActivate";
+import BookFounderDashboard from "@/pages/BookFounderDashboard";
 
 const queryClient = new QueryClient();
 
@@ -57,8 +60,12 @@ const App = () => (
           <Route path="/teachers" element={<Teachers />} />
           <Route path="/community" element={<Community />} />
           <Route path="/auth" element={<Auth />} />
+          {/* Book platform */}
           <Route path="/book" element={<BookDashboard />} />
           <Route path="/book/:id" element={<BookChapter />} />
+          <Route path="/book-login" element={<BookAuth />} />
+          <Route path="/activate" element={<BookActivate />} />
+          <Route path="/book-admin" element={<BookFounderDashboard />} />
           <Route path="/market-game" element={<MarketGame />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
