@@ -37,17 +37,29 @@ export default function BookDashboard() {
       setIsFounder(user.email === "kidsinbusinessgr@gmail.com");
 
       // Load profile (name + code)
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from("user_profiles" as any)
         .select("full_name, book_code")
         .eq("id", user.id)
-        .single();
+        .maybeSingle();
+
+      if (profileError) {
+        console.error("Profile load error:", profileError);
+      }
 
       if (profile) {
         setChildName((profile as any).full_name || user.email?.split("@")[0] || "Μικρός Επενδυτής");
         setHasCode(!!(profile as any).book_code);
       } else {
         setChildName(user.email?.split("@")[0] || "Μικρός Επενδυτής");
+        // Fallback: check directly if user has activated a code
+        const { data: rows } = await supabase
+          .from("user_profiles" as any)
+          .select("book_code")
+          .eq("id", user.id);
+        if (rows && rows.length > 0 && (rows[0] as any).book_code) {
+          setHasCode(true);
+        }
       }
 
       // Load progress
