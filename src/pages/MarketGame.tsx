@@ -142,6 +142,13 @@ export default function MarketGame() {
     if (prod.type === "need") setWisdom(w => w + 2);
   };
 
+  const undoProduct = (prod: Product) => {
+    if (!bought.has(prod.id)) return;
+    setBought(prev => { const next = new Set(prev); next.delete(prod.id); return next; });
+    setCoins(c => c + prod.price);
+    if (prod.type === "need") setWisdom(w => Math.max(0, w - 2));
+  };
+
   const buyStock = (id: StockId) => {
     spend(getPrice(week, id));
     setOwned(prev => ({ ...prev, [id]: prev[id] + 1 }));
@@ -259,9 +266,9 @@ export default function MarketGame() {
             const isNeed = prod.type === "need";
             return (
               <div key={prod.id}
-                className={`border-2 rounded-xl p-4 bg-white shadow-sm transition-opacity ${
+                className={`border-2 rounded-xl p-4 bg-white shadow-sm transition-all ${
                   isNeed ? "border-green-400" : "border-yellow-400"
-                } ${isBought ? "opacity-50" : ""}`}
+                } ${isBought ? "bg-gray-50" : ""}`}
               >
                 <div className="text-3xl text-center mb-2">{prod.emoji}</div>
                 <div className="font-bold text-center text-gray-800 text-sm mb-1">{prod.name}</div>
@@ -271,12 +278,20 @@ export default function MarketGame() {
                   {isNeed ? "ΑΝΑΓΚΗ" : "ΕΠΙΘΥΜΙΑ"}
                 </div>
                 <div className="text-center font-bold text-green-700 mb-3">💰 {prod.price}</div>
-                <Button size="sm" onClick={() => buyProduct(prod)} disabled={isBought}
-                  className={`w-full text-xs ${isBought
-                    ? "bg-gray-200 text-gray-500 hover:bg-gray-200 cursor-default"
-                    : "bg-green-600 hover:bg-green-700 text-white"}`}>
-                  {isBought ? "✓ Αγοράστηκε" : "Αγορά"}
-                </Button>
+                {isBought ? (
+                  <div className="space-y-1">
+                    <div className="text-center text-xs text-green-600 font-semibold">✓ Αγοράστηκε</div>
+                    <Button size="sm" onClick={() => undoProduct(prod)}
+                      className="w-full text-xs bg-gray-100 hover:bg-red-50 text-gray-500 hover:text-red-600 border border-gray-200">
+                      ↩ Αναίρεση
+                    </Button>
+                  </div>
+                ) : (
+                  <Button size="sm" onClick={() => buyProduct(prod)}
+                    className="w-full text-xs bg-green-600 hover:bg-green-700 text-white">
+                    Αγορά
+                  </Button>
+                )}
               </div>
             );
           })}
