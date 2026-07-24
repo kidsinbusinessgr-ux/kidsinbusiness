@@ -1,421 +1,514 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 
-// ── Types ──────────────────────────────────────────────────────────────────
-interface Choice {
-  text: string;
-  consequence: string;
-  coinsChange: number;   // positive = gain, negative = spend
-  savingsChange: number;
-  givingChange: number;
-  wisdomPoints: number;  // 0-3 how wise the choice is
-  emoji: string;
-}
+// ─── Types ────────────────────────────────────────────────────────────────────
+type GamePhase = "intro" | "shop" | "stocks" | "event" | "summary" | "results";
+type StockId = "lego" | "techkids" | "foodco";
 
-interface Scenario {
-  id: number;
-  chapter: number;
-  situation: string;
-  emoji: string;
-  choices: [Choice, Choice, Choice];
-}
+interface Product { id: string; name: string; emoji: string; type: "need" | "want"; price: number; }
+interface StockDef { id: StockId; name: string; emoji: string; desc: string; volatile: boolean; }
+interface GameEvent { emoji: string; title: string; body: string; coins: number; stock?: { id: StockId; delta: number }; }
 
-// ── Scenarios (5 total, each linked to a chapter) ─────────────────────────
-const SCENARIOS: Scenario[] = [
-  {
-    id: 1,
-    chapter: 8,
-    situation: "Βλέπεις μια διαφήμιση για νέα αθλητικά παπούτσια 25€. «Τα ΘΕΛΕΙΣ τόσο πολύ!» λέει η διαφήμιση. Τα παπούτσια σου είναι καλά ακόμα.",
-    emoji: "👟",
-    choices: [
-      { text: "Τα αγοράζω αμέσως!", consequence: "Αγόρασες παπούτσια που δεν χρειαζόσουν. Τα χρήματά σου λιγόστεψαν.", coinsChange: -25, savingsChange: 0, givingChange: 0, wisdomPoints: 0, emoji: "😅" },
-      { text: "Σκέφτομαι αν τα χρειάζομαι πραγματικά...", consequence: "Σωστά! Η διαφήμιση σε επηρέαζε. Τα παπούτσια σου είναι εντάξει — κρατάς τα χρήματα!", coinsChange: 0, savingsChange: 0, givingChange: 0, wisdomPoints: 3, emoji: "🧠" },
-      { text: "Τα βάζω στη λίστα επιθυμιών και αποταμιεύω", consequence: "Έξυπνο! Αν τα θες πολύ, θα τα πάρεις — αλλά με σχέδιο.", coinsChange: 5, savingsChange: 5, givingChange: 0, wisdomPoints: 2, emoji: "📝" },
-    ]
-  },
-  {
-    id: 2,
-    chapter: 3,
-    situation: "Ο φίλος σου πουλά το παλιό του ποδήλατο για 20€ — πολύ φθηνό! Εσύ έχεις ήδη ποδήλατο αλλά αυτό είναι πιο ωραίο.",
-    emoji: "🚲",
-    choices: [
-      { text: "Το αγοράζω, είναι ευκαιρία!", consequence: "Αγόρασες δεύτερο ποδήλατο που δεν χρειαζόσουν. Φθηνή τιμή ≠ καλή αγορά!", coinsChange: -20, savingsChange: 0, givingChange: 0, wisdomPoints: 0, emoji: "😬" },
-      { text: "Δεν το χρειάζομαι — έχω ήδη ποδήλατο", consequence: "Τέλεια κριτική σκέψη! Η «ευκαιρία» είναι ευκαιρία μόνο αν σε χρειάζεται.", coinsChange: 0, savingsChange: 0, givingChange: 0, wisdomPoints: 3, emoji: "💪" },
-      { text: "Το αγοράζω για να το μεταπουλήσω ακριβότερα!", consequence: "Επιχειρηματική σκέψη! Αν βρεις αγοραστή, κερδίζεις — αλλά έχει ρίσκο.", coinsChange: -20, savingsChange: 0, givingChange: 0, wisdomPoints: 2, emoji: "🚀" },
-    ]
-  },
-  {
-    id: 3,
-    chapter: 12,
-    situation: "Το αγαπημένο σου σνακ κόστιζε 1€. Τώρα κοστίζει 1,50€! Δεν φταίει ο μπακάλης — είναι ο πληθωρισμός: όλα ακρίβυναν!",
-    emoji: "🍫",
-    choices: [
-      { text: "Το αγοράζω ούτως ή άλλως", consequence: "Το αγόρασες — αλλά 50 λεπτά παραπάνω × 5 φορές την εβδομάδα = 2,50€ τον μήνα λιγότερα!", coinsChange: -2, savingsChange: 0, givingChange: 0, wisdomPoints: 1, emoji: "😔" },
-      { text: "Ψάχνω φθηνότερη εναλλακτική", consequence: "Έξυπνο! Ο πληθωρισμός δεν σε νικά — προσαρμόζεσαι!", coinsChange: 0, savingsChange: 1, givingChange: 0, wisdomPoints: 3, emoji: "🧠" },
-      { text: "Το αγοράζω λιγότερο συχνά για να εξοικονομήσω", consequence: "Καλή ισορροπία! Δεν στερείσαι αλλά δεν σπαταλάς.", coinsChange: -1, savingsChange: 1, givingChange: 0, wisdomPoints: 2, emoji: "👍" },
-    ]
-  },
-  {
-    id: 4,
-    chapter: 5,
-    situation: "Ο συμμαθητής σου ξέχασε το μεσημεριανό και δεν έχει χρήματα. Εσύ έχεις 5€ για σνακ.",
-    emoji: "🥪",
-    choices: [
-      { text: "Δεν είναι πρόβλημά μου", consequence: "Τεχνικά σωστό — αλλά η προσφορά κάνει τον κόσμο καλύτερο. Χάνεις ευκαιρία.", coinsChange: 0, savingsChange: 0, givingChange: 0, wisdomPoints: 0, emoji: "😶" },
-      { text: "Του αγοράζω φαγητό από τα δικά μου", consequence: "Η γενναιοδωρία σου έκανε τη μέρα του φίλου σου καλύτερη. Αυτά είναι τα χρήματα του βάζου Προσφορά!", coinsChange: -2, savingsChange: 0, givingChange: 3, wisdomPoints: 3, emoji: "❤️" },
-      { text: "Μοιραζόμαστε το δικό μου φαγητό", consequence: "Τέλεια! Προσφορά χωρίς να ξοδέψεις χρήματα — και εξίσου ωραία!", coinsChange: 0, savingsChange: 0, givingChange: 2, wisdomPoints: 3, emoji: "🤝" },
-    ]
-  },
-  {
-    id: 5,
-    chapter: 4,
-    situation: "Έχεις μαζέψει 30€ αποταμίευση! Η μαμά σου λέει «μπράβο — κάνε ό,τι θέλεις». Τι κάνεις;",
-    emoji: "🐷",
-    choices: [
-      { text: "Τα ξοδεύω όλα τώρα, το αξίζω!", consequence: "Απόλαυσες τα χρήματά σου — αλλά ο κουμπαράς άδειασε. Ξεκινάς από μηδέν.", coinsChange: -30, savingsChange: -30, givingChange: 0, wisdomPoints: 0, emoji: "🎢" },
-      { text: "Κρατάω 20€ αποταμίευση και ξοδεύω 10€", consequence: "Εξαιρετικό! Απόλαυσες ένα μέρος αλλά κράτησες τη βάση σου. Αυτό κάνουν οι έξυπνοι επενδυτές!", coinsChange: -10, savingsChange: -10, givingChange: 0, wisdomPoints: 3, emoji: "🌟" },
-      { text: "Τα βάζω όλα στην τράπεζα για τόκο", consequence: "Super σοφό! Τα χρήματά σου δουλεύουν για σένα τώρα.", coinsChange: 2, savingsChange: 30, givingChange: 0, wisdomPoints: 2, emoji: "🏦" },
-    ]
-  }
+// ─── Static data ──────────────────────────────────────────────────────────────
+const ALLOWANCE = 30;
+const TOTAL_WEEKS = 6;
+
+const STOCK_DEFS: StockDef[] = [
+  { id: "lego",     name: "LEGO Corp", emoji: "🧱", desc: "Σταθερή εταιρεία παιχνιδιών",   volatile: false },
+  { id: "techkids", name: "TechKids",  emoji: "💻", desc: "Τεχνολογία — ανεβοκατεβαίνει!", volatile: true  },
+  { id: "foodco",   name: "FoodCo",    emoji: "🥗", desc: "Τρόφιμα — αργά αλλά σταθερά",   volatile: false },
 ];
 
-// ── Phase types ────────────────────────────────────────────────────────────
-type Phase = "intro" | "jars" | "scenarios" | "results";
+const BASE_PRICES: Record<StockId, number[]> = {
+  lego:     [10, 11, 10, 12, 11, 13],
+  techkids: [15, 18, 13, 20, 16, 22],
+  foodco:   [ 8,  8,  9,  9, 10, 10],
+};
 
-interface JarAllocation { spending: number; saving: number; giving: number; }
-interface ScenarioResult { scenarioId: number; choiceIdx: number; choice: Choice; }
+const WEEKLY_PRODUCTS: Product[][] = [
+  [
+    { id:"f1", name:"Φαγητό",          emoji:"🍕", type:"need", price:5  },
+    { id:"s1", name:"Σχολικά",         emoji:"📚", type:"need", price:8  },
+    { id:"m1", name:"Φάρμακο",         emoji:"💊", type:"need", price:6  },
+    { id:"i1", name:"Παγωτό",          emoji:"🍦", type:"want", price:3  },
+    { id:"g1", name:"Βιντεοπαιχνίδι",  emoji:"🎮", type:"want", price:20 },
+  ],
+  [
+    { id:"f2", name:"Φαγητό",          emoji:"🍕", type:"need", price:6  },
+    { id:"c2", name:"Ρούχα",           emoji:"👕", type:"need", price:12 },
+    { id:"m2", name:"Φάρμακο",         emoji:"💊", type:"need", price:6  },
+    { id:"k2", name:"Κινηματογράφος",  emoji:"🎬", type:"want", price:7  },
+    { id:"w2", name:"Γλυκά",           emoji:"🍬", type:"want", price:4  },
+  ],
+  [
+    { id:"f3", name:"Φαγητό",          emoji:"🍕", type:"need", price:6  },
+    { id:"b3", name:"Τσάντα σχολείου", emoji:"🎒", type:"need", price:15 },
+    { id:"m3", name:"Φάρμακο",         emoji:"💊", type:"need", price:7  },
+    { id:"o3", name:"Μπάλα",           emoji:"⚽", type:"want", price:10 },
+    { id:"i3", name:"Παγωτό",          emoji:"🍦", type:"want", price:4  },
+  ],
+  [
+    { id:"f4", name:"Φαγητό",          emoji:"🍕", type:"need", price:7  },
+    { id:"s4", name:"Σχολικά",         emoji:"📚", type:"need", price:9  },
+    { id:"c4", name:"Ρούχα",           emoji:"👕", type:"need", price:13 },
+    { id:"g4", name:"Βιντεοπαιχνίδι",  emoji:"🎮", type:"want", price:22 },
+    { id:"w4", name:"Γλυκά",           emoji:"🍬", type:"want", price:4  },
+  ],
+  [
+    { id:"f5", name:"Φαγητό",          emoji:"🍕", type:"need", price:7  },
+    { id:"m5", name:"Φάρμακο",         emoji:"💊", type:"need", price:8  },
+    { id:"r5", name:"Χρώματα",         emoji:"🎨", type:"need", price:8  },
+    { id:"k5", name:"Κινηματογράφος",  emoji:"🎬", type:"want", price:8  },
+    { id:"o5", name:"Μπάλα",           emoji:"⚽", type:"want", price:11 },
+  ],
+  [
+    { id:"f6", name:"Φαγητό",          emoji:"🍕", type:"need", price:8  },
+    { id:"s6", name:"Σχολικά",         emoji:"📚", type:"need", price:10 },
+    { id:"c6", name:"Ρούχα",           emoji:"👕", type:"need", price:14 },
+    { id:"g6", name:"Βιντεοπαιχνίδι",  emoji:"🎮", type:"want", price:23 },
+    { id:"i6", name:"Παγωτό",          emoji:"🍦", type:"want", price:5  },
+  ],
+];
 
-// ── Main component ─────────────────────────────────────────────────────────
+const EVENTS: GameEvent[] = [
+  { emoji:"🎂", title:"Γενέθλια!",           body:"Η γιαγιά σου σου έδωσε χαρτζιλίκι!",                              coins:15  },
+  { emoji:"🚲", title:"Ατύχημα!",            body:"Το ποδήλατό σου χάλασε και χρειάστηκε επισκευή.",                 coins:-10 },
+  { emoji:"📈", title:"Νέο Gadget!",         body:"Η TechKids ανακοίνωσε νέο προϊόν. Οι μετοχές εκτινάχθηκαν!",    coins:0,  stock:{ id:"techkids", delta:4  } },
+  { emoji:"📉", title:"Σκάνδαλο LEGO!",      body:"Ανάκληση προϊόντων. Η τιμή της LEGO έπεσε.",                     coins:0,  stock:{ id:"lego",     delta:-3 } },
+  { emoji:"🌧️", title:"Κακοκαιρία!",        body:"Πλημμύρες στις αποθήκες τροφίμων. Η FoodCo ανεβαίνει.",          coins:0,  stock:{ id:"foodco",   delta:2  } },
+  { emoji:"🎓", title:"Διαγωνισμός!",        body:"Κέρδισες μαθηματικό διαγωνισμό! Μικρό έπαθλο!",                 coins:20  },
+  { emoji:"💸", title:"Χάθηκε πορτοφόλι!",  body:"Άουτς! Το πορτοφόλι σου χάθηκε στο λεωφορείο.",                  coins:-8  },
+  { emoji:"🚀", title:"TechKids — Boom!",    body:"Εκπληκτικές πωλήσεις αυτή την εβδομάδα για την TechKids!",       coins:0,  stock:{ id:"techkids", delta:5  } },
+  { emoji:"⭐", title:"Ήσυχη εβδομάδα",     body:"Τίποτα ιδιαίτερο. Ούτε καλό ούτε κακό αυτή την εβδομάδα!",      coins:0   },
+  { emoji:"🎪", title:"Φεστιβάλ πόλης!",    body:"Βοήθησες εθελοντικά στο φεστιβάλ και σε πλήρωσαν!",              coins:12  },
+];
+
+// ─── Component ────────────────────────────────────────────────────────────────
 export default function MarketGame() {
   const navigate = useNavigate();
-  const [phase, setPhase] = useState<Phase>("intro");
-  const [jars, setJars] = useState<JarAllocation>({ spending: 25, saving: 20, giving: 5 });
-  const [currentScenario, setCurrentScenario] = useState(0);
-  const [results, setResults] = useState<ScenarioResult[]>([]);
-  const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
-  const [showConsequence, setShowConsequence] = useState(false);
-  const [timer, setTimer] = useState(15);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const TOTAL_COINS = 50;
-  const remaining = TOTAL_COINS - jars.spending - jars.saving - jars.giving;
-
-  // Timer for scenarios
   useEffect(() => {
-    if (phase !== "scenarios" || showConsequence) return;
-    setTimer(15);
-    timerRef.current = setInterval(() => {
-      setTimer(t => {
-        if (t <= 1) {
-          clearInterval(timerRef.current!);
-          // Auto-pick middle choice if time runs out
-          if (selectedChoice === null) handleChoice(1);
-          return 0;
-        }
-        return t - 1;
-      });
-    }, 1000);
-    return () => clearInterval(timerRef.current!);
-  }, [currentScenario, phase, showConsequence]);
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) navigate("/book-login");
+    });
+  }, [navigate]);
 
-  const handleChoice = (idx: number) => {
-    if (showConsequence) return;
-    clearInterval(timerRef.current!);
-    setSelectedChoice(idx);
-    setShowConsequence(true);
+  const [phase,     setPhase]     = useState<GamePhase>("intro");
+  const [week,      setWeek]      = useState(1);
+  const [coins,     setCoins]     = useState(0);
+  const [debt,      setDebt]      = useState(0);
+  const [owned,     setOwned]     = useState<Record<StockId, number>>({ lego:0, techkids:0, foodco:0 });
+  const [overrides, setOverrides] = useState<Record<StockId, number>>({ lego:0, techkids:0, foodco:0 });
+  const [bought,    setBought]    = useState<Set<string>>(new Set());
+  const [wisdom,    setWisdom]    = useState(0);
+  const [event,     setEvent]     = useState<GameEvent | null>(null);
+  const [usedEvts,  setUsedEvts]  = useState<number[]>([]);
+  const [newWeekMsg, setNewWeekMsg] = useState(false);
+
+  // ─── Derived ─────────────────────────────────────────────────────────────
+  const getPrice = (w: number, id: StockId) =>
+    Math.max(1, BASE_PRICES[id][w - 1] + overrides[id]);
+
+  const portfolio = () =>
+    owned.lego * getPrice(week, "lego") +
+    owned.techkids * getPrice(week, "techkids") +
+    owned.foodco * getPrice(week, "foodco");
+
+  const netWorth = () => coins + portfolio() - Math.round(debt * 1.5);
+
+  // ─── Actions ─────────────────────────────────────────────────────────────
+  const resetGame = () => {
+    setPhase("shop"); setWeek(1); setCoins(ALLOWANCE); setDebt(0);
+    setOwned({ lego:0, techkids:0, foodco:0 });
+    setOverrides({ lego:0, techkids:0, foodco:0 });
+    setBought(new Set()); setWisdom(0); setEvent(null); setUsedEvts([]);
+    setNewWeekMsg(true); setTimeout(() => setNewWeekMsg(false), 2500);
   };
 
-  const handleNextScenario = () => {
-    const scenario = SCENARIOS[currentScenario];
-    const choice = scenario.choices[selectedChoice!];
-    setResults(prev => [...prev, { scenarioId: scenario.id, choiceIdx: selectedChoice!, choice }]);
-    setShowConsequence(false);
-    setSelectedChoice(null);
-    if (currentScenario < SCENARIOS.length - 1) {
-      setCurrentScenario(c => c + 1);
-    } else {
-      setPhase("results");
+  const spend = (amount: number) => {
+    setCoins(c => {
+      const next = c - amount;
+      if (next < 0) { setDebt(d => d + Math.abs(next)); return 0; }
+      return next;
+    });
+  };
+
+  const buyProduct = (prod: Product) => {
+    if (bought.has(prod.id)) return;
+    spend(prod.price);
+    setBought(prev => new Set([...prev, prod.id]));
+    if (prod.type === "need") setWisdom(w => w + 2);
+  };
+
+  const buyStock = (id: StockId) => {
+    spend(getPrice(week, id));
+    setOwned(prev => ({ ...prev, [id]: prev[id] + 1 }));
+  };
+
+  const sellStock = (id: StockId) => {
+    if (owned[id] <= 0) return;
+    setCoins(c => c + getPrice(week, id));
+    setOwned(prev => ({ ...prev, [id]: prev[id] - 1 }));
+  };
+
+  const goToEvent = () => {
+    const avail = EVENTS.map((_, i) => i).filter(i => !usedEvts.includes(i));
+    const idx = avail[Math.floor(Math.random() * avail.length)];
+    setEvent(EVENTS[idx]);
+    setUsedEvts(prev => [...prev, idx]);
+    setPhase("event");
+  };
+
+  const applyEvent = () => {
+    if (!event) return;
+    if (event.coins > 0) setCoins(c => c + event.coins);
+    else if (event.coins < 0) spend(Math.abs(event.coins));
+    if (event.stock) {
+      setOverrides(prev => ({ ...prev, [event.stock!.id]: prev[event.stock!.id] + event.stock!.delta }));
     }
+    setPhase("summary");
   };
 
-  // ── Calculate final score ──────────────────────────────────────────────
-  const calcResults = () => {
-    const totalWisdom = results.reduce((s, r) => s + r.choice.wisdomPoints, 0);
-    const maxWisdom = SCENARIOS.length * 3;
-    const wisdomPct = totalWisdom / maxWisdom;
-    const totalGiving = results.reduce((s, r) => s + r.choice.givingChange, 0) + jars.giving;
-    const totalSaving = results.reduce((s, r) => s + r.choice.savingsChange, 0) + jars.saving;
-    const coinsLeft = results.reduce((s, r) => s + r.choice.coinsChange, 0) + TOTAL_COINS;
-
-    const stars = wisdomPct >= 0.85 ? 5 : wisdomPct >= 0.65 ? 4 : wisdomPct >= 0.45 ? 3 : wisdomPct >= 0.25 ? 2 : 1;
-    return { stars, totalWisdom, maxWisdom, totalGiving, totalSaving, coinsLeft };
+  const nextWeek = () => {
+    if (week >= TOTAL_WEEKS) { setPhase("results"); return; }
+    const nw = week + 1;
+    setWeek(nw);
+    setCoins(c => c + ALLOWANCE);
+    setBought(new Set());
+    setEvent(null);
+    setPhase("shop");
+    setNewWeekMsg(true);
+    setTimeout(() => setNewWeekMsg(false), 2500);
   };
 
-  const starLabels = ["", "Αρχάριος Καταναλωτής", "Μαθητευόμενος Επενδυτής", "Σοφός Αγοραστής", "Έξυπνος Επενδυτής", "Μικρός Οικονομολόγος! 🏆"];
+  // ─── Grade ───────────────────────────────────────────────────────────────
+  const getGrade = () => {
+    const score = netWorth() + wisdom;
+    if (score >= 100) return { grade:"Άριστος Επενδυτής",    stars:"⭐⭐⭐", color:"text-yellow-600", msg:"Εξαιρετική διαχείριση! Η πόλη σου λάμπει!" };
+    if (score >= 60)  return { grade:"Καλός Επενδυτής",      stars:"⭐⭐",   color:"text-blue-600",   msg:"Πολύ καλή δουλειά! Μάθες πολλά αυτές τις 6 εβδομάδες." };
+    if (score >= 25)  return { grade:"Μαθητευόμενος Επενδυτής", stars:"⭐",   color:"text-green-600",  msg:"Καλή αρχή! Την επόμενη φορά θα τα πας ακόμα καλύτερα." };
+    return              { grade:"Αρχάριος Επενδυτής",    stars:"🌱",   color:"text-gray-600",   msg:"Κάθε εμπειρία είναι μάθηση! Ξαναπαίξε και δες τη διαφορά." };
+  };
 
-  // ══════════════════════════════════════════════════════════════════════════
-  //  PHASE: INTRO
-  // ══════════════════════════════════════════════════════════════════════════
-  if (phase === "intro") return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50 flex items-center justify-center px-4">
-      <div className="max-w-lg w-full text-center">
-        <div className="text-7xl mb-4">🏪</div>
-        <h1 className="text-3xl font-black text-gray-800 mb-2">Η Μικρή Αγορά</h1>
-        <p className="text-gray-500 mb-6">Προσομοίωση πραγματικής ζωής — εφάρμοσε αυτά που έμαθες!</p>
+  // ─── Shared UI ───────────────────────────────────────────────────────────
+  const products = WEEKLY_PRODUCTS[week - 1];
 
-        <div className="bg-white rounded-2xl border p-5 mb-6 text-left space-y-3">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">🫙</span>
-            <div><p className="font-semibold text-gray-800">Φάση 1: Τα 3 Βάζα</p><p className="text-sm text-gray-500">Μοίρασε τα 50 coins εβδομαδιαίου χαρτζιλικιού σου</p></div>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">🎯</span>
-            <div><p className="font-semibold text-gray-800">Φάση 2: Αποφάσεις</p><p className="text-sm text-gray-500">5 πραγματικές καταστάσεις — τι θα έκανες;</p></div>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">⭐</span>
-            <div><p className="font-semibold text-gray-800">Φάση 3: Αποτελέσματα</p><p className="text-sm text-gray-500">Δες πόσο σοφός επενδυτής είσαι!</p></div>
-          </div>
+  const StatusBar = () => (
+    <div className="bg-white border-b px-4 py-3 flex items-center justify-between sticky top-0 z-10 shadow-sm">
+      <div className="flex items-center gap-3">
+        <span className="text-sm font-semibold text-gray-700">Εβδ. {week}/{TOTAL_WEEKS}</span>
+        <div className="flex gap-1">
+          {Array.from({ length: TOTAL_WEEKS }, (_, i) => (
+            <div key={i} className={`h-2 w-5 rounded-full ${i < week ? "bg-green-500" : "bg-gray-200"}`} />
+          ))}
         </div>
+      </div>
+      <div className="flex items-center gap-2 text-sm">
+        {debt > 0 && <span className="bg-red-100 text-red-700 px-2 py-0.5 rounded-full text-xs">⚠️ -{debt}</span>}
+        <span className="font-bold text-green-700">💰 {coins}</span>
+        {portfolio() > 0 && <span className="text-blue-600">📊 {portfolio()}</span>}
+      </div>
+    </div>
+  );
 
-        <Button onClick={() => setPhase("jars")} className="w-full py-4 text-lg font-bold rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 border-0 text-white shadow-lg">
+  const NewWeekBanner = () => newWeekMsg ? (
+    <div className="fixed top-16 left-1/2 -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-xl shadow-lg z-20 font-bold text-sm animate-pulse">
+      💰 +{ALLOWANCE} νομίσματα! Νέα εβδομάδα!
+    </div>
+  ) : null;
+
+  // ─── INTRO ───────────────────────────────────────────────────────────────
+  if (phase === "intro") return (
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
+        <div className="text-6xl mb-4">🏙️</div>
+        <h1 className="text-3xl font-bold text-green-800 mb-2">Η Δική μου Πόλη</h1>
+        <p className="text-gray-500 mb-1 text-sm">από KidsInBusiness.gr</p>
+        <p className="text-gray-600 mb-6">Διαχειρίσου τα χρήματά σου για 6 εβδομάδες!</p>
+        <div className="bg-green-50 rounded-xl p-4 text-left mb-6 text-sm space-y-2">
+          <div className="flex gap-2"><span>💰</span><span>Παίρνεις <strong>30 νομίσματα</strong> κάθε εβδομάδα</span></div>
+          <div className="flex gap-2"><span>🛒</span><span>Αγόραζε <strong>ανάγκες</strong> (πράσινο) και <strong>επιθυμίες</strong> (κίτρινο)</span></div>
+          <div className="flex gap-2"><span>📈</span><span>Επένδυε στο <strong>χρηματιστήριο</strong> — οι τιμές αλλάζουν!</span></div>
+          <div className="flex gap-2"><span>🎲</span><span>Κάθε εβδομάδα υπάρχει μια <strong>έκπληξη</strong>!</span></div>
+          <div className="flex gap-2"><span>⚠️</span><span>Αν ξοδέψεις παραπάνω, μπαίνεις σε <strong>χρέος</strong> — ποινή στο τέλος!</span></div>
+        </div>
+        <Button onClick={resetGame} className="w-full bg-green-600 hover:bg-green-700 text-white text-lg py-6">
           Ξεκινάμε! 🚀
         </Button>
-        <button onClick={() => navigate("/book")} className="mt-3 text-sm text-gray-400 hover:text-gray-600">← Πίσω στα κεφάλαια</button>
+        <button onClick={() => navigate("/book")} className="mt-4 text-sm text-gray-400 hover:text-gray-600 block w-full">
+          ← Πίσω στο βιβλίο
+        </button>
       </div>
     </div>
   );
 
-  // ══════════════════════════════════════════════════════════════════════════
-  //  PHASE: JARS
-  // ══════════════════════════════════════════════════════════════════════════
-  if (phase === "jars") {
-    const jarConfig = [
-      { key: "spending" as const, emoji: "🛍️", label: "Ξόδεμα", color: "bg-blue-100 border-blue-300", textColor: "text-blue-700", desc: "Για αγορές & διασκέδαση" },
-      { key: "saving" as const, emoji: "🐷", label: "Αποταμίευση", color: "bg-green-100 border-green-300", textColor: "text-green-700", desc: "Για τον στόχο σου" },
-      { key: "giving" as const, emoji: "❤️", label: "Προσφορά", color: "bg-pink-100 border-pink-300", textColor: "text-pink-700", desc: "Για να βοηθάς άλλους" },
-    ];
+  // ─── SHOP ────────────────────────────────────────────────────────────────
+  if (phase === "shop") return (
+    <div className="min-h-screen bg-gray-50">
+      <StatusBar />
+      <NewWeekBanner />
+      <div className="max-w-2xl mx-auto p-4">
+        <h2 className="text-xl font-bold text-gray-800 mb-1">🛒 Αγορά — Εβδομάδα {week}</h2>
+        <p className="text-sm text-gray-500 mb-4">Τι χρειάζεσαι αυτή την εβδομάδα; Έχεις 💰 {coins} νομίσματα.</p>
 
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50 px-4 py-8">
-        <div className="max-w-lg mx-auto">
-          <div className="text-center mb-6">
-            <div className="text-4xl mb-2">🫙</div>
-            <h2 className="text-2xl font-black text-gray-800">Φάση 1: Τα 3 Βάζα</h2>
-            <p className="text-gray-500 mt-1">Έχεις <span className="font-bold text-emerald-600">50 coins</span> εβδομαδιαίο χαρτζιλίκι. Πώς τα μοιράζεις;</p>
-          </div>
-
-          {/* Remaining coins */}
-          <div className={`text-center py-3 rounded-2xl mb-5 font-bold text-lg ${remaining === 0 ? "bg-green-100 text-green-700" : remaining < 0 ? "bg-red-100 text-red-700" : "bg-yellow-100 text-yellow-700"}`}>
-            {remaining === 0 ? "✅ Μοίρασες όλα τα coins!" : remaining > 0 ? `🪙 ${remaining} coins ακόμα να μοιράσεις` : `❌ Ξεπέρασες κατά ${Math.abs(remaining)} coins!`}
-          </div>
-
-          <div className="space-y-4 mb-6">
-            {jarConfig.map(jar => (
-              <div key={jar.key} className={`${jar.color} border-2 rounded-2xl p-4`}>
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl">{jar.emoji}</span>
-                    <div>
-                      <p className={`font-bold ${jar.textColor}`}>{jar.label}</p>
-                      <p className="text-xs text-gray-500">{jar.desc}</p>
-                    </div>
-                  </div>
-                  <span className={`text-2xl font-black ${jar.textColor}`}>{jars[jar.key]}🪙</span>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
+          {products.map(prod => {
+            const isBought = bought.has(prod.id);
+            const isNeed = prod.type === "need";
+            return (
+              <div key={prod.id}
+                className={`border-2 rounded-xl p-4 bg-white shadow-sm transition-opacity ${
+                  isNeed ? "border-green-400" : "border-yellow-400"
+                } ${isBought ? "opacity-50" : ""}`}
+              >
+                <div className="text-3xl text-center mb-2">{prod.emoji}</div>
+                <div className="font-bold text-center text-gray-800 text-sm mb-1">{prod.name}</div>
+                <div className={`text-xs text-center px-2 py-0.5 rounded-full mb-2 ${
+                  isNeed ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"
+                }`}>
+                  {isNeed ? "ΑΝΑΓΚΗ" : "ΕΠΙΘΥΜΙΑ"}
                 </div>
-                <div className="flex items-center gap-3">
-                  <button onClick={() => setJars(j => ({ ...j, [jar.key]: Math.max(0, j[jar.key] - 5) }))}
-                    className="w-10 h-10 rounded-full bg-white border-2 border-current font-bold text-lg flex items-center justify-center">−</button>
-                  <div className="flex-1">
-                    <Progress value={(jars[jar.key] / 50) * 100} className="h-3" />
-                  </div>
-                  <button onClick={() => setJars(j => ({ ...j, [jar.key]: Math.min(50, j[jar.key] + 5) }))}
-                    className="w-10 h-10 rounded-full bg-white border-2 border-current font-bold text-lg flex items-center justify-center">+</button>
-                </div>
+                <div className="text-center font-bold text-green-700 mb-3">💰 {prod.price}</div>
+                <Button size="sm" onClick={() => buyProduct(prod)} disabled={isBought}
+                  className={`w-full text-xs ${isBought
+                    ? "bg-gray-200 text-gray-500 hover:bg-gray-200 cursor-default"
+                    : "bg-green-600 hover:bg-green-700 text-white"}`}>
+                  {isBought ? "✓ Αγοράστηκε" : "Αγορά"}
+                </Button>
               </div>
-            ))}
-          </div>
-
-          <Button
-            onClick={() => setPhase("scenarios")}
-            disabled={remaining !== 0}
-            className="w-full py-4 text-lg font-bold rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 border-0 text-white shadow-lg disabled:opacity-50"
-          >
-            Έτοιμος! Πάμε στις Αποφάσεις →
-          </Button>
+            );
+          })}
         </div>
+
+        <div className="bg-blue-50 rounded-xl p-3 text-sm text-blue-700 mb-4">
+          💡 <strong>Συμβουλή:</strong> Αγόρασε πρώτα τις <strong>ΑΝΑΓΚΕΣ</strong> (πράσινο πλαίσιο). Οι επιθυμίες μπορούν να περιμένουν!
+        </div>
+
+        <Button onClick={() => setPhase("stocks")} className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+          Πάμε στο Χρηματιστήριο →
+        </Button>
       </div>
-    );
-  }
+    </div>
+  );
 
-  // ══════════════════════════════════════════════════════════════════════════
-  //  PHASE: SCENARIOS
-  // ══════════════════════════════════════════════════════════════════════════
-  if (phase === "scenarios") {
-    const scenario = SCENARIOS[currentScenario];
-    const progressPct = ((currentScenario) / SCENARIOS.length) * 100;
-
+  // ─── STOCKS ──────────────────────────────────────────────────────────────
+  if (phase === "stocks") {
+    const prevWeekPrices = week > 1
+      ? { lego: getPrice(week - 1, "lego"), techkids: getPrice(week - 1, "techkids"), foodco: getPrice(week - 1, "foodco") }
+      : null;
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 px-4 py-6">
-        <div className="max-w-lg mx-auto">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-4">
-            <div className="text-sm text-gray-500 font-medium">Κατάσταση {currentScenario + 1} / {SCENARIOS.length}</div>
-            <div className={`text-sm font-bold px-3 py-1 rounded-full ${timer <= 5 ? "bg-red-100 text-red-700" : "bg-blue-100 text-blue-700"}`}>
-              ⏱ {timer}s
-            </div>
-          </div>
-          <Progress value={progressPct} className="h-2 mb-5" />
+      <div className="min-h-screen bg-gray-50">
+        <StatusBar />
+        <div className="max-w-2xl mx-auto p-4">
+          <h2 className="text-xl font-bold text-gray-800 mb-1">📈 Χρηματιστήριο — Εβδομάδα {week}</h2>
+          <p className="text-sm text-gray-500 mb-4">Θέλεις να επενδύσεις; Οι τιμές αλλάζουν κάθε εβδομάδα!</p>
 
-          {/* Chapter link */}
-          <div className="text-xs text-purple-500 font-medium mb-3">📖 Σχετίζεται με Κεφάλαιο {scenario.chapter}</div>
-
-          {/* Situation */}
-          <div className="bg-white rounded-2xl border shadow-sm p-5 mb-4">
-            <div className="text-4xl mb-3 text-center">{scenario.emoji}</div>
-            <p className="text-gray-800 font-medium text-center leading-relaxed">{scenario.situation}</p>
-          </div>
-
-          {/* Choices */}
-          {!showConsequence ? (
-            <div className="space-y-3">
-              <p className="text-sm text-gray-500 text-center font-medium">Τι κάνεις;</p>
-              {scenario.choices.map((choice, i) => (
-                <button
-                  key={i}
-                  onClick={() => handleChoice(i)}
-                  className="w-full text-left p-4 rounded-2xl border-2 border-gray-100 bg-white hover:border-purple-300 hover:shadow-md transition-all font-medium text-gray-700"
-                >
-                  {choice.text}
-                </button>
-              ))}
-            </div>
-          ) : (
-            /* Consequence */
-            <div className={`rounded-2xl p-5 border-2 ${
-              scenario.choices[selectedChoice!].wisdomPoints >= 2 ? "bg-green-50 border-green-300" : "bg-orange-50 border-orange-300"
-            }`}>
-              <div className="text-4xl text-center mb-3">{scenario.choices[selectedChoice!].emoji}</div>
-              <p className="text-center font-bold text-gray-800 mb-2">Διάλεξες: "{scenario.choices[selectedChoice!].text}"</p>
-              <p className="text-center text-gray-600 text-sm mb-4">{scenario.choices[selectedChoice!].consequence}</p>
-
-              {/* Coins effect */}
-              {scenario.choices[selectedChoice!].coinsChange !== 0 && (
-                <div className={`text-center text-sm font-bold mb-3 ${scenario.choices[selectedChoice!].coinsChange > 0 ? "text-green-600" : "text-red-600"}`}>
-                  {scenario.choices[selectedChoice!].coinsChange > 0 ? "+" : ""}{scenario.choices[selectedChoice!].coinsChange} coins
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+            {STOCK_DEFS.map(def => {
+              const price = getPrice(week, def.id);
+              const prev = prevWeekPrices ? prevWeekPrices[def.id] : price;
+              const diff = price - prev;
+              const trend = diff > 0 ? "↑" : diff < 0 ? "↓" : "→";
+              const trendColor = diff > 0 ? "text-green-600" : diff < 0 ? "text-red-600" : "text-gray-400";
+              return (
+                <div key={def.id} className="border-2 border-gray-200 rounded-xl p-4 bg-white shadow-sm">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-2xl">{def.emoji}</span>
+                    <span className={`text-xl font-bold ${trendColor}`}>{trend}</span>
+                  </div>
+                  <div className="font-bold text-gray-800 text-sm">{def.name}</div>
+                  <div className="text-xs text-gray-400 mb-1">{def.desc}</div>
+                  {diff !== 0 && week > 1 && (
+                    <div className={`text-xs mb-1 ${trendColor}`}>
+                      {diff > 0 ? `+${diff}` : diff} από περασμένη εβδ.
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-lg font-bold text-green-700">💰 {price}</span>
+                    <span className="text-xs text-gray-500">Έχεις: {owned[def.id]} μτχ.</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button size="sm" onClick={() => buyStock(def.id)} disabled={coins < price}
+                      className="flex-1 bg-green-600 hover:bg-green-700 text-white text-xs">
+                      Αγορά
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => sellStock(def.id)} disabled={owned[def.id] === 0}
+                      className="flex-1 text-xs">
+                      Πώληση
+                    </Button>
+                  </div>
                 </div>
-              )}
+              );
+            })}
+          </div>
 
-              <div className="flex justify-center gap-1 mb-4">
-                {[1,2,3].map(p => (
-                  <span key={p} className={`text-2xl ${p <= scenario.choices[selectedChoice!].wisdomPoints ? "opacity-100" : "opacity-20"}`}>⭐</span>
-                ))}
-              </div>
-
-              <Button onClick={handleNextScenario} className="w-full bg-gradient-to-r from-purple-500 to-pink-500 border-0 text-white font-bold rounded-xl">
-                {currentScenario < SCENARIOS.length - 1 ? "Επόμενη κατάσταση →" : "Δες τα αποτελέσματα! 🏆"}
-              </Button>
+          {portfolio() > 0 && (
+            <div className="bg-blue-50 rounded-xl p-3 text-sm text-blue-700 mb-3">
+              📊 Portfolio σου: <strong>{portfolio()} νομίσματα</strong>
+              {" "}(LEGO ×{owned.lego} · TechKids ×{owned.techkids} · FoodCo ×{owned.foodco})
             </div>
           )}
+          {coins === 0 && (
+            <div className="bg-yellow-50 rounded-xl p-3 text-sm text-yellow-700 mb-3">
+              💡 Δεν έχεις νομίσματα για αγορά μετοχών. Μπορείς να πουλήσεις αν θέλεις!
+            </div>
+          )}
+
+          <Button onClick={goToEvent} className="w-full bg-purple-600 hover:bg-purple-700 text-white">
+            Δες τι έγινε αυτή την εβδομάδα →
+          </Button>
         </div>
       </div>
     );
   }
 
-  // ══════════════════════════════════════════════════════════════════════════
-  //  PHASE: RESULTS
-  // ══════════════════════════════════════════════════════════════════════════
-  const { stars, totalWisdom, maxWisdom, totalGiving, totalSaving, coinsLeft } = calcResults();
-
-  const starColors = ["", "text-gray-400", "text-orange-400", "text-yellow-400", "text-yellow-500", "text-yellow-500"];
-  const resultMessages = [
-    "",
-    "Συνέχισε να μαθαίνεις — κάθε απόφαση είναι εμπειρία!",
-    "Καλή αρχή! Με λίγη εξάσκηση θα γίνεις εξαιρετικός!",
-    "Μπράβο! Έδειξες σοφή οικονομική σκέψη!",
-    "Εξαιρετικά! Σκέφτεσαι σαν αληθινός επενδυτής!",
-    "Τέλειο! Είσαι έτοιμος να κατακτήσεις τον κόσμο της οικονομίας! 🌟"
-  ];
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-pink-50 px-4 py-8">
-      <div className="max-w-lg mx-auto">
-        {/* Trophy */}
-        <div className="text-center mb-6">
-          <div className="text-7xl mb-3">🏆</div>
-          <h2 className="text-2xl font-black text-gray-800">Αποτελέσματα!</h2>
-          <p className="text-gray-500 mt-1">{starLabels[stars]}</p>
-        </div>
-
-        {/* Stars */}
-        <div className="bg-white rounded-2xl border shadow-sm p-6 mb-5 text-center">
-          <div className="flex justify-center gap-2 mb-3">
-            {[1,2,3,4,5].map(s => (
-              <span key={s} className={`text-4xl transition-all ${s <= stars ? starColors[stars] : "opacity-20"}`}>⭐</span>
-            ))}
-          </div>
-          <p className="text-gray-600 font-medium">{resultMessages[stars]}</p>
-          <p className="text-sm text-gray-400 mt-1">{totalWisdom} / {maxWisdom} πόντοι σοφίας</p>
-        </div>
-
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-3 mb-5">
-          <div className="bg-white rounded-xl border p-3 text-center">
-            <div className="text-2xl mb-1">🪙</div>
-            <div className="text-xl font-black text-gray-800">{coinsLeft}</div>
-            <div className="text-xs text-gray-500">coins απέμειναν</div>
-          </div>
-          <div className="bg-white rounded-xl border p-3 text-center">
-            <div className="text-2xl mb-1">🐷</div>
-            <div className="text-xl font-black text-green-600">{totalSaving}</div>
-            <div className="text-xs text-gray-500">αποταμίευση</div>
-          </div>
-          <div className="bg-white rounded-xl border p-3 text-center">
-            <div className="text-2xl mb-1">❤️</div>
-            <div className="text-xl font-black text-pink-600">{totalGiving}</div>
-            <div className="text-xs text-gray-500">προσφορά</div>
-          </div>
-        </div>
-
-        {/* Decision breakdown */}
-        <div className="bg-white rounded-2xl border shadow-sm p-5 mb-5">
-          <h3 className="font-bold text-gray-800 mb-3">Οι αποφάσεις σου:</h3>
-          <div className="space-y-2">
-            {results.map((r, i) => (
-              <div key={i} className={`rounded-xl p-3 ${r.choice.wisdomPoints >= 2 ? "bg-green-50" : "bg-orange-50"}`}>
-                <div className="flex items-start justify-between gap-2 mb-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">{SCENARIOS[i].emoji}</span>
-                    <span className="text-xs text-gray-400 font-medium">Κατάσταση {i + 1}</span>
-                  </div>
-                  <div className="flex gap-0.5 shrink-0">
-                    {[1,2,3].map(p => (
-                      <span key={p} className={`text-sm ${p <= r.choice.wisdomPoints ? "text-yellow-500" : "text-gray-200"}`}>⭐</span>
-                    ))}
-                  </div>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-base">{r.choice.emoji}</span>
-                  <span className="text-sm text-gray-700 leading-snug">{r.choice.text}</span>
-                </div>
+  // ─── EVENT ───────────────────────────────────────────────────────────────
+  if (phase === "event") return (
+    <div className="min-h-screen bg-gray-50">
+      <StatusBar />
+      <div className="max-w-sm mx-auto p-4 pt-8">
+        <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
+          <div className="text-7xl mb-4" style={{ animation: "bounce 1s infinite" }}>{event?.emoji}</div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-3">{event?.title}</h2>
+          <p className="text-gray-600 mb-6">{event?.body}</p>
+          <div className="bg-gray-50 rounded-xl p-4 mb-6">
+            {event && event.coins !== 0 && (
+              <div className={`text-xl font-bold ${event.coins > 0 ? "text-green-600" : "text-red-600"}`}>
+                {event.coins > 0 ? `+${event.coins}` : event.coins} 💰 νομίσματα
               </div>
-            ))}
+            )}
+            {event?.stock && (
+              <div className={`text-lg font-bold ${event.stock.delta > 0 ? "text-green-600" : "text-red-600"}`}>
+                {STOCK_DEFS.find(s => s.id === event.stock!.id)?.name}:{" "}
+                {event.stock.delta > 0 ? `+${event.stock.delta}` : event.stock.delta} 💰/μετοχή
+              </div>
+            )}
+            {event?.coins === 0 && !event?.stock && (
+              <div className="text-gray-500 text-sm">Καμία επίπτωση αυτή την εβδομάδα.</div>
+            )}
           </div>
-        </div>
-
-        {/* Actions */}
-        <div className="space-y-3">
-          <Button onClick={() => { setPhase("intro"); setResults([]); setCurrentScenario(0); setSelectedChoice(null); setShowConsequence(false); }}
-            className="w-full py-3 font-bold rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 border-0 text-white">
-            🔄 Παίξε ξανά με διαφορετικές επιλογές!
-          </Button>
-          <Button variant="outline" onClick={() => navigate("/book")} className="w-full rounded-2xl">
-            ← Πίσω στα κεφάλαια
+          <Button onClick={applyEvent} className="w-full bg-purple-600 hover:bg-purple-700 text-white">
+            Κατάλαβα! →
           </Button>
         </div>
       </div>
     </div>
   );
+
+  // ─── SUMMARY ─────────────────────────────────────────────────────────────
+  if (phase === "summary") {
+    const isLastWeek = week >= TOTAL_WEEKS;
+    const boughtNeeds = products.filter(p => p.type === "need" && bought.has(p.id));
+    const boughtWants = products.filter(p => p.type === "want" && bought.has(p.id));
+    const skippedNeeds = products.filter(p => p.type === "need" && !bought.has(p.id));
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <StatusBar />
+        <div className="max-w-2xl mx-auto p-4">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">📋 Σύνοψη — Εβδομάδα {week}</h2>
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="bg-white rounded-xl p-4 text-center shadow-sm">
+              <div className="text-2xl mb-1">💰</div>
+              <div className="text-2xl font-bold text-green-700">{coins}</div>
+              <div className="text-xs text-gray-500">νομίσματα</div>
+            </div>
+            <div className="bg-white rounded-xl p-4 text-center shadow-sm">
+              <div className="text-2xl mb-1">📊</div>
+              <div className="text-2xl font-bold text-blue-700">{portfolio()}</div>
+              <div className="text-xs text-gray-500">portfolio</div>
+            </div>
+            {debt > 0 && (
+              <div className="col-span-2 bg-red-50 rounded-xl p-4 text-center shadow-sm">
+                <div className="text-2xl font-bold text-red-700">⚠️ Χρέος: {debt}</div>
+                <div className="text-xs text-red-400">ποινή × 1.5 στο τελικό σκορ</div>
+              </div>
+            )}
+          </div>
+
+          {boughtNeeds.length > 0 && (
+            <div className="bg-green-50 rounded-xl p-3 mb-2 text-sm">
+              <span className="font-semibold text-green-800">✅ Ανάγκες: </span>
+              {boughtNeeds.map(p => `${p.emoji} ${p.name}`).join(" · ")}
+            </div>
+          )}
+          {boughtWants.length > 0 && (
+            <div className="bg-yellow-50 rounded-xl p-3 mb-2 text-sm">
+              <span className="font-semibold text-yellow-700">🛍️ Επιθυμίες: </span>
+              {boughtWants.map(p => `${p.emoji} ${p.name}`).join(" · ")}
+            </div>
+          )}
+          {skippedNeeds.length > 0 && (
+            <div className="bg-orange-50 rounded-xl p-3 mb-2 text-sm">
+              <span className="font-semibold text-orange-700">⚠️ Παρέλειψες: </span>
+              {skippedNeeds.map(p => `${p.emoji} ${p.name}`).join(" · ")}
+              <span className="text-orange-500"> — προσπάθησε να καλύπτεις τις ανάγκες σου!</span>
+            </div>
+          )}
+          {event && (
+            <div className="bg-purple-50 rounded-xl p-3 mb-4 text-sm">
+              <span className="font-semibold text-purple-800">{event.emoji} Γεγονός: </span>
+              {event.title}
+            </div>
+          )}
+
+          <div className="bg-white rounded-xl p-4 mb-4 shadow-sm border-2 border-gray-100">
+            <div className="text-sm text-gray-500 mb-1">Συνολική αξία τώρα</div>
+            <div className="text-3xl font-bold text-green-700">{netWorth()} 💰</div>
+            <div className="text-xs text-gray-400">νομίσματα + portfolio{debt > 0 ? " − χρέος×1.5" : ""}</div>
+          </div>
+
+          <Button onClick={nextWeek} className="w-full bg-green-600 hover:bg-green-700 text-white text-lg py-6">
+            {isLastWeek ? "🏁 Δες τα Αποτελέσματα!" : `Εβδομάδα ${week + 1} →`}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── RESULTS ─────────────────────────────────────────────────────────────
+  if (phase === "results") {
+    const g = getGrade();
+    const score = netWorth() + wisdom;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+          <div className="text-center mb-6">
+            <div className="text-5xl mb-3">{g.stars}</div>
+            <h2 className="text-2xl font-bold text-gray-800">{g.grade}</h2>
+            <p className={`text-sm mt-2 ${g.color} font-medium`}>{g.msg}</p>
+          </div>
+          <div className="space-y-2 mb-6 text-sm">
+            <div className="flex justify-between p-3 bg-green-50 rounded-xl">
+              <span>💰 Νομίσματα</span><span className="font-bold text-green-700">{coins}</span>
+            </div>
+            <div className="flex justify-between p-3 bg-blue-50 rounded-xl">
+              <span>📊 Portfolio</span><span className="font-bold text-blue-700">{portfolio()}</span>
+            </div>
+            {debt > 0 && (
+              <div className="flex justify-between p-3 bg-red-50 rounded-xl">
+                <span>⚠️ Χρέος (×1.5 ποινή)</span><span className="font-bold text-red-700">-{Math.round(debt * 1.5)}</span>
+              </div>
+            )}
+            <div className="flex justify-between p-3 bg-purple-50 rounded-xl">
+              <span>🧠 Σωστές αποφάσεις</span><span className="font-bold text-purple-700">+{wisdom} pts</span>
+            </div>
+            <div className="flex justify-between p-4 bg-gray-100 rounded-xl border-2 border-gray-200">
+              <span className="font-bold">Τελικό Σκορ</span>
+              <span className="text-xl font-bold">{score}</span>
+            </div>
+          </div>
+          <Button onClick={() => { setPhase("intro"); }} className="w-full bg-green-600 hover:bg-green-700 text-white mb-3">
+            🔄 Παίξε ξανά!
+          </Button>
+          <button onClick={() => navigate("/book")} className="w-full text-sm text-gray-400 hover:text-gray-700 py-2">
+            ← Πίσω στο βιβλίο
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
 }
