@@ -28,7 +28,7 @@ const DREAMS: Dream[] = [
 ];
 
 const BUSINESSES: BizDef[] = [
-  { id:"lemonade",  name:"Λεμοναδόσταση",      emoji:"🍋", cost:20, income:6,  desc:"Πουλάς λεμονάδα στη γειτονιά" },
+  { id:"lemonade",  name:"Στάντ λεμονάδας",      emoji:"🍋", cost:20, income:6,  desc:"Πουλάς λεμονάδα στη γειτονιά σου" },
   { id:"drawings",  name:"Ζωγραφιές προς πώληση", emoji:"🎨", cost:15, income:4, desc:"Πουλάς τις ζωγραφιές σου στο σχολείο" },
   { id:"tutoring",  name:"Ιδιαίτερα Μαθήματα", emoji:"📖", cost:25, income:8,  desc:"Βοηθάς μικρότερους μαθητές" },
 ];
