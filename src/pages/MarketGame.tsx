@@ -189,7 +189,7 @@ export default function MarketGame() {
     setDream(selectedDream);
     setPhase("shop");
     setWeek(1);
-    setCoins(ALLOWANCE);
+    setCoins(100);
     setDebt(0);
     setOwned({ lego:0, techkids:0, foodco:0 });
     setOverrides({ lego:0, techkids:0, foodco:0 });
