@@ -24,7 +24,7 @@ const TOTAL_WEEKS  = 6;
 const DREAMS: Dream[] = [
   { id:"bike",  name:"Ποδήλατο",           emoji:"🚲", cost:50, desc:"Ένα καινούριο ποδήλατο για βόλτες!" },
   { id:"trip",  name:"Ταξίδι στη θάλασσα", emoji:"🏖️", cost:70, desc:"Ένα ταξίδι με την οικογένεια!" },
-  { id:"puppy", name:"Κουτάβι",            emoji:"🐶", cost:60, desc:"Ένας μικρός φίλος για πάντα!" },
+  { id:"puppy", name:"Υιοθεσία κουταβιού",   emoji:"🐶", cost:60, desc:"Υιοθετείς ένα κουτάβι — τα νομίσματα καλύπτουν τροφή & κτηνιατρική φροντίδα!" },
 ];
 
 const BUSINESSES: BizDef[] = [
