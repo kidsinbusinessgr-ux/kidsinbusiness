@@ -138,9 +138,10 @@ export default function BookChapter() {
   };
 
   const isMathCorrect = (idx: number) => {
-    const ans = mathAnswers[idx].trim().replace(",", ".");
-    const correct = chapter.mathChallenge[idx].answer.replace(",", ".");
-    return ans === correct;
+    const ans = parseFloat(mathAnswers[idx].trim().replace(",", "."));
+    const correct = parseFloat(chapter.mathChallenge[idx].answer.replace(",", "."));
+    if (!isNaN(ans) && !isNaN(correct)) return ans === correct;
+    return mathAnswers[idx].trim().replace(",", ".") === chapter.mathChallenge[idx].answer.replace(",", ".");
   };
 
   // =====================
