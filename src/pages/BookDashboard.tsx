@@ -108,10 +108,10 @@ export default function BookDashboard() {
   const overallPercent = Math.round((completedCount / BOOK_CHAPTERS.length) * 100);
 
   const islands = [
-    { name: "Νησί των Βασικών", emoji: "🏝️", chapters: BOOK_CHAPTERS.slice(0, 4) },
-    { name: "Νησί της Σοφίας", emoji: "🌴", chapters: BOOK_CHAPTERS.slice(4, 8) },
-    { name: "Νησί του Χρήματος", emoji: "⛵", chapters: BOOK_CHAPTERS.slice(8, 12) },
-    { name: "Νησί των Επενδυτών", emoji: "🏆", chapters: BOOK_CHAPTERS.slice(12, 16) },
+    { name: "Το Νησί της Ανακάλυψης", emoji: "🏝️", chapters: BOOK_CHAPTERS.slice(0, 4) },
+    { name: "Το Νησί της Σοφίας", emoji: "🌴", chapters: BOOK_CHAPTERS.slice(4, 8) },
+    { name: "Το Νησί του Χρήματος", emoji: "⛵", chapters: BOOK_CHAPTERS.slice(8, 12) },
+    { name: "Το Νησί των Επενδυτών", emoji: "🏆", chapters: BOOK_CHAPTERS.slice(12, 16) },
   ];
 
   return (
