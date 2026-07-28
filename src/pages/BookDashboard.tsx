@@ -23,9 +23,16 @@ export default function BookDashboard() {
   const [hasCode, setHasCode] = useState(false);
   const [isFounder, setIsFounder] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
+  const [showIntro, setShowIntro] = useState(false);
+
+  // Audio source — update path when file is ready
+  const AUTHOR_AUDIO_SRC = "/author-message.mp3";
 
   useEffect(() => {
     loadProgress();
+    if (!localStorage.getItem("intro_seen")) {
+      setShowIntro(true);
+    }
   }, []);
 
   const loadProgress = async () => {
@@ -114,8 +121,45 @@ export default function BookDashboard() {
     { name: "Το Νησί των Επενδυτών", emoji: "🏆", chapters: BOOK_CHAPTERS.slice(12, 16) },
   ];
 
+  const dismissIntro = () => {
+    localStorage.setItem("intro_seen", "1");
+    setShowIntro(false);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+      {/* Intro Modal — first visit only */}
+      {showIntro && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-5">
+            <div className="text-center space-y-1">
+              <div className="text-4xl">🎧</div>
+              <h2 className="text-xl font-bold text-gray-800">Μήνυμα από τη συγγραφέα</h2>
+              <p className="text-sm text-gray-500">Σταυρούλα Βούλγαρη</p>
+            </div>
+            <p className="text-sm text-gray-700 leading-relaxed text-center">
+              Αγαπητέ μικρέ επενδυτή, καλωσόρισες! Αγόρασες το βιβλίο{" "}
+              <span className="font-semibold">«Μικροί Επενδυτές, Μεγάλο Μέλλον»</span> και με τον
+              κωδικό που βρήκες μέσα, ξεκλείδωσες αυτή την πλατφόρμα. Εδώ θα ταξιδέψεις σε 4
+              νησιά γνώσης, θα λύσεις κουίζ και θα μαζέψεις νομίσματα. Πριν ξεκινήσεις, άκου
+              ένα μικρό μήνυμά μου!
+            </p>
+            <audio
+              controls
+              className="w-full rounded-lg"
+              src={AUTHOR_AUDIO_SRC}
+            >
+              Ο browser σου δεν υποστηρίζει audio.
+            </audio>
+            <button
+              onClick={dismissIntro}
+              className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-3 rounded-xl hover:opacity-90 transition"
+            >
+              Ξεκινάω την περιπέτεια! 🚀
+            </button>
+          </div>
+        </div>
+      )}
       {/* Header */}
       <div className="bg-white/80 backdrop-blur border-b sticky top-0 z-10 px-4 py-3">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
