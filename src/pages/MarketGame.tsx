@@ -279,7 +279,7 @@ export default function MarketGame() {
   // ══════════════════════════════════════════════════════════════════════════════
   if (screen === "hub") {
     const modules = [
-      { id:"m1" as Screen, emoji:"🏪", title:"Ξεκίνα Επιχείρηση", desc:"Επέλεξε και αγόρασε την πρώτη σου επιχείρηση!", color:"from-emerald-400 to-teal-600",    bg:"bg-emerald-500" },
+      { id:"m1" as Screen, emoji:"🐷", title:"Ο Κουμπαράς μου", desc:"Αποτάμιευσε χρήματα και φτάσε τον στόχο σου!", color:"from-emerald-400 to-teal-600", bg:"bg-emerald-500" },
       { id:"m2" as Screen, emoji:"📊", title:"Κέρδος ή Ζημιά;",    desc:"Ξέρεις να υπολογίζεις αν η επιχείρηση κερδίζει;", color:"from-blue-400 to-indigo-600",  bg:"bg-blue-500"   },
       { id:"m3" as Screen, emoji:"⚠️", title:"Κάρτες Ρίσκου",     desc:"Αντιμετώπισε εκπλήξεις και πάρε αποφάσεις!",    color:"from-orange-400 to-rose-500",  bg:"bg-orange-500" },
       { id:"m4" as Screen, emoji:"🏆", title:"Μεγάλος Επιχειρηματίας", desc:"Παίξε εναντίον ενός αντιπάλου για 6 μέρες!", color:"from-violet-500 to-purple-700", bg:"bg-violet-600" },
