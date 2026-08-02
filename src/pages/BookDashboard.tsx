@@ -135,7 +135,7 @@ export default function BookDashboard() {
             <div className="text-center space-y-1">
               <div className="text-4xl">🎧</div>
               <h2 className="text-xl font-bold text-gray-800">Μήνυμα από τη συγγραφέα</h2>
-              <p className="text-sm text-gray-500">Σταυρούλα Βούλγαρη</p>
+              <p className="text-sm text-gray-500">Σταυρούλα Αρνιθενού</p>
             </div>
             <p className="text-sm text-gray-700 leading-relaxed text-center">
               Αγαπητέ μικρέ επενδυτή, καλωσόρισες! Αγόρασες το βιβλίο{" "}
