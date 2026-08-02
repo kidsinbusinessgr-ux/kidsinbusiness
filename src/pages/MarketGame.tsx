@@ -129,17 +129,19 @@ const M1_WEEKS: { items:M1Item[]; bonus?:number; bonusText?:string }[] = [
 let _muted = false;
 let _greekVoice: SpeechSynthesisVoice | null = null;
 
+const MALE_NAMES = ["stefanos", "stefan", "nikos", "νίκος", "costas", "κώστας", "alexandros"];
+const FEMALE_NAMES = ["νέφελη", "nefeli", "melina", "female", "woman", "google", "zira"];
+
 const _loadGreekVoice = () => {
   if (!("speechSynthesis" in window)) return;
   const voices = window.speechSynthesis.getVoices();
   const elVoices = voices.filter(v => v.lang === "el-GR" || v.lang.startsWith("el"));
-  // Prefer female Greek voices (Νέφελη=Windows, Melina=macOS, Google ελληνικά=female by default)
-  const femaleNames = ["νέφελη", "melina", "female", "woman", "google"];
-  _greekVoice =
-    elVoices.find(v => femaleNames.some(f => v.name.toLowerCase().includes(f))) ||
-    elVoices[0] ||
-    voices.find(v => v.name.toLowerCase().includes("greek")) ||
-    null;
+  // 1. Known female Greek voices
+  const female = elVoices.find(v => FEMALE_NAMES.some(f => v.name.toLowerCase().includes(f)));
+  // 2. Non-male Greek voices
+  const nonMale = elVoices.find(v => !MALE_NAMES.some(m => v.name.toLowerCase().includes(m)));
+  _greekVoice = female || nonMale || elVoices[0] || null;
+  if (_greekVoice) console.log("[TTS] Voice selected:", _greekVoice.name, _greekVoice.lang);
 };
 
 if (typeof window !== "undefined" && "speechSynthesis" in window) {
@@ -149,11 +151,13 @@ if (typeof window !== "undefined" && "speechSynthesis" in window) {
 
 const speak = (text: string) => {
   if (_muted || !("speechSynthesis" in window)) return;
+  // Retry voice load if not ready yet
+  if (!_greekVoice) _loadGreekVoice();
   window.speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
   u.lang = "el-GR";
   u.rate = 0.82;
-  u.pitch = 1.05;
+  u.pitch = 1.1;
   if (_greekVoice) u.voice = _greekVoice;
   window.speechSynthesis.speak(u);
 };
