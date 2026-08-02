@@ -29,7 +29,7 @@ const M2 = [
   { biz:"💪 Γυμναστήριο",      income:500, expense:200, fact:"Πολλά νέα μέλη εγγράφηκαν τον Ιανουάριο!" },
   { biz:"💈 Κομμωτήριο",       income:210, expense:240, fact:"Αγοράστηκαν νέα προϊόντα ομορφιάς." },
   { biz:"🧖 Spa Center",       income:380, expense:170, fact:"Οι πελάτες αγαπούν τα νέα θεραπευτικά πακέτα." },
-  { biz:"🎮 Κατ. Παιχνίδια",   income:290, expense:290, fact:"Εσοδα και έξοδα ισοφαρίστηκαν αυτόν τον μήνα." },
+  { biz:"🎮 Μαγαζί Παιχνίδια",   income:290, expense:290, fact:"Εσοδα και έξοδα ισοφαρίστηκαν αυτόν τον μήνα." },
   { biz:"🏪 Super Market",     income:600, expense:250, fact:"Σεζόν διακοπών — πολύ κόσμος!" },
   { biz:"🚙 Rent a Car",       income:420, expense:500, fact:"Επισκευές σε αυτοκίνητα ανέβασαν τα έξοδα." },
 ];
@@ -444,10 +444,10 @@ export default function MarketGame() {
   // ══════════════════════════════════════════════════════════════════════════════
   if (screen === "m2") {
     const scenario = m2Order[m2Step] ?? null;
-    const isProfit = scenario ? scenario.income > scenario.expense : false;
+    const result = scenario ? (scenario.income > scenario.expense ? "profit" : scenario.income < scenario.expense ? "loss" : "zero") : "profit";
     const diff = scenario ? scenario.income - scenario.expense : 0;
     const answered = m2Answer !== null;
-    const correct = m2Answer === (isProfit ? "profit" : "loss");
+    const correct = m2Answer === result;
 
     return (
       <div className="min-h-screen flex flex-col game-font" style={{ background:"linear-gradient(160deg,#dbeafe 0%,#bfdbfe 50%,#93c5fd 100%)" }}>
@@ -498,14 +498,19 @@ export default function MarketGame() {
               </div>
 
               {!answered ? (
-                <div className="px-4 pb-4 grid grid-cols-2 gap-2">
-                  <button onClick={() => { setM2Answer("profit"); if(isProfit) setM2Score(s=>s+1); }}
-                    className="py-4 rounded-2xl font-black text-white text-base shadow-md active:scale-95"
+                <div className="px-4 pb-4 grid grid-cols-3 gap-2">
+                  <button onClick={() => { setM2Answer("profit"); if(result==="profit") setM2Score(s=>s+1); }}
+                    className="py-3 rounded-2xl font-black text-white text-sm shadow-md active:scale-95"
                     style={{ background:"linear-gradient(90deg,#10b981,#059669)" }}>
                     ✅ Κέρδος!
                   </button>
-                  <button onClick={() => { setM2Answer("loss"); if(!isProfit) setM2Score(s=>s+1); }}
-                    className="py-4 rounded-2xl font-black text-white text-base shadow-md active:scale-95"
+                  <button onClick={() => { setM2Answer("zero"); if(result==="zero") setM2Score(s=>s+1); }}
+                    className="py-3 rounded-2xl font-black text-white text-sm shadow-md active:scale-95"
+                    style={{ background:"linear-gradient(90deg,#f59e0b,#d97706)" }}>
+                    ⚖️ Μηδέν!
+                  </button>
+                  <button onClick={() => { setM2Answer("loss"); if(result==="loss") setM2Score(s=>s+1); }}
+                    className="py-3 rounded-2xl font-black text-white text-sm shadow-md active:scale-95"
                     style={{ background:"linear-gradient(90deg,#f43f5e,#e11d48)" }}>
                     ❌ Ζημιά!
                   </button>
@@ -729,7 +734,7 @@ export default function MarketGame() {
           {/* CHAR SELECT */}
           {m4Phase === "char" && (
             <div className="flex-1 flex flex-col items-center justify-center gap-4">
-              <div className="bg-white rounded-3xl p-5 shadow-lg max-w-xs w-full">
+              <div className="bg-white rounded-3xl p-5 shadow-lg max-w-sm w-full">
                 <h2 className="text-xl font-black text-center text-violet-700 mb-1">Επέλεξε το πιόνι σου!</h2>
                 <p className="text-gray-500 text-xs text-center mb-3">Ξεκινάς με <strong>3.500€</strong> — ο αντίπαλός σου επίσης!</p>
                 <div className="grid grid-cols-3 gap-2" style={{background:"linear-gradient(135deg,#7c3aed,#6d28d9)",borderRadius:"1rem",padding:"0.75rem"}}>
