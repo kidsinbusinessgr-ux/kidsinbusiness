@@ -78,6 +78,16 @@ const M4_EVENTS = [
   { emoji:"🎉", title:"Γιορτές!",      a:{ text:"Εκπτώσεις",delta:-80  }, b:{ text:"Κανονικά",   delta:+200 } },
 ];
 
+
+// ── Day Events (Module 1) ──────────────────────────────────────────────────────
+const DAY_EVENTS = [
+  { label:"Κανονική μέρα",          emoji:"☀️",  mod:1.0  },
+  { label:"Σαββατοκύριακο!",         emoji:"🎉",  mod:1.4  },
+  { label:"Βροχερή μέρα...",         emoji:"🌧️", mod:0.6  },
+  { label:"Τοπική γιορτή!",          emoji:"🎊",  mod:1.6  },
+  { label:"Αρκετοί ανταγωνιστές",    emoji:"😬",  mod:0.8  },
+];
+
 // ── Helpers ────────────────────────────────────────────────────────────────────
 const shuffle = <T,>(arr: T[]): T[] => [...arr].sort(() => Math.random() - 0.5);
 const net = (profit: number, expense: number) => profit - expense;
@@ -165,7 +175,8 @@ export default function MarketGame() {
   const [m1Biz,  setM1Biz]    = useState<typeof BIZ[0]|null>(null);
   const [m1Cash, setM1Cash]   = useState(3500);
   const [m1Day,  setM1Day]    = useState(1);
-  const [m1Log,  setM1Log]    = useState<number[]>([]);
+  const [m1Log,  setM1Log]    = useState<{income:number;expense:number;event:typeof DAY_EVENTS[0]}[]>([]);
+  const [m1Events,setM1Events] = useState<typeof DAY_EVENTS>>(()=>shuffle(DAY_EVENTS) as typeof DAY_EVENTS);
 
   // ── Module 2 state
   const [m2Step,   setM2Step]   = useState(0);
@@ -198,7 +209,7 @@ export default function MarketGame() {
   const goHub = () => {
     setScreen("hub");
     // reset all modules
-    setM1Step(0); setM1Char(0); setM1Biz(null); setM1Cash(3500); setM1Day(1); setM1Log([]);
+    setM1Step(0); setM1Char(0); setM1Biz(null); setM1Cash(3500); setM1Day(1); setM1Log([]); setM1Events(shuffle(DAY_EVENTS) as typeof DAY_EVENTS);
     setM2Step(0); setM2Answer(null); setM2Score(0); setM2Order(shuffle(M2));
     setM3Step(0); setM3Cash(2000); setM3Result(null);
     setM4Phase("char"); setM4Biz(null); setM4Player(3500); setM4Bot(3500); setM4Round(1); setM4Event(null); setM4EvRes(null);
@@ -253,7 +264,7 @@ export default function MarketGame() {
   if (screen === "m1") {
     const DAYS = 5;
     const char = CHARS[m1Char];
-    const totalEarned = m1Log.reduce((s, n) => s + n, 0);
+    const totalEarned = m1Log.reduce((s, e) => s + e.income - e.expense, 0);
 
     return (
       <div className="min-h-screen flex flex-col game-font" style={{ background:"linear-gradient(160deg,#d1fae5 0%,#a7f3d0 50%,#6ee7b7 100%)" }}>
@@ -392,12 +403,15 @@ export default function MarketGame() {
                 <h2 className="text-2xl font-black text-emerald-700 mb-1">Μπράβο! Πιόνι: {CHARS[m1Char].trait}!</h2>
                 <p className="text-gray-500 text-sm mb-3">Σε {DAYS} μέρες με το <strong>{m1Biz.emoji} {m1Biz.name}</strong></p>
                 <div className="space-y-2 mb-3">
-                  {m1Log.map((d, i) => (
+                  {m1Log.map((d, i) => {
+                    const dayNet = d.income - d.expense;
+                    return (
                     <div key={i} className="flex justify-between text-sm bg-gray-50 rounded-lg px-3 py-1.5">
-                      <span className="text-gray-500">Μέρα {i+1}</span>
-                      <span className={`font-black ${d>0?"text-emerald-600":"text-rose-600"}`}>{d>0?"+":""}{d}€</span>
+                      <span className="text-gray-500">{d.event.emoji} Μέρα {i+1}</span>
+                      <span className={`font-black ${dayNet>0?"text-emerald-600":"text-rose-600"}`}>{dayNet>0?"+":""}{dayNet}€</span>
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
                 <div className="bg-emerald-500 text-white rounded-2xl py-3 px-4">
                   <div className="text-sm opacity-80">Συνολικό κέρδος</div>
@@ -408,7 +422,7 @@ export default function MarketGame() {
                 </div>
               </div>
               <div className="flex gap-2 w-full max-w-xs">
-                <button onClick={() => { setM1Step(0); setM1Log([]); setM1Cash(3500); setM1Biz(null); setM1Day(1); }}
+                <button onClick={() => { setM1Step(0); setM1Log([]); setM1Cash(3500); setM1Biz(null); setM1Day(1); setM1Events(shuffle(DAY_EVENTS) as typeof DAY_EVENTS); }}
                   className="flex-1 py-3 rounded-2xl font-black text-emerald-700 bg-white border-2 border-emerald-300 text-sm">
                   🔄 Ξανά
                 </button>
