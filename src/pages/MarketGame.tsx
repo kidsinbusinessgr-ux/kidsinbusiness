@@ -127,11 +127,32 @@ const M1_WEEKS: { items:M1Item[]; bonus?:number; bonusText?:string }[] = [
 
 // ── Speech helper ─────────────────────────────────────────────────────────────
 let _muted = false;
+let _greekVoice: SpeechSynthesisVoice | null = null;
+
+const _loadGreekVoice = () => {
+  if (!("speechSynthesis" in window)) return;
+  const voices = window.speechSynthesis.getVoices();
+  // Prefer el-GR, then el-*, then any voice with "Greek" in name
+  _greekVoice =
+    voices.find(v => v.lang === "el-GR") ||
+    voices.find(v => v.lang.startsWith("el")) ||
+    voices.find(v => v.name.toLowerCase().includes("greek")) ||
+    null;
+};
+
+if (typeof window !== "undefined" && "speechSynthesis" in window) {
+  window.speechSynthesis.onvoiceschanged = _loadGreekVoice;
+  _loadGreekVoice();
+}
+
 const speak = (text: string) => {
   if (_muted || !("speechSynthesis" in window)) return;
   window.speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
-  u.lang = "el-GR"; u.rate = 0.88; u.pitch = 1.1;
+  u.lang = "el-GR";
+  u.rate = 0.82;
+  u.pitch = 1.05;
+  if (_greekVoice) u.voice = _greekVoice;
   window.speechSynthesis.speak(u);
 };
 
