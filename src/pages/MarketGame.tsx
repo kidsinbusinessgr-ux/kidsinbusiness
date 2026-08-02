@@ -157,15 +157,15 @@ const ProgressBar = ({ step, total, color="bg-white" }: { step:number; total:num
 
 const CharCard = ({ char, selected, onSelect }: { char:typeof CHARS[0]; selected:boolean; onSelect:()=>void }) => (
   <button onClick={onSelect}
-    className={`rounded-2xl p-2.5 text-center transition-all duration-200 border-4 w-full ${
+    className={`rounded-2xl p-2 text-center transition-all duration-200 border-4 w-full ${
       selected ? "border-white shadow-2xl bg-white/30" : "border-white/30 bg-white/10 hover:bg-white/20"
     }`}>
-    <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${char.grad} flex items-center justify-center text-2xl mx-auto mb-1.5 shadow-lg ring-2 ring-white/50`}>
+    <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${char.grad} flex items-center justify-center text-xl mx-auto mb-1 shadow-lg ring-2 ring-white/50`}>
       {char.emoji}
     </div>
-    <div className="font-black text-white text-xs leading-tight">{char.trait}</div>
-    <div className="text-white/70 text-[9px] mt-0.5 leading-tight">{char.desc}</div>
-    {selected && <div className="mt-1.5 bg-white text-purple-700 rounded-full text-[8px] font-black px-1.5 py-0.5">✓ Επιλεγμένο</div>}
+    <div className="font-black text-white text-[10px] leading-tight break-words">{char.trait}</div>
+    <div className="text-white/70 text-[8px] mt-0.5 leading-tight">{char.desc}</div>
+    {selected && <div className="mt-1 bg-white text-purple-700 rounded-full text-[7px] font-black px-1 py-0.5">✓ Επιλεγμένο</div>}
   </button>
 );
 
