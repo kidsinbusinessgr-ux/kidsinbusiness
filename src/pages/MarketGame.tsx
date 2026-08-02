@@ -14,35 +14,35 @@ interface RiskCard  { id:string; emoji:string; title:string; body:string; delta:
 // Bottom (L→R): 0-10, Right (↑): 11-14, Top (R→L): 15-25, Left (↓): 26-29
 const SQUARES: Square[] = [
   { id:0,  type:"start",    name:"Αφετηρία",                   emoji:"🏁" },
-  { id:1,  type:"business", name:"Αθλητικά",                   emoji:"🏆", bizId:"athletic"    },
-  { id:2,  type:"business", name:"Κομμωτήριο",                 emoji:"✂️", bizId:"hair"        },
-  { id:3,  type:"business", name:"Εστιατόριο",                 emoji:"🍽️", bizId:"restaurant"  },
-  { id:4,  type:"risk",     name:"Κάρτα Ρίσκου",               emoji:"🎴" },
-  { id:5,  type:"business", name:"Φούρνος",                    emoji:"🥐", bizId:"bakery"      },
-  { id:6,  type:"business", name:"Γυμναστήριο",                emoji:"🏋️", bizId:"gym"         },
-  { id:7,  type:"business", name:"Πλυντήριο Ρούχων",           emoji:"🧺", bizId:"laundry"     },
-  { id:8,  type:"business", name:"Water Sports",               emoji:"🌊", bizId:"watersports" },
+  { id:1,  type:"business", name:"Αθλητικά",                   emoji:"🏅", bizId:"athletic"    },
+  { id:2,  type:"business", name:"Κομμωτήριο",                 emoji:"💈", bizId:"hair"        },
+  { id:3,  type:"business", name:"Εστιατόριο",                 emoji:"🍴", bizId:"restaurant"  },
+  { id:4,  type:"risk",     name:"Κάρτα Ρίσκου",               emoji:"⚠️" },
+  { id:5,  type:"business", name:"Φούρνος",                    emoji:"🥖", bizId:"bakery"      },
+  { id:6,  type:"business", name:"Γυμναστήριο",                emoji:"💪", bizId:"gym"         },
+  { id:7,  type:"business", name:"Πλυντήριο Ρούχων",           emoji:"🫧", bizId:"laundry"     },
+  { id:8,  type:"business", name:"Water Sports",               emoji:"🏄", bizId:"watersports" },
   { id:9,  type:"business", name:"Ανακύκλωση",                 emoji:"♻️", bizId:"recycling"   },
-  { id:10, type:"business", name:"Spa Center",                 emoji:"💆", bizId:"spa"         },
-  { id:11, type:"business", name:"Pet Shop",                   emoji:"🐾", bizId:"petshop"     },
-  { id:12, type:"business", name:"Super Market",               emoji:"🛒", bizId:"supermarket" },
-  { id:13, type:"risk",     name:"Κάρτα Ρίσκου",               emoji:"🎴" },
-  { id:14, type:"business", name:"Ξενοδοχείο",                 emoji:"🏨", bizId:"hotel"       },
+  { id:10, type:"business", name:"Spa Center",                 emoji:"🧖", bizId:"spa"         },
+  { id:11, type:"business", name:"Pet Shop",                   emoji:"🐕", bizId:"petshop"     },
+  { id:12, type:"business", name:"Super Market",               emoji:"🏪", bizId:"supermarket" },
+  { id:13, type:"risk",     name:"Κάρτα Ρίσκου",               emoji:"⚠️" },
+  { id:14, type:"business", name:"Ξενοδοχείο",                 emoji:"🏩", bizId:"hotel"       },
   { id:15, type:"bank",     name:"Τράπεζα",                    emoji:"🏦" },
-  { id:16, type:"risk",     name:"Κάρτα Ρίσκου",               emoji:"🎴" },
+  { id:16, type:"risk",     name:"Κάρτα Ρίσκου",               emoji:"⚠️" },
   { id:17, type:"expenses", name:"Έξοδα",                      emoji:"💸" },
-  { id:18, type:"business", name:"Τουριστικό",                 emoji:"✈️", bizId:"travel"      },
-  { id:19, type:"risk",     name:"Κάρτα Ρίσκου",               emoji:"🎴" },
+  { id:18, type:"business", name:"Τουριστικό",                 emoji:"🗺️", bizId:"travel"      },
+  { id:19, type:"risk",     name:"Κάρτα Ρίσκου",               emoji:"⚠️" },
   { id:20, type:"upgrade",  name:"Αναβάθμιση",                 emoji:"⬆️" },
-  { id:21, type:"business", name:"Παιχνίδια",                  emoji:"🧸", bizId:"toys"        },
-  { id:22, type:"business", name:"Rent a Car",                 emoji:"🚖", bizId:"rentacar"    },
-  { id:23, type:"business", name:"Παπούτσια",                  emoji:"👟", bizId:"shoes"       },
+  { id:21, type:"business", name:"Παιχνίδια",                  emoji:"🎮", bizId:"toys"        },
+  { id:22, type:"business", name:"Rent a Car",                 emoji:"🚙", bizId:"rentacar"    },
+  { id:23, type:"business", name:"Παπούτσια",                  emoji:"👠", bizId:"shoes"       },
   { id:24, type:"airport",  name:"Αεροδρόμιο",                 emoji:"🛫" },
-  { id:25, type:"meeting",  name:"Biz Meeting",                emoji:"🤝" },
-  { id:26, type:"business", name:"Αντ/πεία Αυτ/νων",          emoji:"🚗", bizId:"cardealer"   },
-  { id:27, type:"risk",     name:"Κάρτα Ρίσκου",               emoji:"🎴" },
+  { id:25, type:"meeting",  name:"Biz Meeting",                emoji:"👔" },
+  { id:26, type:"business", name:"Αντ/πεία Αυτ/νων",          emoji:"🚘", bizId:"cardealer"   },
+  { id:27, type:"risk",     name:"Κάρτα Ρίσκου",               emoji:"⚠️" },
   { id:28, type:"expenses", name:"Έξοδα",                      emoji:"💸" },
-  { id:29, type:"business", name:"Οπτικά",                     emoji:"👓", bizId:"optical"     },
+  { id:29, type:"business", name:"Οπτικά",                     emoji:"🕶️", bizId:"optical"     },
 ];
 
 // Grid position: 11 cols × 6 rows
@@ -320,14 +320,14 @@ export default function MarketGame() {
     <div className="w-full px-2">
       <div
         className="w-full border-2 border-teal-400 rounded-xl overflow-hidden bg-gradient-to-br from-teal-50 to-cyan-50 shadow-md"
-        style={{ display:'grid', gridTemplateColumns:'repeat(11,1fr)', gridTemplateRows:'repeat(6,1fr)', aspectRatio:'11/6' }}
+        style={{ display:'grid', gridTemplateColumns:'repeat(11,1fr)', gridTemplateRows:'repeat(6, 50px)' }}
       >
         {/* Center panel */}
         <div style={{gridColumn:'2/11',gridRow:'2/6'}}
           className="flex flex-col items-center justify-center bg-gradient-to-br from-teal-400/10 to-cyan-400/10 p-1 text-center">
-          <div className="text-base font-black text-teal-700 leading-none">START-UP</div>
-          <div className="text-xs font-black text-orange-500 leading-none">ADVENTURE</div>
-          <div className="text-[10px] text-gray-500 mt-0.5">Γύρος {round}/{TOTAL_ROUNDS}</div>
+          <div className="text-sm font-black text-teal-700 leading-none">START-UP</div>
+          <div className="text-[10px] font-black text-orange-500 leading-none">ADVENTURE</div>
+          <div className="text-[9px] text-gray-500 mt-0.5">Γύρος {round}/{TOTAL_ROUNDS}</div>
           <div className="text-sm font-black text-green-700">💶{cash.toLocaleString()}€</div>
           {dice && !animating && <div className="text-[10px] font-bold text-teal-600 mt-0.5">🎲 {dice} βήματα</div>}
           {ownedBizList().length>0 && (
@@ -357,9 +357,9 @@ export default function MarketGame() {
               onMouseEnter={()=>setTooltipSq(s.id)}
               onMouseLeave={()=>setTooltipSq(null)}
             >
-              <span className="text-sm leading-none">{isHere ? "🧍" : s.emoji}</span>
-              <span className="text-[7px] leading-none font-semibold text-center px-0.5 truncate w-full text-center opacity-90">
-                {s.name.length>7?s.name.slice(0,6)+"…":s.name}
+              <span className="text-2xl leading-none">{isHere ? "🧍" : s.emoji}</span>
+              <span className="text-[8px] leading-tight font-bold text-center px-0.5 w-full truncate opacity-95 mt-0.5">
+                {s.name.length>6?s.name.slice(0,5)+"…":s.name}
               </span>
             </div>
           );
