@@ -381,31 +381,27 @@ export default function MarketGame() {
     <div className="w-full px-2">
       <div className="w-full border-2 border-teal-400 rounded-xl overflow-hidden shadow-md"
         style={{display:'grid',gridTemplateColumns:'repeat(11,1fr)',gridTemplateRows:'repeat(6,50px)'}}>
-        {/* Center */}
+        {/* Center — board logo + scoreboard */}
         <div style={{gridColumn:'2/11',gridRow:'2/6'}}
-          className="flex flex-col items-center justify-center overflow-hidden relative bg-teal-50">
-          <div className="absolute inset-0" style={{background:"repeating-linear-gradient(135deg,rgba(13,148,136,0.15) 0px,rgba(13,148,136,0.15) 2px,transparent 2px,transparent 14px)"}}/>
-          <div className="relative z-10 flex flex-col items-center w-full px-1">
-            {/* Logo */}
-            <img src="/logo.png" alt="KidsInBusiness" className="h-5 object-contain mb-0.5 opacity-90"/>
-            {/* Title */}
-            <div className="leading-none text-center">
-              <span className="text-[11px] font-black" style={{color:"#1e3a5f"}}>START-</span>
-              <span className="text-[11px] font-black" style={{color:"#e85d04"}}>UP</span>
-            </div>
-            <div className="text-[13px] font-black tracking-tight" style={{background:"linear-gradient(90deg,#e85d04,#7209b7,#3a86ff,#06d6a0)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>ADVENTURE</div>
-            <div className="text-[8px] text-teal-800 font-semibold mt-0.5">Γύρος {round}/{TOTAL_ROUNDS}</div>
-            {/* Scoreboard */}
-            <div className="mt-1 space-y-0.5 w-full px-1">
+          className="flex flex-col items-center justify-between overflow-hidden relative"
+          style2="">
+          {/* Herringbone teal background */}
+          <div className="absolute inset-0" style={{background:"#81d4e8",backgroundImage:"repeating-linear-gradient(135deg,rgba(255,255,255,0.08) 0px,rgba(255,255,255,0.08) 1px,transparent 1px,transparent 10px),repeating-linear-gradient(45deg,rgba(255,255,255,0.08) 0px,rgba(255,255,255,0.08) 1px,transparent 1px,transparent 10px)"}}/>
+          <div className="relative z-10 flex flex-col items-center justify-between h-full w-full py-0.5">
+            {/* Logo image fills most of center */}
+            <img src="/startup-logo.svg" alt="Start-up Adventure" className="w-full object-contain flex-1 min-h-0 px-1" style={{maxHeight:'calc(100% - 52px)'}}/>
+            {/* Scoreboard strip at bottom */}
+            <div className="w-full px-1 space-y-0.5 pb-0.5">
+              <div className="text-[7px] text-center text-teal-900 font-bold">Γύρος {round}/{TOTAL_ROUNDS}</div>
               {players.map(p=>(
-                <div key={p.id} className="flex items-center gap-1 text-[8px] bg-white/70 rounded px-1 py-0.5">
-                  <span className={`${p.colorBg} text-white rounded px-0.5 font-bold text-[7px]`}>{p.emoji}</span>
-                  <span className="truncate text-gray-700 font-medium">{p.name}</span>
+                <div key={p.id} className="flex items-center gap-0.5 text-[7px] bg-white/75 rounded px-1">
+                  <span className={`${p.colorBg} text-white rounded px-0.5 font-bold`}>{p.emoji}</span>
+                  <span className="truncate text-gray-700">{p.name}</span>
                   <span className="ml-auto font-black text-gray-800">{p.cash.toLocaleString()}€</span>
                 </div>
               ))}
+              {airportMode&&<div className="text-[7px] font-black animate-pulse bg-blue-100 text-blue-800 rounded px-1 text-center">👆 Πάτα τετράγωνο!</div>}
             </div>
-            {airportMode&&<div className="text-[8px] text-blue-900 font-black mt-1 animate-pulse bg-white/80 rounded px-1">👆 Πάτα τετράγωνο!</div>}
           </div>
         </div>
         {/* Squares */}
