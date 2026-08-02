@@ -150,14 +150,20 @@ if (typeof window !== "undefined" && "speechSynthesis" in window) {
 }
 
 const speak = (text: string) => {
-  if (_muted || !("speechSynthesis" in window)) return;
-  // Retry voice load if not ready yet
+  if (_muted) return;
+  // Prefer ResponsiveVoice (Greek Female) if loaded
+  const rv = (window as any).responsiveVoice;
+  if (rv && rv.voiceSupport()) {
+    rv.cancel();
+    rv.speak(text, "Greek Female", { rate: 0.9, pitch: 1, onstart: ()=>{} });
+    return;
+  }
+  // Fallback: native Web Speech API
+  if (!("speechSynthesis" in window)) return;
   if (!_greekVoice) _loadGreekVoice();
   window.speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
-  u.lang = "el-GR";
-  u.rate = 0.82;
-  u.pitch = 1.1;
+  u.lang = "el-GR"; u.rate = 0.82; u.pitch = 1.1;
   if (_greekVoice) u.voice = _greekVoice;
   window.speechSynthesis.speak(u);
 };
