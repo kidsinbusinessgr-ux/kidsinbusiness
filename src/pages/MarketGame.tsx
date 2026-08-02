@@ -81,47 +81,48 @@ const M4_EVENTS = [
 
 // ── Module 1 — Αποταμίευση & Στόχος ──────────────────────────────────────────
 const M1_GOALS = [
-  { emoji:"🚲", name:"Ποδήλατο",       price:300, grad:"from-emerald-400 to-teal-600"   },
-  { emoji:"🎮", name:"Χειριστήριο",    price:200, grad:"from-blue-400 to-indigo-600"    },
-  { emoji:"🎒", name:"Νέο Σακίδιο",   price:120, grad:"from-violet-500 to-purple-700"  },
+  { emoji:"🚲", name:"Ποδήλατο",     price:45, grad:"from-emerald-400 to-teal-600"   },
+  { emoji:"🎮", name:"Βιντεοπαιχνίδι", price:30, grad:"from-blue-400 to-indigo-600"  },
+  { emoji:"🎒", name:"Νέο Σακίδιο",  price:20, grad:"from-violet-500 to-purple-700"  },
 ];
-const WEEKLY_INCOME = 60;
+const WEEKLY_INCOME = 10;
 type M1Item = { emoji:string; name:string; price:number; type:"need"|"want" };
 const M1_WEEKS: { items:M1Item[]; bonus?:number; bonusText?:string }[] = [
   { items:[
-    { emoji:"🥗", name:"Σχολικό γεύμα",      price:15, type:"need" },
-    { emoji:"🎬", name:"Κινηματογράφος",     price:12, type:"want" },
-    { emoji:"🍦", name:"Παγωτό",             price:5,  type:"want" },
-    { emoji:"📚", name:"Βιβλίο ιστοριών",   price:10, type:"want" },
+    { emoji:"🥗", name:"Σχολικό γεύμα",    price:2, type:"need" },
+    { emoji:"🎬", name:"Κινηματογράφος",   price:5, type:"want" },
+    { emoji:"🍦", name:"Παγωτό",           price:1, type:"want" },
+    { emoji:"📚", name:"Βιβλίο ιστοριών", price:3, type:"want" },
   ]},
   { items:[
-    { emoji:"✏️", name:"Σχολικά είδη",       price:20, type:"need" },
-    { emoji:"🎮", name:"Νέο παιχνίδι",       price:35, type:"want" },
-    { emoji:"☕", name:"Smoothie",            price:6,  type:"want" },
+    { emoji:"✏️", name:"Σχολικά είδη",     price:3, type:"need" },
+    { emoji:"🎮", name:"Αγαπημένο σνακ",  price:2, type:"want" },
+    { emoji:"☕", name:"Smoothie",          price:2, type:"want" },
+    { emoji:"🃏", name:"Κάρτες συλλογής", price:4, type:"want" },
   ]},
   { items:[
-    { emoji:"🥗", name:"Σχολικό γεύμα",      price:15, type:"need" },
-    { emoji:"👕", name:"Νέο μπλουζάκι",     price:20, type:"want" },
-    { emoji:"🎵", name:"Μουσική εφαρμογή",  price:8,  type:"want" },
-    { emoji:"🍕", name:"Πίτσα με παρέα",    price:12, type:"want" },
+    { emoji:"🥗", name:"Σχολικό γεύμα",   price:2, type:"need" },
+    { emoji:"🍕", name:"Πίτσα με παρέα",  price:4, type:"want" },
+    { emoji:"🎵", name:"Τραγούδι online", price:1, type:"want" },
+    { emoji:"🎨", name:"Χρώματα",         price:3, type:"want" },
   ]},
-  { bonus:20, bonusText:"🎂 Γενέθλια! Δώρο +20€",
+  { bonus:5, bonusText:"🎂 Γενέθλια! Δώρο +5€",
     items:[
-    { emoji:"🚌", name:"Εκδρομή σχολείου",   price:20, type:"need" },
-    { emoji:"🎲", name:"Επιτραπέζιο",        price:25, type:"want" },
-    { emoji:"🧋", name:"Bubble tea",         price:7,  type:"want" },
+    { emoji:"🚌", name:"Εκδρομή σχολείου", price:3, type:"need" },
+    { emoji:"🎲", name:"Επιτραπέζιο",      price:5, type:"want" },
+    { emoji:"🧋", name:"Bubble tea",       price:2, type:"want" },
   ]},
   { items:[
-    { emoji:"🚌", name:"Μεταφορές εβδομάδας",price:10, type:"need" },
-    { emoji:"🎨", name:"Χρώματα ζωγραφικής", price:15, type:"want" },
-    { emoji:"🍟", name:"Fast food με φίλους", price:12, type:"want" },
-    { emoji:"🎠", name:"Λούνα παρκ",          price:20, type:"want" },
+    { emoji:"🚌", name:"Μεταφορές",        price:2, type:"need" },
+    { emoji:"🍟", name:"Fast food",        price:3, type:"want" },
+    { emoji:"🎠", name:"Λούνα παρκ",      price:5, type:"want" },
+    { emoji:"🪀", name:"Μικρό παιχνίδι",  price:2, type:"want" },
   ]},
   { items:[
-    { emoji:"🥗", name:"Σχολικό γεύμα",      price:15, type:"need" },
-    { emoji:"🎁", name:"Δώρο για φίλο",      price:20, type:"want" },
-    { emoji:"📱", name:"Θήκη κινητού",       price:18, type:"want" },
-    { emoji:"🍰", name:"Γλυκό ζαχαροπλαστείου",price:8, type:"want" },
+    { emoji:"🥗", name:"Σχολικό γεύμα",   price:2, type:"need" },
+    { emoji:"🎁", name:"Δώρο για φίλο",   price:4, type:"want" },
+    { emoji:"📱", name:"Θήκη κινητού",    price:3, type:"want" },
+    { emoji:"🍰", name:"Γλυκό",           price:2, type:"want" },
   ]},
 ];
 
