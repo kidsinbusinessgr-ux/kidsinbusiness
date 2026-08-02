@@ -699,7 +699,7 @@ export default function MarketGame() {
     const pickEvent = (choice: "a"|"b") => {
       if (!m4Event) return;
       const pDelta = m4Event[choice].delta;
-      const botChoice = Math.random() > 0.5 ? "a" : "b";
+      const botChoice: "a"|"b" = "b"; // bot always picks the "safe/wrong" choice
       const bDelta = m4Event[botChoice].delta;
       setM4Player(p => Math.max(0, p + pDelta));
       setM4Bot(b => Math.max(0, b + bDelta));
@@ -765,7 +765,13 @@ export default function MarketGame() {
                 ))}
               </div>
               {m4Biz && (
-                <button onClick={() => { setM4Player(3500-m4Biz.buy); setM4Bot(3500-m4BotBiz.buy); setM4Phase("day"); }}
+                <button onClick={() => {
+                    const botBiz = BIZ.find(b => b.id !== m4Biz!.id) ?? BIZ[0];
+                    setM4BotBiz(botBiz);
+                    setM4Player(3500-m4Biz!.buy);
+                    setM4Bot(3500-botBiz.buy);
+                    setM4Phase("day");
+                  }}
                   className="w-full py-4 rounded-2xl font-black text-white text-lg shadow-xl sticky bottom-4"
                   style={{ background:"linear-gradient(90deg,#7c3aed,#6d28d9)", boxShadow:"0 5px 0 #5b21b6" }}>
                   Αγοράζω {m4Biz.emoji} {m4Biz.name}!
