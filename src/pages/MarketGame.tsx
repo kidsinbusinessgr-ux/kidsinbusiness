@@ -7,19 +7,19 @@ type Screen = "hub" | "m1" | "m2" | "m3" | "m4";
 
 // ── Characters ─────────────────────────────────────────────────────────────────
 const CHARS = [
-  { name:"Σοφία", emoji:"👩‍💼", color:"bg-rose-500",   grad:"from-rose-400 to-pink-600",    role:"Η Δημιουργική"  },
-  { name:"Νίκος", emoji:"🧑‍💼", color:"bg-sky-600",    grad:"from-sky-500 to-blue-700",     role:"Ο Στρατηγιστής" },
-  { name:"Ζωή",   emoji:"👩‍🚀", color:"bg-violet-600", grad:"from-violet-500 to-purple-700", role:"Η Innovator"    },
+  { trait:"Δημιουργικός", emoji:"🎨", color:"bg-rose-500",   grad:"from-rose-400 to-pink-600",    desc:"Βλέπει ευκαιρίες παντού!" },
+  { trait:"Καινοτόμος",   emoji:"💡", color:"bg-sky-600",    grad:"from-sky-400 to-blue-600",     desc:"Σκέφτεται πέρα από τα όρια!" },
+  { trait:"Οραματιστής",  emoji:"🌟", color:"bg-violet-600", grad:"from-violet-500 to-purple-700", desc:"Χτίζει το μέλλον σήμερα!" },
 ];
 
 // ── Businesses ─────────────────────────────────────────────────────────────────
 const BIZ = [
-  { id:"bakery",  name:"Φούρνος",        emoji:"🥖", buy:1800, profit:280, expense:100, desc:"Φρέσκα αρώματα κάθε πρωί!" },
+  { id:"bakery",  name:"Φούρνος",        emoji:"🥖", buy:1800, profit:280, expense:100, desc:"Φρέσκα ψωμιά κάθε πρωί!" },
   { id:"petshop", name:"Pet Shop",       emoji:"🐕", buy:2000, profit:260, expense:90,  desc:"Χαρά για τα ζωάκια!"      },
   { id:"hair",    name:"Κομμωτήριο",     emoji:"💈", buy:1500, profit:210, expense:75,  desc:"Στυλ για όλους!"           },
   { id:"gym",     name:"Γυμναστήριο",    emoji:"💪", buy:2500, profit:340, expense:120, desc:"Υγεία και δύναμη!"         },
   { id:"spa",     name:"Spa Center",     emoji:"🧖", buy:2200, profit:270, expense:95,  desc:"Χαλάρωση και ομορφιά!"    },
-  { id:"toys",    name:"Κατ. Παιχνίδια", emoji:"🎮", buy:1700, profit:240, expense:80,  desc:"Χαρά για παιδιά!"          },
+  { id:"toys",    name:"Μαγαζί Παιχνίδια",emoji:"🎮", buy:1700, profit:240, expense:80,  desc:"Παιχνίδια για όλες τις ηλικίες!" },
 ];
 
 // ── Module 2 Scenarios ─────────────────────────────────────────────────────────
@@ -100,15 +100,15 @@ const ProgressBar = ({ step, total, color="bg-white" }: { step:number; total:num
 
 const CharCard = ({ char, selected, onSelect }: { char:typeof CHARS[0]; selected:boolean; onSelect:()=>void }) => (
   <button onClick={onSelect}
-    className={`flex-1 rounded-2xl p-3 text-center transition-all duration-200 border-4 ${
-      selected ? "border-white scale-105 shadow-2xl bg-white/25" : "border-white/30 bg-white/10 hover:bg-white/20"
+    className={`rounded-2xl p-2.5 text-center transition-all duration-200 border-4 w-full ${
+      selected ? "border-white shadow-2xl bg-white/30" : "border-white/30 bg-white/10 hover:bg-white/20"
     }`}>
-    <div className={`w-14 h-14 rounded-full bg-gradient-to-br ${char.grad} flex items-center justify-center text-3xl mx-auto mb-2 shadow-lg ring-2 ring-white/50`}>
+    <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${char.grad} flex items-center justify-center text-2xl mx-auto mb-1.5 shadow-lg ring-2 ring-white/50`}>
       {char.emoji}
     </div>
-    <div className="font-black text-white text-sm">{char.name}</div>
-    <div className="text-white/70 text-[10px] font-semibold">{char.role}</div>
-    {selected && <div className="mt-1.5 bg-white text-purple-700 rounded-full text-[9px] font-black px-2 py-0.5">✓ Επιλεγμένος</div>}
+    <div className="font-black text-white text-xs leading-tight">{char.trait}</div>
+    <div className="text-white/70 text-[9px] mt-0.5 leading-tight">{char.desc}</div>
+    {selected && <div className="mt-1.5 bg-white text-purple-700 rounded-full text-[8px] font-black px-1.5 py-0.5">✓ Επιλεγμένο</div>}
   </button>
 );
 
@@ -299,16 +299,16 @@ export default function MarketGame() {
           {m1Step === 1 && (
             <div className="flex-1 flex flex-col items-center justify-center gap-4">
               <div className="bg-white rounded-3xl p-5 shadow-lg max-w-xs w-full">
-                <h2 className="text-xl font-black text-center text-emerald-700 mb-1">Ποιος είσαι;</h2>
+                <h2 className="text-xl font-black text-center text-emerald-700 mb-1">Επέλεξε το πιόνι σου!</h2>
                 <p className="text-gray-500 text-xs text-center mb-3">Επέλεξε τον χαρακτήρα σου</p>
-                <div className="flex gap-2" style={{background:"linear-gradient(135deg,#059669,#0d9488)",borderRadius:"1rem",padding:"0.75rem"}}>
+                <div className="grid grid-cols-3 gap-2" style={{background:"linear-gradient(135deg,#059669,#0d9488)",borderRadius:"1rem",padding:"0.75rem"}}>
                   {CHARS.map((c, i) => <CharCard key={i} char={c} selected={m1Char===i} onSelect={() => setM1Char(i)} />)}
                 </div>
               </div>
               <button onClick={() => setM1Step(2)}
                 className="w-full max-w-xs py-4 rounded-2xl font-black text-white text-lg shadow-xl"
                 style={{ background:"linear-gradient(90deg,#10b981,#059669)", boxShadow:"0 5px 0 #047857" }}>
-                Είμαι ο/η {CHARS[m1Char].name}! →
+                Επιλέγω: {CHARS[m1Char].trait}! →
               </button>
             </div>
           )}
@@ -317,7 +317,7 @@ export default function MarketGame() {
           {m1Step === 2 && (
             <div className="flex flex-col gap-3">
               <div className="bg-white rounded-2xl p-3 shadow-sm text-center">
-                <span className={`${char.color} text-white rounded-full px-3 py-1 text-sm font-black`}>{char.emoji} {char.name}</span>
+                <span className={`${char.color} text-white rounded-full px-3 py-1 text-sm font-black`}>{char.emoji} {char.trait}</span>
                 <span className="text-gray-600 text-sm ml-2">Έχεις <strong className="text-emerald-700">{fmt(m1Cash)}€</strong></span>
               </div>
               <p className="text-center font-black text-emerald-800 text-base">Διάλεξε επιχείρηση:</p>
@@ -389,7 +389,7 @@ export default function MarketGame() {
             <div className="flex-1 flex flex-col items-center justify-center gap-4">
               <div className="text-6xl animate-bounce">🎉</div>
               <div className="bg-white rounded-3xl p-5 shadow-lg w-full max-w-xs text-center">
-                <h2 className="text-2xl font-black text-emerald-700 mb-1">Μπράβο {CHARS[m1Char].name}!</h2>
+                <h2 className="text-2xl font-black text-emerald-700 mb-1">Μπράβο! Πιόνι: {CHARS[m1Char].trait}!</h2>
                 <p className="text-gray-500 text-sm mb-3">Σε {DAYS} μέρες με το <strong>{m1Biz.emoji} {m1Biz.name}</strong></p>
                 <div className="space-y-2 mb-3">
                   {m1Log.map((d, i) => (
@@ -716,16 +716,16 @@ export default function MarketGame() {
           {m4Phase === "char" && (
             <div className="flex-1 flex flex-col items-center justify-center gap-4">
               <div className="bg-white rounded-3xl p-5 shadow-lg max-w-xs w-full">
-                <h2 className="text-xl font-black text-center text-violet-700 mb-1">Ποιος είσαι;</h2>
+                <h2 className="text-xl font-black text-center text-violet-700 mb-1">Επέλεξε το πιόνι σου!</h2>
                 <p className="text-gray-500 text-xs text-center mb-3">Ξεκινάς με <strong>3.500€</strong> — ο αντίπαλός σου επίσης!</p>
-                <div className="flex gap-2" style={{background:"linear-gradient(135deg,#7c3aed,#6d28d9)",borderRadius:"1rem",padding:"0.75rem"}}>
+                <div className="grid grid-cols-3 gap-2" style={{background:"linear-gradient(135deg,#7c3aed,#6d28d9)",borderRadius:"1rem",padding:"0.75rem"}}>
                   {CHARS.map((c,i) => <CharCard key={i} char={c} selected={m4Char===i} onSelect={()=>setM4Char(i)} />)}
                 </div>
               </div>
               <button onClick={() => setM4Phase("biz")}
                 className="w-full max-w-xs py-4 rounded-2xl font-black text-white text-lg shadow-xl"
                 style={{ background:"linear-gradient(90deg,#7c3aed,#6d28d9)", boxShadow:"0 5px 0 #5b21b6" }}>
-                Είμαι ο/η {CHARS[m4Char].name}! →
+                Επιλέγω: {CHARS[m4Char].trait}! →
               </button>
             </div>
           )}
@@ -734,7 +734,7 @@ export default function MarketGame() {
           {m4Phase === "biz" && (
             <div className="flex flex-col gap-3 w-full">
               <div className="bg-white rounded-2xl p-3 shadow-sm text-center">
-                <span className={`${char.color} text-white rounded-full px-3 py-1 text-sm font-black`}>{char.emoji} {char.name}</span>
+                <span className={`${char.color} text-white rounded-full px-3 py-1 text-sm font-black`}>{char.emoji} {char.trait}</span>
                 <span className="text-gray-600 text-sm ml-2">Έχεις <strong className="text-violet-700">3.500€</strong></span>
               </div>
               <p className="text-center font-black text-violet-800">Διάλεξε επιχείρηση:</p>
@@ -764,7 +764,7 @@ export default function MarketGame() {
                 <p className="text-gray-500 text-sm mb-3">Μαζεύεις κέρδη από τις επιχειρήσεις σας...</p>
                 <div className="space-y-2">
                   <div className="flex justify-between bg-violet-50 rounded-xl p-2.5">
-                    <span className="font-semibold text-sm text-gray-600">{char.emoji} {char.name} ({m4Biz.emoji})</span>
+                    <span className="font-semibold text-sm text-gray-600">{char.emoji} {char.trait} ({m4Biz.emoji})</span>
                     <span className="font-black text-violet-700">+{net(m4Biz.profit,m4Biz.expense)}€</span>
                   </div>
                   <div className="flex justify-between bg-gray-50 rounded-xl p-2.5">
@@ -822,7 +822,7 @@ export default function MarketGame() {
                 <div className="text-center font-black text-violet-700 text-base mb-3">Αποτέλεσμα Μέρας {m4Round}</div>
                 <div className="space-y-2">
                   <div className={`flex justify-between rounded-2xl p-3 ${m4EvRes.pDelta>=0?"bg-emerald-50":"bg-rose-50"}`}>
-                    <span className="font-semibold text-sm">{char.emoji} {char.name}</span>
+                    <span className="font-semibold text-sm">{char.emoji} {char.trait}</span>
                     <span className={`font-black ${m4EvRes.pDelta>=0?"text-emerald-700":"text-rose-600"}`}>
                       {m4EvRes.pDelta>=0?"+":""}{m4EvRes.pDelta}€ → {fmt(m4Player)}€
                     </span>
@@ -856,7 +856,7 @@ export default function MarketGame() {
                 </h2>
                 <div className="space-y-2 mb-3">
                   <div className={`flex justify-between rounded-2xl p-3 border-2 ${m4Player>m4Bot?"border-violet-400 bg-violet-50":"border-gray-200 bg-gray-50"}`}>
-                    <span className="font-black">{char.emoji} {char.name}</span>
+                    <span className="font-black">{char.emoji} {char.trait}</span>
                     <span className={`font-black text-lg ${m4Player>m4Bot?"text-violet-700":"text-gray-600"}`}>{fmt(m4Player)}€</span>
                   </div>
                   <div className={`flex justify-between rounded-2xl p-3 border-2 ${m4Bot>m4Player?"border-violet-400 bg-violet-50":"border-gray-200 bg-gray-50"}`}>
