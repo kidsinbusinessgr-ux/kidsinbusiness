@@ -250,6 +250,14 @@ export default function MarketGame() {
   // sync muted flag to module-level var for speak()
   useEffect(() => { _muted = muted; }, [muted]);
 
+  // auto-narrate when entering each module
+  useEffect(() => {
+    if (screen === "hub")  { setTimeout(()=>speak("Γεια σου! Διάλεξε ένα παιχνίδι για να ξεκινήσεις!"), 300); return; }
+    if (screen === "m2")   { setTimeout(()=>speak("Κέρδος ή Ζημιά! Δες τα έσοδα και έξοδα και πες μου αν η επιχείρηση κερδίζει ή χάνει!"), 300); return; }
+    if (screen === "m3")   { setTimeout(()=>speak("Κάρτες Ρίσκου! Αντιμετώπισε εκπλήξεις και πάρε έξυπνες αποφάσεις!"), 300); return; }
+    if (screen === "m4")   { setTimeout(()=>speak("Μεγάλος Επιχειρηματίας! Ανταγωνίσου τον Άλεξ! Ξεκινάς με τριάμισι χιλιάδες ευρώ!"), 300); return; }
+  }, [screen]);
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) navigate("/book-login");
@@ -771,8 +779,10 @@ export default function MarketGame() {
       const botNet    = net(m4BotBiz.profit, m4BotBiz.expense);
       setM4Player(p => p + playerNet);
       setM4Bot(b => b + botNet);
-      setM4Event(randEvent());
+      const ev = randEvent();
+      setM4Event(ev);
       setM4Phase("event");
+      setTimeout(()=>speak("Νέο γεγονός! " + ev.title + ". Επίλεξε: " + ev.a.text + " ή " + ev.b.text), 400);
     };
 
     const pickEvent = (choice: "a"|"b") => {
