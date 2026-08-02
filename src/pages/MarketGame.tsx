@@ -227,7 +227,7 @@ export default function MarketGame() {
 
   // ── Module 2 state
   const [m2Step,   setM2Step]   = useState(0);
-  const [m2Answer, setM2Answer] = useState<"profit"|"loss"|null>(null);
+  const [m2Answer, setM2Answer] = useState<"profit"|"loss"|"zero"|null>(null);
   const [m2Score,  setM2Score]  = useState(0);
   const [m2Order,  setM2Order]  = useState<typeof M2>(M2);
 
