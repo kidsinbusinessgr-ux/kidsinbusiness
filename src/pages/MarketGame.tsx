@@ -216,14 +216,14 @@ export default function MarketGame() {
   const navigate = useNavigate();
   const [screen, setScreen] = useState<Screen>("hub");
 
-  // ── Module 1 state
-  const [m1Step, setM1Step]   = useState(0); // 0=intro 1=char 2=biz 3=day 4=done
-  const [m1Char, setM1Char]   = useState(0);
-  const [m1Biz,  setM1Biz]    = useState<typeof BIZ[0]|null>(null);
-  const [m1Cash, setM1Cash]   = useState(3500);
-  const [m1Day,  setM1Day]    = useState(1);
-  const [m1Log,  setM1Log]    = useState<{income:number;expense:number;event:typeof DAY_EVENTS[0]}[]>([]);
-  const [m1Events,setM1Events] = useState<typeof DAY_EVENTS>>(()=>shuffle(DAY_EVENTS) as typeof DAY_EVENTS);
+  // ── Module 1 state (Αποταμίευση & Στόχος)
+  const [m1Phase,   setM1Phase]   = useState<"goal"|"week"|"done">("goal");
+  const [m1GoalIdx, setM1GoalIdx] = useState(0);
+  const [m1Savings, setM1Savings] = useState(0);
+  const [m1Week,    setM1Week]    = useState(0);
+  const [m1Bought,  setM1Bought]  = useState<boolean[]>([]);
+  const [m1WeekLog, setM1WeekLog] = useState<number[]>([]);
+  const [muted,     setMuted]     = useState(false);
 
   // ── Module 2 state
   const [m2Step,   setM2Step]   = useState(0);
