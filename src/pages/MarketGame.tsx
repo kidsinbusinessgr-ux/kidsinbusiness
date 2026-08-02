@@ -19,7 +19,7 @@ const BIZ = [
   { id:"hair",    name:"Κομμωτήριο",     emoji:"💈", buy:1500, profit:210, expense:75,  desc:"Στυλ για όλους!"           },
   { id:"gym",     name:"Γυμναστήριο",    emoji:"💪", buy:2500, profit:340, expense:120, desc:"Υγεία και δύναμη!"         },
   { id:"spa",     name:"Spa Center",     emoji:"🧖", buy:2200, profit:270, expense:95,  desc:"Χαλάρωση και ομορφιά!"    },
-  { id:"toys",    name:"Μαγαζί Παιχνίδια",emoji:"🎮", buy:1700, profit:240, expense:80,  desc:"Παιχνίδια για όλες τις ηλικίες!" },
+  { id:"toys",    name:"Μαγαζί με Παιχνίδια",emoji:"🎮", buy:1700, profit:240, expense:80,  desc:"Παιχνίδια για όλες τις ηλικίες!" },
 ];
 
 // ── Module 2 Scenarios ─────────────────────────────────────────────────────────
@@ -29,7 +29,7 @@ const M2 = [
   { biz:"💪 Γυμναστήριο",      income:500, expense:200, fact:"Πολλά νέα μέλη εγγράφηκαν τον Ιανουάριο!" },
   { biz:"💈 Κομμωτήριο",       income:210, expense:240, fact:"Αγοράστηκαν νέα προϊόντα ομορφιάς." },
   { biz:"🧖 Spa Center",       income:380, expense:170, fact:"Οι πελάτες αγαπούν τα νέα θεραπευτικά πακέτα." },
-  { biz:"🎮 Μαγαζί Παιχνίδια",   income:290, expense:290, fact:"Εσοδα και έξοδα ισοφαρίστηκαν αυτόν τον μήνα." },
+  { biz:"🎮 Μαγαζί με Παιχνίδια",   income:290, expense:290, fact:"Εσοδα και έξοδα ισοφαρίστηκαν αυτόν τον μήνα." },
   { biz:"🏪 Super Market",     income:600, expense:250, fact:"Σεζόν διακοπών — πολύ κόσμος!" },
   { biz:"🚙 Rent a Car",       income:420, expense:500, fact:"Επισκευές σε αυτοκίνητα ανέβασαν τα έξοδα." },
 ];
@@ -883,7 +883,7 @@ export default function MarketGame() {
               <div className="bg-white rounded-3xl p-5 shadow-lg max-w-xs w-full text-center">
                 <div className="text-4xl mb-2">📅</div>
                 <h2 className="text-2xl font-black text-violet-700">Μέρα {m4Round}</h2>
-                <p className="text-gray-500 text-sm mb-3">Μαζεύεις κέρδη από τις επιχειρήσεις σας...</p>
+                <p className="text-gray-500 text-sm mb-3">Μαζεύω κέρδη για τις επιχειρήσεις μου!</p>
                 <div className="space-y-2">
                   <div className="flex justify-between bg-violet-50 rounded-xl p-2.5">
                     <span className="font-semibold text-sm text-gray-600">{char.emoji} {char.trait} ({m4Biz.emoji})</span>
