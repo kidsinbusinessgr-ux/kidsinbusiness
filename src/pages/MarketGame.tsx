@@ -79,14 +79,61 @@ const M4_EVENTS = [
 ];
 
 
-// ── Day Events (Module 1) ──────────────────────────────────────────────────────
-const DAY_EVENTS = [
-  { label:"Κανονική μέρα",          emoji:"☀️",  mod:1.0  },
-  { label:"Σαββατοκύριακο!",         emoji:"🎉",  mod:1.4  },
-  { label:"Βροχερή μέρα...",         emoji:"🌧️", mod:0.6  },
-  { label:"Τοπική γιορτή!",          emoji:"🎊",  mod:1.6  },
-  { label:"Αρκετοί ανταγωνιστές",    emoji:"😬",  mod:0.8  },
+// ── Module 1 — Αποταμίευση & Στόχος ──────────────────────────────────────────
+const M1_GOALS = [
+  { emoji:"🚲", name:"Ποδήλατο",       price:300, grad:"from-emerald-400 to-teal-600"   },
+  { emoji:"🎮", name:"Χειριστήριο",    price:200, grad:"from-blue-400 to-indigo-600"    },
+  { emoji:"🎒", name:"Νέο Σακίδιο",   price:120, grad:"from-violet-500 to-purple-700"  },
 ];
+const WEEKLY_INCOME = 60;
+type M1Item = { emoji:string; name:string; price:number; type:"need"|"want" };
+const M1_WEEKS: { items:M1Item[]; bonus?:number; bonusText?:string }[] = [
+  { items:[
+    { emoji:"🥗", name:"Σχολικό γεύμα",      price:15, type:"need" },
+    { emoji:"🎬", name:"Κινηματογράφος",     price:12, type:"want" },
+    { emoji:"🍦", name:"Παγωτό",             price:5,  type:"want" },
+    { emoji:"📚", name:"Βιβλίο ιστοριών",   price:10, type:"want" },
+  ]},
+  { items:[
+    { emoji:"✏️", name:"Σχολικά είδη",       price:20, type:"need" },
+    { emoji:"🎮", name:"Νέο παιχνίδι",       price:35, type:"want" },
+    { emoji:"☕", name:"Smoothie",            price:6,  type:"want" },
+  ]},
+  { items:[
+    { emoji:"🥗", name:"Σχολικό γεύμα",      price:15, type:"need" },
+    { emoji:"👕", name:"Νέο μπλουζάκι",     price:20, type:"want" },
+    { emoji:"🎵", name:"Μουσική εφαρμογή",  price:8,  type:"want" },
+    { emoji:"🍕", name:"Πίτσα με παρέα",    price:12, type:"want" },
+  ]},
+  { bonus:20, bonusText:"🎂 Γενέθλια! Δώρο +20€",
+    items:[
+    { emoji:"🚌", name:"Εκδρομή σχολείου",   price:20, type:"need" },
+    { emoji:"🎲", name:"Επιτραπέζιο",        price:25, type:"want" },
+    { emoji:"🧋", name:"Bubble tea",         price:7,  type:"want" },
+  ]},
+  { items:[
+    { emoji:"🚌", name:"Μεταφορές εβδομάδας",price:10, type:"need" },
+    { emoji:"🎨", name:"Χρώματα ζωγραφικής", price:15, type:"want" },
+    { emoji:"🍟", name:"Fast food με φίλους", price:12, type:"want" },
+    { emoji:"🎠", name:"Λούνα παρκ",          price:20, type:"want" },
+  ]},
+  { items:[
+    { emoji:"🥗", name:"Σχολικό γεύμα",      price:15, type:"need" },
+    { emoji:"🎁", name:"Δώρο για φίλο",      price:20, type:"want" },
+    { emoji:"📱", name:"Θήκη κινητού",       price:18, type:"want" },
+    { emoji:"🍰", name:"Γλυκό ζαχαροπλαστείου",price:8, type:"want" },
+  ]},
+];
+
+// ── Speech helper ─────────────────────────────────────────────────────────────
+let _muted = false;
+const speak = (text: string) => {
+  if (_muted || !("speechSynthesis" in window)) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "el-GR"; u.rate = 0.88; u.pitch = 1.1;
+  window.speechSynthesis.speak(u);
+};
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 const shuffle = <T,>(arr: T[]): T[] => [...arr].sort(() => Math.random() - 0.5);
@@ -200,6 +247,9 @@ export default function MarketGame() {
   const [m4Event,  setM4Event]  = useState<typeof M4_EVENTS[0]|null>(null);
   const [m4EvRes,  setM4EvRes]  = useState<{pDelta:number; bDelta:number}|null>(null);
 
+  // sync muted flag to module-level var for speak()
+  useEffect(() => { _muted = muted; }, [muted]);
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) navigate("/book-login");
@@ -207,9 +257,9 @@ export default function MarketGame() {
   }, [navigate]);
 
   const goHub = () => {
+    window.speechSynthesis?.cancel();
     setScreen("hub");
-    // reset all modules
-    setM1Step(0); setM1Char(0); setM1Biz(null); setM1Cash(3500); setM1Day(1); setM1Log([]); setM1Events(shuffle(DAY_EVENTS) as typeof DAY_EVENTS);
+    setM1Phase("goal"); setM1GoalIdx(0); setM1Savings(0); setM1Week(0); setM1Bought([]); setM1WeekLog([]);
     setM2Step(0); setM2Answer(null); setM2Score(0); setM2Order(shuffle(M2));
     setM3Step(0); setM3Cash(2000); setM3Result(null);
     setM4Phase("char"); setM4Biz(null); setM4Player(3500); setM4Bot(3500); setM4Round(1); setM4Event(null); setM4EvRes(null);
@@ -240,7 +290,7 @@ export default function MarketGame() {
         {/* Module cards */}
         <div className="grid grid-cols-2 gap-3 px-4 w-full max-w-sm">
           {modules.map(m => (
-            <button key={m.id} onClick={() => setScreen(m.id)}
+            <button key={m.id} onClick={() => { setScreen(m.id); speak(m.title + ". " + m.desc); }}
               className="rounded-3xl overflow-hidden shadow-xl active:scale-95 transition-transform text-left">
               <div className={`bg-gradient-to-br ${m.color} p-4 pb-3`}>
                 <div className="text-4xl mb-2">{m.emoji}</div>
@@ -253,176 +303,205 @@ export default function MarketGame() {
           ))}
         </div>
 
-        <button onClick={() => navigate("/book")} className="text-white/40 text-xs mt-8 hover:text-white/60">← Πίσω στο βιβλίο</button>
+        <div className="flex items-center gap-4 mt-8">
+          <button onClick={() => navigate("/book")} className="text-white/40 text-xs hover:text-white/60">← Πίσω στο βιβλίο</button>
+          <button onClick={() => setMuted(m => !m)}
+            className="text-white/40 text-xs hover:text-white/60 border border-white/20 rounded-full px-3 py-1">
+            {muted ? "🔇 Ήχος OFF" : "🔊 Ήχος ON"}
+          </button>
+        </div>
       </div>
     );
   }
 
   // ══════════════════════════════════════════════════════════════════════════════
-  // MODULE 1 — Ξεκίνα Επιχείρηση
+  // MODULE 1 — Αποταμίευση & Στόχος
   // ══════════════════════════════════════════════════════════════════════════════
   if (screen === "m1") {
-    const DAYS = 5;
-    const char = CHARS[m1Char];
-    const totalEarned = m1Log.reduce((s, e) => s + e.income - e.expense, 0);
+    const WEEKS = 6;
+    const goal = M1_GOALS[m1GoalIdx];
+    const weekData = M1_WEEKS[m1Week] ?? M1_WEEKS[0];
+    const weekIncome = WEEKLY_INCOME + (weekData.bonus ?? 0);
+    const needsCost = weekData.items.filter(i=>i.type==="need").reduce((s,i)=>s+i.price,0);
+    const wantItems = weekData.items.filter(i=>i.type==="want");
+    const selectedWantsCost = wantItems.reduce((s,item,idx)=> s+(m1Bought[idx]?item.price:0), 0);
+    const weekSaved = weekIncome - needsCost - selectedWantsCost;
+    const projectedTotal = m1Savings + weekSaved;
+    const resetWeekBought = () => setM1Bought(Array(wantItems.length).fill(false));
 
     return (
       <div className="min-h-screen flex flex-col game-font" style={{ background:"linear-gradient(160deg,#d1fae5 0%,#a7f3d0 50%,#6ee7b7 100%)" }}>
-        {/* Top bar */}
         <div className="relative bg-gradient-to-r from-emerald-500 to-teal-600 px-4 pt-10 pb-4 text-white">
           <BackBtn onBack={goHub} />
           <div className="text-center">
-            <div className="text-lg font-black">🏪 Ξεκίνα Επιχείρηση</div>
-            {m1Step >= 3 && m1Biz && (
-              <div className="mt-1">
-                <ProgressBar step={m1Log.length} total={DAYS} />
-                <div className="text-xs mt-1 opacity-80">Μέρα {m1Log.length}/{DAYS}</div>
-              </div>
+            <div className="text-lg font-black">🏦 Αποταμίευση & Στόχος</div>
+            {m1Phase === "week" && (
+              <>
+                <ProgressBar step={m1Week} total={WEEKS} />
+                <div className="text-xs mt-1 opacity-80">Εβδομάδα {m1Week+1} από {WEEKS} · Αποταμιεύτηκαν: {m1Savings}€</div>
+              </>
             )}
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col p-4 gap-3">
+        <div className="flex-1 flex flex-col p-4 gap-3 items-center justify-center">
 
-          {/* STEP 0 — Intro */}
-          {m1Step === 0 && (
-            <div className="flex-1 flex flex-col items-center justify-center gap-4">
-              <div className="text-6xl animate-bounce">🏪</div>
-              <div className="bg-white rounded-3xl p-5 shadow-lg text-center max-w-xs w-full">
-                <h2 className="text-2xl font-black text-emerald-700 mb-2">Ξεκίνα την Επιχείρησή σου!</h2>
-                <p className="text-gray-600 text-sm mb-3">Έχεις <strong className="text-emerald-700">3.500€</strong> για να επενδύσεις. Διάλεξε τον χαρακτήρα σου και αγόρασε μια επιχείρηση!</p>
-                <div className="bg-emerald-50 rounded-2xl p-3 text-xs text-gray-600 space-y-1 text-left">
-                  <div>📌 Κάθε επιχείρηση έχει <strong>κόστος αγοράς</strong></div>
-                  <div>💰 Κάθε μέρα έχεις <strong>έσοδα</strong> (χρήματα που μπαίνουν)</div>
-                  <div>💸 Και <strong>έξοδα</strong> (ενοίκιο, μισθοί, υλικά)</div>
-                  <div>✅ Κέρδος = Έσοδα − Έξοδα</div>
-                </div>
-              </div>
-              <button onClick={() => setM1Step(1)}
-                className="w-full max-w-xs py-4 rounded-2xl font-black text-white text-lg shadow-xl active:scale-95"
-                style={{ background:"linear-gradient(90deg,#10b981,#059669)", boxShadow:"0 6px 0 #047857" }}>
-                Ξεκινάω! 🚀
-              </button>
-            </div>
-          )}
-
-          {/* STEP 1 — Character select */}
-          {m1Step === 1 && (
-            <div className="flex-1 flex flex-col items-center justify-center gap-4">
-              <div className="bg-white rounded-3xl p-5 shadow-lg max-w-xs w-full">
-                <h2 className="text-xl font-black text-center text-emerald-700 mb-1">Επέλεξε το πιόνι σου!</h2>
-                <p className="text-gray-500 text-xs text-center mb-3">Επέλεξε τον χαρακτήρα σου</p>
-                <div className="grid grid-cols-3 gap-2" style={{background:"linear-gradient(135deg,#059669,#0d9488)",borderRadius:"1rem",padding:"0.75rem"}}>
-                  {CHARS.map((c, i) => <CharCard key={i} char={c} selected={m1Char===i} onSelect={() => setM1Char(i)} />)}
-                </div>
-              </div>
-              <button onClick={() => setM1Step(2)}
-                className="w-full max-w-xs py-4 rounded-2xl font-black text-white text-lg shadow-xl"
-                style={{ background:"linear-gradient(90deg,#10b981,#059669)", boxShadow:"0 5px 0 #047857" }}>
-                Επιλέγω: {CHARS[m1Char].trait}! →
-              </button>
-            </div>
-          )}
-
-          {/* STEP 2 — Business select */}
-          {m1Step === 2 && (
-            <div className="flex flex-col gap-3">
-              <div className="bg-white rounded-2xl p-3 shadow-sm text-center">
-                <span className={`${char.color} text-white rounded-full px-3 py-1 text-sm font-black`}>{char.emoji} {char.trait}</span>
-                <span className="text-gray-600 text-sm ml-2">Έχεις <strong className="text-emerald-700">{fmt(m1Cash)}€</strong></span>
-              </div>
-              <p className="text-center font-black text-emerald-800 text-base">Διάλεξε επιχείρηση:</p>
-              <div className="grid grid-cols-1 gap-2">
-                {BIZ.map(b => (
-                  <BizCard key={b.id} biz={b} cash={m1Cash}
-                    selected={m1Biz?.id === b.id}
-                    onSelect={() => setM1Biz(b)} />
-                ))}
-              </div>
-              {m1Biz && (
-                <button onClick={() => {
-                  setM1Cash(m1Cash - m1Biz.buy);
-                  setM1Step(3);
-                }}
-                  className="w-full py-4 rounded-2xl font-black text-white text-lg shadow-xl sticky bottom-4"
-                  style={{ background:"linear-gradient(90deg,#10b981,#059669)", boxShadow:"0 5px 0 #047857" }}>
-                  Αγοράζω {m1Biz.emoji} {m1Biz.name} ({fmt(m1Biz.buy)}€)!
-                </button>
-              )}
-            </div>
-          )}
-
-          {/* STEP 3 — Playing (daily profit) */}
-          {m1Step === 3 && m1Biz && m1Log.length < DAYS && (
-            <div className="flex-1 flex flex-col items-center justify-center gap-4">
-              <div className="text-center">
-                <div className="text-5xl mb-1">{m1Biz.emoji}</div>
-                <div className="font-black text-2xl text-emerald-800">{m1Biz.name}</div>
-                <div className="text-sm text-emerald-600 font-semibold">Μέρα {m1Log.length + 1} από {DAYS}</div>
-              </div>
-              <div className="bg-white rounded-3xl p-5 shadow-lg w-full max-w-xs">
-                <div className="text-center font-black text-gray-700 text-base mb-3">Σήμερα:</div>
-                <div className="space-y-2">
-                  <div className="flex justify-between bg-emerald-50 rounded-xl p-2.5">
-                    <span className="text-sm font-semibold text-gray-600">💰 Έσοδα</span>
-                    <span className="font-black text-emerald-700">+{m1Biz.profit}€</span>
-                  </div>
-                  <div className="flex justify-between bg-rose-50 rounded-xl p-2.5">
-                    <span className="text-sm font-semibold text-gray-600">💸 Έξοδα</span>
-                    <span className="font-black text-rose-600">−{m1Biz.expense}€</span>
-                  </div>
-                  <div className="border-t-2 border-gray-200 pt-2 flex justify-between items-center">
-                    <span className="font-black text-gray-700">= Καθαρό Κέρδος</span>
-                    <span className={`font-black text-xl ${net(m1Biz.profit,m1Biz.expense)>0?"text-emerald-700":"text-rose-600"}`}>
-                      {net(m1Biz.profit,m1Biz.expense)>0?"+":""}{net(m1Biz.profit,m1Biz.expense)}€
-                    </span>
-                  </div>
-                </div>
-                <div className="mt-3 bg-indigo-50 rounded-xl p-2.5 text-center">
-                  <div className="text-xs text-gray-500">Σύνολο μετρητών</div>
-                  <div className="font-black text-lg text-indigo-700">{fmt(m1Cash + m1Log.reduce((s,n)=>s+n,0))}€</div>
+          {/* PHASE: goal select */}
+          {m1Phase === "goal" && (
+            <>
+              <div className="bg-white rounded-3xl p-5 shadow-lg max-w-sm w-full text-center">
+                <div className="text-5xl mb-2">🐷</div>
+                <h2 className="text-2xl font-black text-emerald-700 mb-1">Ο Κουμπαράς μου!</h2>
+                <p className="text-gray-600 text-sm mb-4">Κάθε εβδομάδα κερδίζεις <strong className="text-emerald-700">60€</strong> χαρτζιλίκι. Επίλεξε τι θέλεις να αγοράσεις και αποφάσισε τι αξίζει να ξοδέψεις!</p>
+                <p className="font-black text-gray-700 mb-3">Ποιος είναι ο στόχος σου;</p>
+                <div className="flex flex-col gap-2">
+                  {M1_GOALS.map((g, i) => (
+                    <button key={i} onClick={() => setM1GoalIdx(i)}
+                      className={`rounded-2xl p-3 flex items-center gap-3 border-4 transition-all ${m1GoalIdx===i?"border-emerald-500 bg-emerald-50 shadow-lg":"border-gray-200 bg-white hover:border-emerald-300"}`}>
+                      <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${g.grad} flex items-center justify-center text-2xl shadow-md`}>{g.emoji}</div>
+                      <div className="text-left flex-1">
+                        <div className="font-black text-gray-800">{g.name}</div>
+                        <div className="text-sm text-gray-500">Κόστος: <strong className="text-emerald-700">{g.price}€</strong></div>
+                      </div>
+                      {m1GoalIdx===i && <div className="text-emerald-600 font-black text-xl">✓</div>}
+                    </button>
+                  ))}
                 </div>
               </div>
               <button onClick={() => {
-                const dayNet = net(m1Biz.profit, m1Biz.expense);
-                setM1Log(prev => [...prev, dayNet]);
-                if (m1Log.length + 1 === DAYS) setM1Step(4);
-              }}
-                className="w-full max-w-xs py-4 rounded-2xl font-black text-white text-lg shadow-xl"
-                style={{ background:"linear-gradient(90deg,#10b981,#059669)", boxShadow:"0 5px 0 #047857" }}>
-                {m1Log.length + 1 === DAYS ? "Τελευταία μέρα! 🎉" : `Επόμενη μέρα →`}
+                  speak("Ωραία! Θέλεις " + goal.name + "! Χρειάζεσαι " + goal.price + " ευρώ. Κάθε εβδομάδα παίρνεις εξήντα ευρώ. Αποφάσισε τι θα ξοδέψεις και τι θα αποταμιεύσεις!");
+                  setM1Phase("week"); setM1Week(0); setM1Savings(0); setM1WeekLog([]); resetWeekBought();
+                }}
+                className="w-full max-w-sm py-4 rounded-2xl font-black text-white text-lg shadow-xl active:scale-95"
+                style={{ background:"linear-gradient(90deg,#10b981,#059669)", boxShadow:"0 6px 0 #047857" }}>
+                Ξεκινάω! 🚀
               </button>
-            </div>
+            </>
           )}
 
-          {/* STEP 4 — Done */}
-          {(m1Step === 4 || (m1Step===3 && m1Log.length===DAYS)) && m1Biz && (
-            <div className="flex-1 flex flex-col items-center justify-center gap-4">
-              <div className="text-6xl animate-bounce">🎉</div>
-              <div className="bg-white rounded-3xl p-5 shadow-lg w-full max-w-xs text-center">
-                <h2 className="text-2xl font-black text-emerald-700 mb-1">Μπράβο! Πιόνι: {CHARS[m1Char].trait}!</h2>
-                <p className="text-gray-500 text-sm mb-3">Σε {DAYS} μέρες με το <strong>{m1Biz.emoji} {m1Biz.name}</strong></p>
-                <div className="space-y-2 mb-3">
-                  {m1Log.map((d, i) => {
-                    const dayNet = d.income - d.expense;
-                    return (
-                    <div key={i} className="flex justify-between text-sm bg-gray-50 rounded-lg px-3 py-1.5">
-                      <span className="text-gray-500">{d.event.emoji} Μέρα {i+1}</span>
-                      <span className={`font-black ${dayNet>0?"text-emerald-600":"text-rose-600"}`}>{dayNet>0?"+":""}{dayNet}€</span>
+          {/* PHASE: week */}
+          {m1Phase === "week" && (
+            <>
+              {/* Goal progress */}
+              <div className="bg-white rounded-2xl p-4 shadow-lg w-full max-w-sm">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${goal.grad} flex items-center justify-center text-2xl shadow`}>{goal.emoji}</div>
+                  <div className="flex-1">
+                    <div className="font-black text-gray-800">{goal.name}</div>
+                    <div className="text-xs text-gray-500">Στόχος: <strong>{goal.price}€</strong></div>
+                    <div className="mt-1 h-3 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full transition-all duration-700"
+                        style={{ width:`${Math.min(100,(m1Savings/goal.price)*100)}%` }} />
                     </div>
+                    <div className="text-xs text-emerald-700 font-black mt-0.5">{m1Savings}€ / {goal.price}€</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Week card */}
+              <div className="bg-white rounded-3xl shadow-lg overflow-hidden w-full max-w-sm">
+                <div className="bg-gradient-to-r from-emerald-500 to-teal-600 p-4 text-white text-center">
+                  <div className="font-black text-lg">📅 Εβδομάδα {m1Week+1}</div>
+                  <div className="text-sm opacity-80">Κέρδισες: <strong>{weekIncome}€</strong>
+                    {weekData.bonus ? <span className="ml-1 bg-white/20 rounded-full px-2 py-0.5 text-xs">{weekData.bonusText}</span> : null}
+                  </div>
+                </div>
+                <div className="p-4 space-y-2">
+                  {/* Needs (mandatory) */}
+                  {weekData.items.filter(i=>i.type==="need").map((item, idx) => (
+                    <div key={idx} className="flex items-center gap-3 bg-rose-50 border border-rose-200 rounded-xl p-3">
+                      <span className="text-2xl">{item.emoji}</span>
+                      <div className="flex-1">
+                        <div className="font-black text-sm text-gray-800">{item.name}</div>
+                        <div className="text-[10px] bg-rose-200 text-rose-700 rounded-full px-2 py-0.5 inline-block font-bold">ΑΝΑΓΚΗ</div>
+                      </div>
+                      <div className="font-black text-rose-600">−{item.price}€</div>
+                      <div className="text-rose-400 text-lg">✓</div>
+                    </div>
+                  ))}
+                  {/* Wants (toggleable) */}
+                  {wantItems.map((item, idx) => {
+                    const sel = m1Bought[idx] ?? false;
+                    return (
+                      <button key={idx} onClick={() => setM1Bought(prev => { const n=[...prev]; n[idx]=!n[idx]; return n; })}
+                        className={`w-full flex items-center gap-3 rounded-xl p-3 border-2 transition-all ${sel?"border-amber-400 bg-amber-50":"border-gray-200 bg-gray-50 hover:border-amber-300"}`}>
+                        <span className="text-2xl">{item.emoji}</span>
+                        <div className="flex-1 text-left">
+                          <div className="font-black text-sm text-gray-800">{item.name}</div>
+                          <div className="text-[10px] bg-amber-200 text-amber-700 rounded-full px-2 py-0.5 inline-block font-bold">ΕΠΙΘΥΜΙΑ</div>
+                        </div>
+                        <div className={`font-black ${sel?"text-amber-600":"text-gray-400"}`}>−{item.price}€</div>
+                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-black transition-all ${sel?"bg-amber-400 border-amber-400 text-white":"border-gray-300"}`}>
+                          {sel ? "✓" : ""}
+                        </div>
+                      </button>
                     );
                   })}
                 </div>
-                <div className="bg-emerald-500 text-white rounded-2xl py-3 px-4">
-                  <div className="text-sm opacity-80">Συνολικό κέρδος</div>
-                  <div className="text-3xl font-black">{totalEarned>0?"+":""}{totalEarned}€</div>
-                </div>
-                <div className="mt-3 bg-amber-50 rounded-2xl p-3 text-xs text-amber-800 font-semibold">
-                  💡 Θυμήσου: Κέρδος = Έσοδα − Έξοδα. Όσο πιο έξυπνα επενδύεις, τόσο πιο πολύ κερδίζεις!
+                <div className="px-4 pb-4">
+                  <div className={`rounded-2xl p-3 text-center border-2 ${weekSaved>=0?"border-emerald-300 bg-emerald-50":"border-rose-300 bg-rose-50"}`}>
+                    <div className="text-xs text-gray-500 mb-0.5">Αποταμίευση αυτής της εβδομάδας</div>
+                    <div className={`font-black text-2xl ${weekSaved>=0?"text-emerald-700":"text-rose-600"}`}>{weekSaved>=0?"+":""}{weekSaved}€</div>
+                    <div className="text-xs text-gray-400">{weekIncome}€ − {needsCost+selectedWantsCost}€ έξοδα</div>
+                  </div>
                 </div>
               </div>
-              <div className="flex gap-2 w-full max-w-xs">
-                <button onClick={() => { setM1Step(0); setM1Log([]); setM1Cash(3500); setM1Biz(null); setM1Day(1); setM1Events(shuffle(DAY_EVENTS) as typeof DAY_EVENTS); }}
+
+              <button onClick={() => {
+                  const newSavings = m1Savings + Math.max(0, weekSaved);
+                  const newLog = [...m1WeekLog, Math.max(0, weekSaved)];
+                  const nextWeek = m1Week + 1;
+                  setM1Savings(newSavings);
+                  setM1WeekLog(newLog);
+                  if (nextWeek >= WEEKS) {
+                    setM1Phase("done");
+                    if (newSavings >= goal.price) speak("Μπράβο! Τα κατάφερες! Έφτασες τον στόχο σου! Είσαι σπουδαίος αποταμιευτής!");
+                    else speak("Δεν έφτασες τον στόχο αυτή τη φορά. Ξαναπροσπάθησε! Ξόδεψες πολλά χρήματα σε επιθυμίες.");
+                  } else {
+                    setM1Week(nextWeek);
+                    resetWeekBought();
+                    speak("Εβδομάδα " + (nextWeek+1) + "! Κέρδισες " + (WEEKLY_INCOME + (M1_WEEKS[nextWeek]?.bonus??0)) + " ευρώ. Τι θα ξοδέψεις;");
+                  }
+                }}
+                className="w-full max-w-sm py-4 rounded-2xl font-black text-white text-lg shadow-xl active:scale-95"
+                style={{ background:"linear-gradient(90deg,#10b981,#059669)", boxShadow:"0 5px 0 #047857" }}>
+                {m1Week+1 < WEEKS ? `Επόμενη Εβδομάδα →` : "Τελικό Αποτέλεσμα! 🏁"}
+              </button>
+            </>
+          )}
+
+          {/* PHASE: done */}
+          {m1Phase === "done" && (
+            <>
+              <div className="text-6xl animate-bounce">{m1Savings >= goal.price ? "🏆" : "💪"}</div>
+              <div className="bg-white rounded-3xl p-5 shadow-lg w-full max-w-sm text-center">
+                <h2 className={`text-2xl font-black mb-1 ${m1Savings>=goal.price?"text-emerald-700":"text-amber-600"}`}>
+                  {m1Savings >= goal.price ? "Τα κατάφερες! 🎉" : "Συνέχισε να προσπαθείς!"}
+                </h2>
+                <div className="text-4xl my-2">{goal.emoji}</div>
+                <p className="text-gray-500 text-sm mb-3">
+                  {m1Savings >= goal.price
+                    ? `Αποτάμιευσες ${m1Savings}€ και αγόρασες το ${goal.name}!`
+                    : `Αποτάμιευσες ${m1Savings}€ από τα ${goal.price}€ που χρειαζόσουν.`}
+                </p>
+                <div className="space-y-1.5 mb-3">
+                  {m1WeekLog.map((s, i) => (
+                    <div key={i} className="flex justify-between text-sm bg-gray-50 rounded-lg px-3 py-1.5">
+                      <span className="text-gray-500">📅 Εβδομάδα {i+1}</span>
+                      <span className="font-black text-emerald-600">+{s}€</span>
+                    </div>
+                  ))}
+                </div>
+                <div className={`rounded-2xl py-3 px-4 ${m1Savings>=goal.price?"bg-emerald-500":"bg-amber-400"} text-white`}>
+                  <div className="text-xs opacity-80">Σύνολο αποταμίευσης</div>
+                  <div className="text-3xl font-black">{m1Savings}€</div>
+                </div>
+                <div className="mt-3 bg-blue-50 rounded-2xl p-3 text-xs text-blue-800 font-semibold">
+                  💡 {m1Savings>=goal.price ? "Η αποταμίευση σε βοηθά να αγοράσεις αυτό που πραγματικά θέλεις!" : "Κάθε φορά που αρνείσαι μια επιθυμία, έρχεσαι πιο κοντά στον στόχο σου!"}
+                </div>
+              </div>
+              <div className="flex gap-2 w-full max-w-sm">
+                <button onClick={() => { setM1Phase("goal"); setM1Savings(0); setM1Week(0); setM1Bought([]); setM1WeekLog([]); }}
                   className="flex-1 py-3 rounded-2xl font-black text-emerald-700 bg-white border-2 border-emerald-300 text-sm">
                   🔄 Ξανά
                 </button>
@@ -432,7 +511,7 @@ export default function MarketGame() {
                   Κεντρική →
                 </button>
               </div>
-            </div>
+            </>
           )}
         </div>
       </div>
@@ -499,17 +578,17 @@ export default function MarketGame() {
 
               {!answered ? (
                 <div className="px-4 pb-4 grid grid-cols-3 gap-2">
-                  <button onClick={() => { setM2Answer("profit"); if(result==="profit") setM2Score(s=>s+1); }}
+                  <button onClick={() => { const ok=result==="profit"; setM2Answer("profit"); if(ok){setM2Score(s=>s+1);speak("Σωστά! Κέρδος!");}else speak("Λάθος! Τα έξοδα είναι μεγαλύτερα."); }}
                     className="py-3 rounded-2xl font-black text-white text-sm shadow-md active:scale-95"
                     style={{ background:"linear-gradient(90deg,#10b981,#059669)" }}>
                     ✅ Κέρδος!
                   </button>
-                  <button onClick={() => { setM2Answer("zero"); if(result==="zero") setM2Score(s=>s+1); }}
+                  <button onClick={() => { const ok=result==="zero"; setM2Answer("zero"); if(ok){setM2Score(s=>s+1);speak("Σωστά! Ισοφαρίστηκαν!");}else speak("Λάθος! Κοίτα πάλι τα νούμερα."); }}
                     className="py-3 rounded-2xl font-black text-white text-sm shadow-md active:scale-95"
                     style={{ background:"linear-gradient(90deg,#f59e0b,#d97706)" }}>
                     ⚖️ Μηδέν!
                   </button>
-                  <button onClick={() => { setM2Answer("loss"); if(result==="loss") setM2Score(s=>s+1); }}
+                  <button onClick={() => { const ok=result==="loss"; setM2Answer("loss"); if(ok){setM2Score(s=>s+1);speak("Σωστά! Ζημιά!");}else speak("Λάθος! Κοίτα πάλι τα νούμερα."); }}
                     className="py-3 rounded-2xl font-black text-white text-sm shadow-md active:scale-95"
                     style={{ background:"linear-gradient(90deg,#f43f5e,#e11d48)" }}>
                     ❌ Ζημιά!
@@ -614,12 +693,12 @@ export default function MarketGame() {
 
                 {!m3Result ? (
                   <div className="space-y-2">
-                    <button onClick={() => { const r=card.a; setM3Cash(c=>c+r.delta); setM3Result(r); }}
+                    <button onClick={() => { const r=card.a; setM3Cash(c=>c+r.delta); setM3Result(r); speak(r.delta>=0?'Καλή επιλογή! Κέρδισες '+r.delta+' ευρώ!':'Ωχ! Έχασες '+Math.abs(r.delta)+' ευρώ.'); }}
                       className="w-full py-3.5 rounded-2xl font-black text-white text-base shadow-md active:scale-95"
                       style={{ background:"linear-gradient(90deg,#f97316,#ea580c)" }}>
                       🅰️ {card.a.text}
                     </button>
-                    <button onClick={() => { const r=card.b; setM3Cash(c=>c+r.delta); setM3Result(r); }}
+                    <button onClick={() => { const r=card.b; setM3Cash(c=>c+r.delta); setM3Result(r); speak(r.delta>=0?'Καλή επιλογή! Κέρδισες '+r.delta+' ευρώ!':'Ωχ! Έχασες '+Math.abs(r.delta)+' ευρώ.'); }}
                       className="w-full py-3.5 rounded-2xl font-black text-white text-base shadow-md active:scale-95"
                       style={{ background:"linear-gradient(90deg,#6366f1,#4f46e5)" }}>
                       🅱️ {card.b.text}
@@ -709,7 +788,15 @@ export default function MarketGame() {
 
     const nextRound = () => {
       setM4EvRes(null); setM4Event(null);
-      if (m4Round >= ROUNDS) { setM4Phase("done"); return; }
+      if (m4Round >= ROUNDS) {
+        setM4Phase("done");
+        setTimeout(() => {
+          if (m4Player > m4Bot) speak("Μπράβο! Κέρδισες! Οι έξυπνες αποφάσεις σε οδήγησαν στην επιτυχία!");
+          else if (m4Player < m4Bot) speak("Ο Άλεξ κέρδισε αυτή τη φορά. Δοκίμασε ξανά με καλύτερες αποφάσεις!");
+          else speak("Ισοπαλία! Επέλεξε καλύτερα για να κερδίσεις!");
+        }, 400);
+        return;
+      }
       setM4Round(r => r+1);
       setM4Phase("day");
     };
