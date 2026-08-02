@@ -9,6 +9,7 @@ type SquareType = "start"|"business"|"risk"|"bank"|"expenses"|"upgrade"|"airport
 interface Square   { id:number; type:SquareType; name:string; emoji:string; bizId?:string; }
 interface Business { id:string; name:string; emoji:string; buy:number; profit:number; expense:number; upgCost:number; upgProfit:number; subsidy:number; sale:number; saleUpg:number; }
 interface RiskCard  { id:string; emoji:string; title:string; body:string; delta:number; special?:"discount"|"lucky"; }
+interface BotTurnState { botPlayerIdx:number; targetPos:number; currAnimPos:number; step:number; diceRoll:number; }
 interface Player   { id:number; name:string; emoji:string; colorBg:string; cash:number; pos:number; owned:Record<string,boolean>; upgraded:Record<string,boolean>; isBot:boolean; }
 
 const SQUARES: Square[] = [
@@ -122,7 +123,8 @@ export default function MarketGame() {
   const [dice,        setDice]        = useState<number|null>(null);
   const [animPos,     setAnimPos]     = useState(0);
   const [animating,   setAnimating]   = useState(false);
-  const [botIdx,      setBotIdx]      = useState(0);
+  const [botTurnState, setBotTurnState] = useState<BotTurnState|null>(null);
+  const [botQueueIdx,  setBotQueueIdx]  = useState(0); // which bot in queue
   const [currentCard, setCurrentCard] = useState<RiskCard|null>(null);
   const [usedRisk,    setUsedRisk]    = useState<string[]>([]);
   const [hasDiscount, setHasDiscount] = useState(false);
@@ -147,35 +149,54 @@ export default function MarketGame() {
     });
   },[]);
 
-  // ── Bot turn sequencer ──────────────────────────────────────────────────────
+  // ── Bot turn sequencer (animated) ───────────────────────────────────────────
   useEffect(()=>{
     if(phase!=="bot_turn") return;
     const numBots = players.filter(p=>p.isBot).length;
-    if(botIdx>=numBots){
-      // All bots done → collect profits → next round
-      const profit = players.reduce((s,p)=>{
-        const net = BUSINESSES.filter(b=>p.owned[b.id]).reduce((s2,b)=>s2+b.profit+(p.upgraded[b.id]?b.upgProfit:0)-b.expense,0);
-        return s+net;
-      },0);
-      // Apply round profits to all players
-      setPlayers(prev=>prev.map(p=>{
-        const net = BUSINESSES.filter(b=>p.owned[b.id]).reduce((s,b)=>s+b.profit+(p.upgraded[b.id]?b.upgProfit:0)-b.expense,0);
-        return net!==0?{...p,cash:Math.max(0,p.cash+net)}:p;
-      }));
-      const humanNet = BUSINESSES.filter(b=>players[0]?.owned[b.id]).reduce((s,b)=>s+b.profit+(players[0]?.upgraded[b.id]?b.upgProfit:0)-b.expense,0);
-      setRoundProfit(humanNet);
-      if(round>=TOTAL_ROUNDS){ setTimeout(()=>setPhase("results"),500); return; }
-      setRound(r=>r+1);
-      setDice(null); setCurrentCard(null); setMeetingBiz(null); setRentInfo(null);
-      setTimeout(()=>setPhase(humanNet!==0?"profit":"rolling"),400);
+
+    // No active bot animation → start next bot or finish
+    if(!botTurnState){
+      if(botQueueIdx>=numBots){
+        // All bots done → collect profits → next round
+        setPlayers(prev=>prev.map(p=>{
+          const net=BUSINESSES.filter(b=>p.owned[b.id]).reduce((s,b)=>s+b.profit+(p.upgraded[b.id]?b.upgProfit:0)-b.expense,0);
+          return net!==0?{...p,cash:Math.max(0,p.cash+net)}:p;
+        }));
+        const humanNet=BUSINESSES.filter(b=>players[0]?.owned[b.id]).reduce((s,b)=>s+b.profit+(players[0]?.upgraded[b.id]?b.upgProfit:0)-b.expense,0);
+        setRoundProfit(humanNet);
+        if(round>=TOTAL_ROUNDS){setTimeout(()=>setPhase("results"),500);return;}
+        setRound(r=>r+1);
+        setDice(null);setCurrentCard(null);setMeetingBiz(null);setRentInfo(null);
+        setTimeout(()=>setPhase(humanNet!==0?"profit":"rolling"),400);
+        return;
+      }
+      // Start animating next bot
+      const playerIdx=botQueueIdx+1;
+      const bot=players[playerIdx];
+      if(!bot){setBotQueueIdx(i=>i+1);return;}
+      const d=Math.floor(Math.random()*6)+1;
+      const targetPos=(bot.pos+d)%SQUARES.length;
+      setBotTurnState({botPlayerIdx:playerIdx,targetPos,currAnimPos:bot.pos,step:0,diceRoll:d});
       return;
     }
-    const t = setTimeout(()=>{
-      runBotTurn(botIdx+1); // player index = botIdx+1 (player 0 is human)
-      setBotIdx(i=>i+1);
-    },900);
+
+    // Bot animation in progress — step one square at a time
+    if(botTurnState.step<botTurnState.diceRoll){
+      const t=setTimeout(()=>{
+        const next=(botTurnState.currAnimPos+1)%SQUARES.length;
+        setBotTurnState(prev=>prev?{...prev,currAnimPos:next,step:prev.step+1}:null);
+      },260);
+      return ()=>clearTimeout(t);
+    }
+
+    // Animation done → apply action, queue next bot
+    const t=setTimeout(()=>{
+      applyBotAction(botTurnState.botPlayerIdx,botTurnState.targetPos);
+      setBotTurnState(null);
+      setBotQueueIdx(i=>i+1);
+    },350);
     return ()=>clearTimeout(t);
-  },[phase,botIdx]);
+  },[phase,botQueueIdx,botTurnState]);
 
   // ── Helpers ─────────────────────────────────────────────────────────────────
   const human      = players[0];
@@ -281,7 +302,7 @@ export default function MarketGame() {
     setPhase("action");
   };
 
-  const triggerBotTurns=()=>{ setBotIdx(0); setPhase("bot_turn"); };
+  const triggerBotTurns=()=>{ setBotQueueIdx(0); setBotTurnState(null); setPhase("bot_turn"); };
 
   const buyBiz=(biz:Business)=>{
     let price=biz.buy-biz.subsidy;
@@ -319,16 +340,14 @@ export default function MarketGame() {
     handleSquare(pos,players.map((p,i)=>i===0?{...p,pos}:p));
   };
 
-  // ── Bot turn logic ──────────────────────────────────────────────────────────
-  const runBotTurn=(playerIdx:number)=>{
+  // ── Bot action logic (position already determined by animation) ─────────────
+  const applyBotAction=(playerIdx:number,newPos:number)=>{
     setPlayers(prev=>{
       const next=[...prev];
       const bot={...next[playerIdx], owned:{...next[playerIdx].owned}, upgraded:{...next[playerIdx].upgraded}};
-      const d=Math.floor(Math.random()*6)+1;
-      const newPos=(bot.pos+d)%SQUARES.length;
       const sq=SQUARES[newPos];
       let cashDelta=0;
-      // Passed start
+      // Passed start (newPos wrapped around)
       if(newPos<bot.pos&&bot.pos!==0) cashDelta+=BANK_AMOUNT;
 
       if(sq.type==="start"||sq.type==="bank"){
@@ -367,8 +386,15 @@ export default function MarketGame() {
     });
   };
 
+  // ── Display positions (for board rendering) ────────────────────────────────
+  const getDisplayPos=(playerIdx:number):number=>{
+    if(playerIdx===0) return animating?animPos:(players[0]?.pos??0);
+    if(botTurnState&&botTurnState.botPlayerIdx===playerIdx) return botTurnState.currAnimPos;
+    return players[playerIdx]?.pos??0;
+  };
+
   // ── Derived ─────────────────────────────────────────────────────────────────
-  const displayPos  = animating?animPos:(human?.pos??0);
+  // displayPos now handled per-player via getDisplayPos()
   const sq          = SQUARES[human?.pos??0];
   const sqBiz       = sq.bizId?getBiz(sq.bizId):null;
   const isOwnedByMe = sqBiz?!!(human?.owned[sqBiz.id]):false;
@@ -406,35 +432,39 @@ export default function MarketGame() {
         </div>
         {/* Squares */}
         {SQUARES.map(s=>{
-          const playersHere=players.filter(p=>p.pos===s.id);
-          const humanHere  =displayPos===s.id;
-          const ownedBy    =players.find(p=>s.bizId&&p.owned[s.bizId]);
-          const isTarget   =airportMode&&s.type==="business"&&!human?.owned[s.bizId||""]&&s.id!==human?.pos;
+          const displayPositions=players.map((_,i)=>getDisplayPos(i));
+          const pawnsHere    =players.filter((_,i)=>displayPositions[i]===s.id);
+          const humanHere    =displayPositions[0]===s.id;
+          const ownedBy      =players.find(p=>s.bizId&&p.owned[s.bizId]);
+          const isTarget     =airportMode&&s.type==="business"&&!human?.owned[s.bizId||""]&&s.id!==human?.pos;
+          const isActive     =pawnsHere.length>0;
           return(
             <div key={s.id} style={sqGrid(s.id)}
               className={[
-                "border border-white/30 flex flex-col items-center justify-center overflow-hidden relative transition-all duration-150",
+                "border border-white/30 flex flex-col items-center justify-between overflow-hidden relative transition-all duration-200 py-0.5",
                 SQ_STYLE[s.type],
-                humanHere?"ring-[3px] ring-white z-10 scale-110 shadow-lg":"",
+                humanHere?"ring-[3px] ring-white z-10 scale-110 shadow-xl":"",
+                !humanHere&&isActive?"ring-2 ring-white/70 z-10 scale-105":"",
                 isTarget?"cursor-pointer hover:scale-110 hover:ring-2 hover:ring-white animate-pulse":"",
               ].join(" ")}
               onClick={isTarget?()=>teleport(s.id):undefined}
               onMouseEnter={()=>setTooltipSq(s.id)}
               onMouseLeave={()=>setTooltipSq(null)}
             >
-              <span className="text-xl leading-none">{humanHere?"🧍":s.emoji}</span>
-              {/* Player markers (bots at this square) */}
-              {playersHere.filter(p=>p.isBot&&!humanHere).length>0&&(
-                <div className="absolute top-0 right-0 flex">
-                  {playersHere.filter(p=>p.isBot).map(p=>(
-                    <span key={p.id} className="text-xs leading-none">{p.emoji}</span>
-                  ))}
-                </div>
-              )}
-              {/* Ownership dot */}
-              {ownedBy&&(
-                <div className={`absolute bottom-0 left-0 right-0 h-1 ${ownedBy.colorBg}`}/>
-              )}
+              {/* Square icon */}
+              <span className="text-base leading-none">{s.emoji}</span>
+              {/* Ownership stripe */}
+              {ownedBy&&<div className={`absolute top-0 left-0 right-0 h-0.5 ${ownedBy.colorBg}`}/>}
+              {/* Pawns row at bottom */}
+              <div className="flex gap-0.5 justify-center flex-wrap">
+                {pawnsHere.map(p=>(
+                  <div key={p.id}
+                    className={`${p.colorBg} rounded-full flex items-center justify-center ring-1 ring-white shadow-sm text-[9px] font-bold leading-none`}
+                    style={{width:'14px',height:'14px'}}>
+                    {p.emoji}
+                  </div>
+                ))}
+              </div>
             </div>
           );
         })}
@@ -754,26 +784,36 @@ export default function MarketGame() {
         {phase==="bot_turn"&&(
           <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
             <div className="bg-gray-700 text-white px-4 py-2 flex items-center gap-2">
-              <div className="animate-spin text-lg">⚙️</div>
-              <span className="font-black text-sm">
-                {botIdx<players.filter(p=>p.isBot).length
-                  ? `${players[botIdx+1]?.emoji} ${players[botIdx+1]?.name} παίζει...`
-                  : "Κέρδη γύρου..."}
-              </span>
+              {botTurnState
+                ? <><div className="text-lg">{players[botTurnState.botPlayerIdx]?.emoji}</div>
+                    <span className="font-black text-sm">{players[botTurnState.botPlayerIdx]?.name} παίζει...</span>
+                    <span className="ml-auto text-xl">{"⚀⚁⚂⚃⚄⚅"[botTurnState.diceRoll-1]}</span></>
+                : <><div className="animate-spin text-lg">⚙️</div>
+                    <span className="font-black text-sm">
+                      {botQueueIdx<players.filter(p=>p.isBot).length
+                        ? `${players[botQueueIdx+1]?.emoji} ${players[botQueueIdx+1]?.name} ετοιμάζεται...`
+                        : "Μαζεύω κέρδη..."}
+                    </span></>
+              }
             </div>
-            <div className="p-3 max-h-40 overflow-y-auto">
-              {log.slice(0,8).map((l,i)=>(
-                <div key={i} className={`text-xs py-0.5 border-b border-gray-100 last:border-0 ${i===0?"text-gray-800 font-medium":"text-gray-500"}`}>{l}</div>
-              ))}
+            {/* Bot scorecards */}
+            <div className="px-3 pt-2 pb-1 flex gap-2">
+              {players.filter(p=>p.isBot).map((p,i)=>{
+                const isActive=botTurnState?.botPlayerIdx===p.id;
+                const dispPos=getDisplayPos(p.id);
+                return(
+                  <div key={p.id} className={`flex-1 rounded-xl p-2 text-center text-xs border-2 transition-all ${isActive?`${p.colorBg} text-white border-transparent scale-105 shadow-lg`:"bg-gray-50 border-gray-200"}`}>
+                    <div className="text-xl">{p.emoji}</div>
+                    <div className="font-bold">{p.name}</div>
+                    <div className={isActive?"text-white/90":"text-gray-600"}>{p.cash.toLocaleString()}€</div>
+                    {isActive&&botTurnState&&<div className="text-[9px] mt-0.5 opacity-80">{SQUARES[dispPos]?.emoji} {SQUARES[dispPos]?.name}</div>}
+                  </div>
+                );
+              })}
             </div>
-            {/* Bot positions */}
-            <div className="px-3 pb-3 flex gap-2">
-              {players.filter(p=>p.isBot).map(p=>(
-                <div key={p.id} className={`flex-1 ${p.colorBg} text-white rounded-xl p-2 text-center text-xs`}>
-                  <div className="text-lg">{p.emoji}</div>
-                  <div className="font-bold">{p.name}</div>
-                  <div>{p.cash.toLocaleString()}€</div>
-                </div>
+            <div className="px-3 pb-2 max-h-24 overflow-y-auto">
+              {log.slice(0,5).map((l,i)=>(
+                <div key={i} className={`text-xs py-0.5 border-b border-gray-100 last:border-0 ${i===0?"text-gray-800 font-medium":"text-gray-400"}`}>{l}</div>
               ))}
             </div>
           </div>
