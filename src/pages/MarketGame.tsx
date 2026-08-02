@@ -132,10 +132,12 @@ let _greekVoice: SpeechSynthesisVoice | null = null;
 const _loadGreekVoice = () => {
   if (!("speechSynthesis" in window)) return;
   const voices = window.speechSynthesis.getVoices();
-  // Prefer el-GR, then el-*, then any voice with "Greek" in name
+  const elVoices = voices.filter(v => v.lang === "el-GR" || v.lang.startsWith("el"));
+  // Prefer female Greek voices (Νέφελη=Windows, Melina=macOS, Google ελληνικά=female by default)
+  const femaleNames = ["νέφελη", "melina", "female", "woman", "google"];
   _greekVoice =
-    voices.find(v => v.lang === "el-GR") ||
-    voices.find(v => v.lang.startsWith("el")) ||
+    elVoices.find(v => femaleNames.some(f => v.name.toLowerCase().includes(f))) ||
+    elVoices[0] ||
     voices.find(v => v.name.toLowerCase().includes("greek")) ||
     null;
 };
