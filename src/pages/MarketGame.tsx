@@ -282,10 +282,10 @@ export default function MarketGame() {
 
   // auto-narrate when entering each module
   useEffect(() => {
-    if (screen === "hub")  { setTimeout(()=>speak("Γεια σου! Διάλεξε ένα παιχνίδι για να ξεκινήσεις!"), 300); return; }
-    if (screen === "m2")   { setTimeout(()=>speak("Κέρδος ή Ζημιά! Δες τα έσοδα και έξοδα και πες μου αν η επιχείρηση κερδίζει ή χάνει!"), 300); return; }
-    if (screen === "m3")   { setTimeout(()=>speak("Κάρτες Ρίσκου! Αντιμετώπισε εκπλήξεις και πάρε έξυπνες αποφάσεις!"), 300); return; }
-    if (screen === "m4")   { setTimeout(()=>speak("Μεγάλος Επιχειρηματίας! Ανταγωνίσου τον Άλεξ! Ξεκινάς με τριάμισι χιλιάδες ευρώ!"), 300); return; }
+    if (screen === "hub")  { setTimeout(()=>playClip("hub"), 300); return; }
+    if (screen === "m2")   { setTimeout(()=>playClip("m2-start"), 300); return; }
+    if (screen === "m3")   { setTimeout(()=>playClip("m3-start"), 300); return; }
+    if (screen === "m4")   { setTimeout(()=>playClip("m4-start"), 300); return; }
   }, [screen]);
 
   useEffect(() => {
@@ -328,7 +328,7 @@ export default function MarketGame() {
         {/* Module cards */}
         <div className="grid grid-cols-2 gap-3 px-4 w-full max-w-sm">
           {modules.map(m => (
-            <button key={m.id} onClick={() => { setScreen(m.id); speak(m.title + ". " + m.desc); }}
+            <button key={m.id} onClick={() => { setScreen(m.id); playClip(m.id + "-start"); }}
               className="rounded-3xl overflow-hidden shadow-xl active:scale-95 transition-transform text-left">
               <div className={`bg-gradient-to-br ${m.color} p-4 pb-3`}>
                 <div className="text-4xl mb-2">{m.emoji}</div>
@@ -407,7 +407,7 @@ export default function MarketGame() {
                 </div>
               </div>
               <button onClick={() => {
-                  speak("Ωραία! Θέλεις " + goal.name + "! Χρειάζεσαι " + goal.price + " ευρώ. Κάθε εβδομάδα παίρνεις εξήντα ευρώ. Αποφάσισε τι θα ξοδέψεις και τι θα αποταμιεύσεις!");
+                  playClip("m1-start");
                   setM1Phase("week"); setM1Week(0); setM1Savings(0); setM1WeekLog([]); resetWeekBought();
                 }}
                 className="w-full max-w-sm py-4 rounded-2xl font-black text-white text-lg shadow-xl active:scale-95"
@@ -493,12 +493,12 @@ export default function MarketGame() {
                   setM1WeekLog(newLog);
                   if (nextWeek >= WEEKS) {
                     setM1Phase("done");
-                    if (newSavings >= goal.price) speak("Μπράβο! Τα κατάφερες! Έφτασες τον στόχο σου! Είσαι σπουδαίος αποταμιευτής!");
+                    if (newSavings >= goal.price) playClip("m1-win");
                     else speak("Δεν έφτασες τον στόχο αυτή τη φορά. Ξαναπροσπάθησε! Ξόδεψες πολλά χρήματα σε επιθυμίες.");
                   } else {
                     setM1Week(nextWeek);
                     resetWeekBought();
-                    speak("Εβδομάδα " + (nextWeek+1) + "! Κέρδισες " + (WEEKLY_INCOME + (M1_WEEKS[nextWeek]?.bonus??0)) + " ευρώ. Τι θα ξοδέψεις;");
+                    playClip("m1-week");
                   }
                 }}
                 className="w-full max-w-sm py-4 rounded-2xl font-black text-white text-lg shadow-xl active:scale-95"
@@ -616,17 +616,17 @@ export default function MarketGame() {
 
               {!answered ? (
                 <div className="px-4 pb-4 grid grid-cols-3 gap-2">
-                  <button onClick={() => { const ok=result==="profit"; setM2Answer("profit"); if(ok){setM2Score(s=>s+1);speak("Σωστά! Κέρδος!");}else speak("Λάθος! Τα έξοδα είναι μεγαλύτερα."); }}
+                  <button onClick={() => { const ok=result==="profit"; setM2Answer("profit"); if(ok){setM2Score(s=>s+1);playClip("m2-correct");}else playClip("m2-wrong"); }}
                     className="py-3 rounded-2xl font-black text-white text-sm shadow-md active:scale-95"
                     style={{ background:"linear-gradient(90deg,#10b981,#059669)" }}>
                     ✅ Κέρδος!
                   </button>
-                  <button onClick={() => { const ok=result==="zero"; setM2Answer("zero"); if(ok){setM2Score(s=>s+1);speak("Σωστά! Ισοφαρίστηκαν!");}else speak("Λάθος! Κοίτα πάλι τα νούμερα."); }}
+                  <button onClick={() => { const ok=result==="zero"; setM2Answer("zero"); if(ok){setM2Score(s=>s+1);playClip("m2-correct");}else playClip("m2-wrong"); }}
                     className="py-3 rounded-2xl font-black text-white text-sm shadow-md active:scale-95"
                     style={{ background:"linear-gradient(90deg,#f59e0b,#d97706)" }}>
                     ⚖️ Μηδέν!
                   </button>
-                  <button onClick={() => { const ok=result==="loss"; setM2Answer("loss"); if(ok){setM2Score(s=>s+1);speak("Σωστά! Ζημιά!");}else speak("Λάθος! Κοίτα πάλι τα νούμερα."); }}
+                  <button onClick={() => { const ok=result==="loss"; setM2Answer("loss"); if(ok){setM2Score(s=>s+1);playClip("m2-correct");}else playClip("m2-wrong"); }}
                     className="py-3 rounded-2xl font-black text-white text-sm shadow-md active:scale-95"
                     style={{ background:"linear-gradient(90deg,#f43f5e,#e11d48)" }}>
                     ❌ Ζημιά!
@@ -731,12 +731,12 @@ export default function MarketGame() {
 
                 {!m3Result ? (
                   <div className="space-y-2">
-                    <button onClick={() => { const r=card.a; setM3Cash(c=>c+r.delta); setM3Result(r); speak(r.delta>=0?'Καλή επιλογή! Κέρδισες '+r.delta+' ευρώ!':'Ωχ! Έχασες '+Math.abs(r.delta)+' ευρώ.'); }}
+                    <button onClick={() => { const r=card.a; setM3Cash(c=>c+r.delta); setM3Result(r); playClip(r.delta>=0?'m3-good':'m3-bad'); }}
                       className="w-full py-3.5 rounded-2xl font-black text-white text-base shadow-md active:scale-95"
                       style={{ background:"linear-gradient(90deg,#f97316,#ea580c)" }}>
                       🅰️ {card.a.text}
                     </button>
-                    <button onClick={() => { const r=card.b; setM3Cash(c=>c+r.delta); setM3Result(r); speak(r.delta>=0?'Καλή επιλογή! Κέρδισες '+r.delta+' ευρώ!':'Ωχ! Έχασες '+Math.abs(r.delta)+' ευρώ.'); }}
+                    <button onClick={() => { const r=card.b; setM3Cash(c=>c+r.delta); setM3Result(r); playClip(r.delta>=0?'m3-good':'m3-bad'); }}
                       className="w-full py-3.5 rounded-2xl font-black text-white text-base shadow-md active:scale-95"
                       style={{ background:"linear-gradient(90deg,#6366f1,#4f46e5)" }}>
                       🅱️ {card.b.text}
@@ -831,9 +831,9 @@ export default function MarketGame() {
       if (m4Round >= ROUNDS) {
         setM4Phase("done");
         setTimeout(() => {
-          if (m4Player > m4Bot) speak("Μπράβο! Κέρδισες! Οι έξυπνες αποφάσεις σε οδήγησαν στην επιτυχία!");
-          else if (m4Player < m4Bot) speak("Ο Άλεξ κέρδισε αυτή τη φορά. Δοκίμασε ξανά με καλύτερες αποφάσεις!");
-          else speak("Ισοπαλία! Επέλεξε καλύτερα για να κερδίσεις!");
+          if (m4Player > m4Bot) playClip("m4-win");
+          else if (m4Player < m4Bot) playClip("m4-lose");
+          else playClip("m4-tie");
         }, 400);
         return;
       }
