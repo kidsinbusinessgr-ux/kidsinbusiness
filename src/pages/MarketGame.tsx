@@ -126,42 +126,24 @@ const M1_WEEKS: { items:M1Item[]; bonus?:number; bonusText?:string }[] = [
   ]},
 ];
 
-// ── Speech helper ─────────────────────────────────────────────────────────────
+// ── Audio helper ──────────────────────────────────────────────────────────────
 let _muted = false;
-let _greekVoice: SpeechSynthesisVoice | null = null;
+let _currentAudio: HTMLAudioElement | null = null;
 
-const MALE_NAMES = ["stefanos", "stefan", "nikos", "νίκος", "costas", "κώστας", "alexandros"];
-const FEMALE_NAMES = ["νέφελη", "nefeli", "melina", "female", "woman", "google", "zira"];
-
-const _loadGreekVoice = () => {
-  if (!("speechSynthesis" in window)) return;
-  const voices = window.speechSynthesis.getVoices();
-  const elVoices = voices.filter(v => v.lang === "el-GR" || v.lang.startsWith("el"));
-  // 1. Known female Greek voices
-  const female = elVoices.find(v => FEMALE_NAMES.some(f => v.name.toLowerCase().includes(f)));
-  // 2. Non-male Greek voices
-  const nonMale = elVoices.find(v => !MALE_NAMES.some(m => v.name.toLowerCase().includes(m)));
-  _greekVoice = female || nonMale || elVoices[0] || null;
-  if (_greekVoice) console.log("[TTS] Voice selected:", _greekVoice.name, _greekVoice.lang);
+const playClip = (clip: string) => {
+  if (_muted) return;
+  if (_currentAudio) { _currentAudio.pause(); _currentAudio.currentTime = 0; }
+  _currentAudio = new Audio(`/audio/${clip}.m4a`);
+  _currentAudio.play().catch(() => {});
 };
 
-if (typeof window !== "undefined" && "speechSynthesis" in window) {
-  window.speechSynthesis.onvoiceschanged = _loadGreekVoice;
-  _loadGreekVoice();
-}
-
+// speak() used only for dynamic M4 event narration (variable text)
 const speak = (text: string) => {
   if (_muted) return;
   if (!("speechSynthesis" in window)) return;
-  if (!_greekVoice) _loadGreekVoice();
   window.speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
-  u.lang = "el-GR";
-  u.rate = 0.80;
-  // If only Stefanos available, raise pitch to sound softer; Nefeli/female stays at 1.0
-  const isMale = _greekVoice ? MALE_NAMES.some(m => _greekVoice!.name.toLowerCase().includes(m)) : true;
-  u.pitch = isMale ? 1.7 : 1.0;
-  if (_greekVoice) u.voice = _greekVoice;
+  u.lang = "el-GR"; u.rate = 0.80; u.pitch = 1.7;
   window.speechSynthesis.speak(u);
 };
 
@@ -390,7 +372,7 @@ export default function MarketGame() {
               <div className="bg-white rounded-3xl p-5 shadow-lg max-w-sm w-full text-center">
                 <div className="text-5xl mb-2">🐷</div>
                 <h2 className="text-2xl font-black text-emerald-700 mb-1">Ο Κουμπαράς μου!</h2>
-                <p className="text-gray-600 text-sm mb-4">Κάθε εβδομάδα κερδίζεις <strong className="text-emerald-700">60€</strong> χαρτζιλίκι. Επίλεξε τι θέλεις να αγοράσεις και αποφάσισε τι αξίζει να ξοδέψεις!</p>
+                <p className="text-gray-600 text-sm mb-4">Κάθε εβδομάδα κερδίζεις <strong className="text-emerald-700">{WEEKLY_INCOME}€</strong> χαρτζιλίκι. Επίλεξε τι θέλεις να αγοράσεις και αποφάσισε τι αξίζει να ξοδέψεις!</p>
                 <p className="font-black text-gray-700 mb-3">Ποιος είναι ο στόχος σου;</p>
                 <div className="flex flex-col gap-2">
                   {M1_GOALS.map((g, i) => (
