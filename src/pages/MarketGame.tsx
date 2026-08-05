@@ -932,17 +932,11 @@ export default function MarketGame() {
                     className="w-full py-4 rounded-2xl font-black text-white text-base shadow-md active:scale-95"
                     style={{ background:"linear-gradient(90deg,#7c3aed,#6d28d9)" }}>
                     🅰️ {m4Event.a.text}
-                    <span className={`ml-2 text-sm ${m4Event.a.delta>=0?"text-green-300":"text-red-300"}`}>
-                      ({m4Event.a.delta>0?"+":""}{m4Event.a.delta}€)
-                    </span>
                   </button>
                   <button onClick={() => pickEvent("b")}
                     className="w-full py-4 rounded-2xl font-black text-white text-base shadow-md active:scale-95"
                     style={{ background:"linear-gradient(90deg,#f97316,#ea580c)" }}>
                     🅱️ {m4Event.b.text}
-                    <span className={`ml-2 text-sm ${m4Event.b.delta>=0?"text-green-300":"text-red-300"}`}>
-                      ({m4Event.b.delta>0?"+":""}{m4Event.b.delta}€)
-                    </span>
                   </button>
                 </div>
               </div>
