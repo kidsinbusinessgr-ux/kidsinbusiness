@@ -476,7 +476,7 @@ export default function MarketGame() {
                   if (nextWeek >= WEEKS) {
                     setM1Phase("done");
                     if (newSavings >= goal.price) playClip("m1-win");
-                    else speak("Δεν έφτασες τον στόχο αυτή τη φορά. Ξαναπροσπάθησε! Ξόδεψες πολλά χρήματα σε επιθυμίες.");
+
                   } else {
                     setM1Week(nextWeek);
                     resetWeekBought();
@@ -794,7 +794,6 @@ export default function MarketGame() {
       const ev = randEvent();
       setM4Event(ev);
       setM4Phase("event");
-      setTimeout(()=>speak("Νέο γεγονός! " + ev.title + ". Επίλεξε: " + ev.a.text + " ή " + ev.b.text), 400);
     };
 
     const pickEvent = (choice: "a"|"b") => {
