@@ -96,8 +96,8 @@ const M1_WEEKS: { items:M1Item[]; bonus?:number; bonusText?:string }[] = [
   ]},
   { items:[
     { emoji:"✏️", name:"Σχολικά είδη",     price:3, type:"need" },
-    { emoji:"🎮", name:"Αγαπημένο σνακ",  price:2, type:"want" },
-    { emoji:"☕", name:"Smoothie",          price:2, type:"want" },
+    { emoji:"🍿", name:"Αγαπημένο σνακ",  price:2, type:"want" },
+    { emoji:"🥤", name:"Smoothie",          price:2, type:"want" },
     { emoji:"🃏", name:"Κάρτες συλλογής", price:4, type:"want" },
   ]},
   { items:[
@@ -342,12 +342,14 @@ export default function MarketGame() {
     const goal = M1_GOALS[m1GoalIdx];
     const weekData = M1_WEEKS[m1Week] ?? M1_WEEKS[0];
     const weekIncome = WEEKLY_INCOME + (weekData.bonus ?? 0);
-    const needsCost = weekData.items.filter(i=>i.type==="need").reduce((s,i)=>s+i.price,0);
-    const wantItems = weekData.items.filter(i=>i.type==="want");
-    const selectedWantsCost = wantItems.reduce((s,item,idx)=> s+(m1Bought[idx]?item.price:0), 0);
-    const weekSaved = weekIncome - needsCost - selectedWantsCost;
+    const allItems = weekData.items;
+    const selectedNeedsCost = allItems.reduce((s,item,idx)=> s+(item.type==="need"&&(m1Bought[idx]??false)?item.price:0), 0);
+    const selectedWantsCost = allItems.reduce((s,item,idx)=> s+(item.type==="want"&&(m1Bought[idx]??false)?item.price:0), 0);
+    
+    
+    const weekSaved = weekIncome - selectedNeedsCost - selectedWantsCost;
     const projectedTotal = m1Savings + weekSaved;
-    const resetWeekBought = () => setM1Bought(Array(wantItems.length).fill(false));
+    const resetWeekBought = () => setM1Bought(Array(allItems.length).fill(false));
 
     return (
       <div className="min-h-screen flex flex-col game-font" style={{ background:"linear-gradient(160deg,#d1fae5 0%,#a7f3d0 50%,#6ee7b7 100%)" }}>
@@ -426,31 +428,29 @@ export default function MarketGame() {
                   </div>
                 </div>
                 <div className="p-4 space-y-2">
-                  {/* Needs (mandatory) */}
-                  {weekData.items.filter(i=>i.type==="need").map((item, idx) => (
-                    <div key={idx} className="flex items-center gap-3 bg-rose-50 border border-rose-200 rounded-xl p-3">
-                      <span className="text-2xl">{item.emoji}</span>
-                      <div className="flex-1">
-                        <div className="font-black text-sm text-gray-800">{item.name}</div>
-                        <div className="text-[10px] bg-rose-200 text-rose-700 rounded-full px-2 py-0.5 inline-block font-bold">ΑΝΑΓΚΗ</div>
-                      </div>
-                      <div className="font-black text-rose-600">−{item.price}€</div>
-                      <div className="text-rose-400 text-lg">✓</div>
-                    </div>
-                  ))}
-                  {/* Wants (toggleable) */}
-                  {wantItems.map((item, idx) => {
+                  {/* All items — toggleable */}
+                  {allItems.map((item, idx) => {
+                    const isNeed = item.type === "need";
                     const sel = m1Bought[idx] ?? false;
                     return (
                       <button key={idx} onClick={() => setM1Bought(prev => { const n=[...prev]; n[idx]=!n[idx]; return n; })}
-                        className={`w-full flex items-center gap-3 rounded-xl p-3 border-2 transition-all ${sel?"border-amber-400 bg-amber-50":"border-gray-200 bg-gray-50 hover:border-amber-300"}`}>
+                        className={`w-full flex items-center gap-3 rounded-xl p-3 border-2 transition-all ${
+                          isNeed
+                            ? sel ? "border-rose-400 bg-rose-50" : "border-gray-200 bg-gray-50 hover:border-rose-300"
+                            : sel ? "border-amber-400 bg-amber-50" : "border-gray-200 bg-gray-50 hover:border-amber-300"
+                        }`}>
                         <span className="text-2xl">{item.emoji}</span>
                         <div className="flex-1 text-left">
                           <div className="font-black text-sm text-gray-800">{item.name}</div>
-                          <div className="text-[10px] bg-amber-200 text-amber-700 rounded-full px-2 py-0.5 inline-block font-bold">ΕΠΙΘΥΜΙΑ</div>
+                          {isNeed
+                            ? <div className="text-[10px] bg-rose-200 text-rose-700 rounded-full px-2 py-0.5 inline-block font-bold">ΑΝΑΓΚΗ</div>
+                            : <div className="text-[10px] bg-amber-200 text-amber-700 rounded-full px-2 py-0.5 inline-block font-bold">ΕΠΙΘΥΜΙΑ</div>
+                          }
                         </div>
-                        <div className={`font-black ${sel?"text-amber-600":"text-gray-400"}`}>−{item.price}€</div>
-                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-black transition-all ${sel?"bg-amber-400 border-amber-400 text-white":"border-gray-300"}`}>
+                        <div className={`font-black ${sel ? (isNeed ? "text-rose-600" : "text-amber-600") : "text-gray-400"}`}>−{item.price}€</div>
+                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-black transition-all ${
+                          sel ? (isNeed ? "bg-rose-400 border-rose-400 text-white" : "bg-amber-400 border-amber-400 text-white") : "border-gray-300"
+                        }`}>
                           {sel ? "✓" : ""}
                         </div>
                       </button>
@@ -461,7 +461,7 @@ export default function MarketGame() {
                   <div className={`rounded-2xl p-3 text-center border-2 ${weekSaved>=0?"border-emerald-300 bg-emerald-50":"border-rose-300 bg-rose-50"}`}>
                     <div className="text-xs text-gray-500 mb-0.5">Αποταμίευση αυτής της εβδομάδας</div>
                     <div className={`font-black text-2xl ${weekSaved>=0?"text-emerald-700":"text-rose-600"}`}>{weekSaved>=0?"+":""}{weekSaved}€</div>
-                    <div className="text-xs text-gray-400">{weekIncome}€ − {needsCost+selectedWantsCost}€ έξοδα</div>
+                    <div className="text-xs text-gray-400">{weekIncome}€ − {selectedNeedsCost+selectedWantsCost}€ έξοδα</div>
                   </div>
                 </div>
               </div>
