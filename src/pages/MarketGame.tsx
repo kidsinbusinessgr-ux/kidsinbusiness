@@ -806,6 +806,7 @@ export default function MarketGame() {
       setM4Bot(b => Math.max(0, b + bDelta));
       setM4EvRes({ pDelta, bDelta });
       setM4Phase("eventResult");
+      setTimeout(()=>playClip((m4Player+pDelta)>(m4Bot+bDelta)?"m4-ahead":"m4-behind"), 300);
     };
 
     const nextRound = () => {
