@@ -964,8 +964,8 @@ export default function MarketGame() {
                     </span>
                   </div>
                 </div>
-                <div className={`mt-3 text-center rounded-xl p-2 text-sm font-bold ${m4Player>m4Bot?"bg-emerald-100 text-emerald-800":"m4Player<m4Bot"?"bg-rose-100 text-rose-800":"bg-gray-100 text-gray-700"}`}>
-                  {m4Player > m4Bot ? "🥇 Προηγείσαι!" : m4Player < m4Bot ? "😤 Πίσω! Ανέβα!" : "🤝 Ισοπαλία!"}
+                <div className={`mt-3 text-center rounded-xl p-2 text-sm font-bold ${m4Player>m4Bot?"bg-emerald-100 text-emerald-800":m4Player<m4Bot?"bg-rose-100 text-rose-800":"bg-gray-100 text-gray-700"}`}>
+                  {m4Player > m4Bot ? "🥇 Προηγείσαι!" : m4Player < m4Bot ? "😤 Είσαι πίσω! Πάλεψε!" : "🤝 Ισοπαλία!"}
                 </div>
               </div>
               <button onClick={nextRound}
