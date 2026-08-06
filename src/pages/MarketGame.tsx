@@ -734,7 +734,7 @@ export default function MarketGame() {
                     <div className="bg-indigo-50 rounded-xl p-2 text-center text-sm">
                       Μετρητά: <strong className="text-indigo-700">{fmt(m3Cash)}€</strong>
                     </div>
-                    <button onClick={() => { setM3Result(null); setM3Step(s=>s+1); }}
+                    <button onClick={() => { setM3Result(null); const next = m3Step+1; setM3Step(next); if (next >= M3.length) setTimeout(()=>playClip(m3Cash+(m3Result?.delta??0)>=2000?"m3-win":"m3-lose"),100); }}
                       className="w-full py-3 rounded-2xl font-black text-white shadow-md"
                       style={{ background:"linear-gradient(90deg,#f97316,#ef4444)" }}>
                       {m3Step+1 < M3.length ? "Επόμενη κάρτα →" : "Αποτέλεσμα! 🏁"}
