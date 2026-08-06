@@ -476,7 +476,7 @@ export default function MarketGame() {
                   setM1WeekLog(newLog);
                   if (nextWeek >= WEEKS) {
                     setM1Phase("done");
-                    if (newSavings >= goal.price) playClip("m1-win");
+                    if (newSavings >= goal.price) playClip("m1-win"); else playClip("m1-lose");
 
                   } else {
                     setM1Week(nextWeek);
