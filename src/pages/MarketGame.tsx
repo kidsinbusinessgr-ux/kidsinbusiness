@@ -393,6 +393,7 @@ export default function MarketGame() {
               <button onClick={() => {
                   if (_currentAudio) { _currentAudio.pause(); _currentAudio.currentTime = 0; }
                   setM1Phase("week"); setM1Week(0); setM1Savings(0); setM1WeekLog([]); resetWeekBought();
+                  setTimeout(()=>playClip("m1-week"), 100);
                 }}
                 className="w-full max-w-sm py-4 rounded-2xl font-black text-white text-lg shadow-xl active:scale-95"
                 style={{ background:"linear-gradient(90deg,#10b981,#059669)", boxShadow:"0 6px 0 #047857" }}>
