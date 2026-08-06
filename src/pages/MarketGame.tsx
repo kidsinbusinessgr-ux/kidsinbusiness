@@ -821,6 +821,7 @@ export default function MarketGame() {
       }
       setM4Round(r => r+1);
       setM4Phase("day");
+      setTimeout(()=>playClip("m4-day"), 200);
     };
 
     return (
@@ -880,6 +881,7 @@ export default function MarketGame() {
                     setM4Player(3500-m4Biz!.buy);
                     setM4Bot(3500-botBiz.buy);
                     setM4Phase("day");
+                    setTimeout(()=>playClip("m4-day"), 200);
                   }}
                   className="w-full py-4 rounded-2xl font-black text-white text-lg shadow-xl sticky bottom-4"
                   style={{ background:"linear-gradient(90deg,#7c3aed,#6d28d9)", boxShadow:"0 5px 0 #5b21b6" }}>
