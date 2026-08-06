@@ -311,8 +311,8 @@ export default function MarketGame() {
         <div className="grid grid-cols-2 gap-3 px-4 w-full max-w-sm">
           {modules.map(m => (
             <button key={m.id} onClick={() => { setScreen(m.id); playClip(m.id + "-start"); }}
-              className="rounded-3xl overflow-hidden shadow-xl active:scale-95 transition-transform text-left">
-              <div className={`bg-gradient-to-br ${m.color} p-4 pb-3`}>
+              className="rounded-3xl overflow-hidden shadow-xl active:scale-95 transition-transform text-left h-full flex flex-col">
+              <div className={`bg-gradient-to-br ${m.color} p-4 pb-3 flex-1`}>
                 <div className="text-4xl mb-2">{m.emoji}</div>
                 <div className="font-black text-white text-sm leading-tight">{m.title}</div>
               </div>
