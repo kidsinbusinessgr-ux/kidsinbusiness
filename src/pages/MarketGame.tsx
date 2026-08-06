@@ -713,12 +713,12 @@ export default function MarketGame() {
 
                 {!m3Result ? (
                   <div className="space-y-2">
-                    <button onClick={() => { const r=card.a; setM3Cash(c=>c+r.delta); setM3Result(r); (r.tone==='invest'?playClip('m3-invest'):r.tone==='bad'?playClip('m3-bad'):r.delta>0?playClip('m3-good'):r.delta<0?playClip('m3-bad'):null); }}
+                    <button onClick={() => { const r=card.a; setM3Cash(c=>c+r.delta); setM3Result(r); (r.tone==='invest'?playClip('m3-invest'):r.tone==='bad'?playClip('m3-bad'):r.delta>0?playClip('m3-good'):r.delta<0?playClip('m3-bad'):playClip('m3-neutral')); }}
                       className="w-full py-3.5 rounded-2xl font-black text-white text-base shadow-md active:scale-95"
                       style={{ background:"linear-gradient(90deg,#f97316,#ea580c)" }}>
                       🅰️ {card.a.text}
                     </button>
-                    <button onClick={() => { const r=card.b; setM3Cash(c=>c+r.delta); setM3Result(r); (r.tone==='invest'?playClip('m3-invest'):r.tone==='bad'?playClip('m3-bad'):r.delta>0?playClip('m3-good'):r.delta<0?playClip('m3-bad'):null); }}
+                    <button onClick={() => { const r=card.b; setM3Cash(c=>c+r.delta); setM3Result(r); (r.tone==='invest'?playClip('m3-invest'):r.tone==='bad'?playClip('m3-bad'):r.delta>0?playClip('m3-good'):r.delta<0?playClip('m3-bad'):playClip('m3-neutral')); }}
                       className="w-full py-3.5 rounded-2xl font-black text-white text-base shadow-md active:scale-95"
                       style={{ background:"linear-gradient(90deg,#6366f1,#4f46e5)" }}>
                       🅱️ {card.b.text}
