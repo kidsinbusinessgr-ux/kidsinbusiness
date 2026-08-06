@@ -800,7 +800,7 @@ export default function MarketGame() {
     const pickEvent = (choice: "a"|"b") => {
       if (!m4Event) return;
       const pDelta = m4Event[choice].delta;
-      const botChoice: "a"|"b" = "b"; // bot always picks the "safe/wrong" choice
+      const botChoice: "a"|"b" = Math.random() < 0.5 ? "a" : "b";
       const bDelta = m4Event[botChoice].delta;
       setM4Player(p => Math.max(0, p + pDelta));
       setM4Bot(b => Math.max(0, b + bDelta));
