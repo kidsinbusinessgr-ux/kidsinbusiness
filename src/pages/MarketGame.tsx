@@ -45,7 +45,7 @@ const M3 = [
   {
     emoji:"⛈️", title:"Κακός Καιρός!",
     story:"Μια μεγάλη καταιγίδα χτύπησε την περιοχή. Λίγοι πελάτες ήρθαν σήμερα.",
-    a:{ text:"Κλείνω προσωρινά 🚪", delta:-100, explain:"Σωστή απόφαση! Λιγότερη ζημιά από τη λειτουργία χωρίς πελάτες." },
+    a:{ text:"Κλείνω προσωρινά 🚪", delta:-100, explain:"Σωστή απόφαση! Λιγότερη ζημιά από τη λειτουργία χωρίς πελάτες.", tone:"invest" },
     b:{ text:"Μένω ανοιχτός 💪",    delta:-300, explain:"Ατυχία! Τα έξοδα τρέχουν χωρίς έσοδα." },
   },
   {
@@ -63,8 +63,8 @@ const M3 = [
   {
     emoji:"📉", title:"Λίγοι Πελάτες...",
     story:"Αυτόν τον μήνα ήρθαν λιγότεροι πελάτες. Τι κάνεις για να τους προσελκύσεις;",
-    a:{ text:"Κάνω προσφορές 🎁",    delta:-100, explain:"Εξυπνάδα! Μικρότερο κέρδος τώρα, αλλά περισσότεροι πελάτες μακροπρόθεσμα!" },
-    b:{ text:"Διαφημίζομαι 📢",       delta:-150, explain:"Η διαφήμιση κοστίζει αλλά χτίζει την επιχείρηση!" },
+    a:{ text:"Κάνω προσφορές 🎁",    delta:-100, explain:"Εξυπνάδα! Μικρότερο κέρδος τώρα, αλλά περισσότεροι πελάτες μακροπρόθεσμα!", tone:"invest" },
+    b:{ text:"Διαφημίζομαι 📢",       delta:-150, explain:"Η διαφήμιση κοστίζει αλλά χτίζει την επιχείρηση!", tone:"invest" },
   },
 ];
 
@@ -713,12 +713,12 @@ export default function MarketGame() {
 
                 {!m3Result ? (
                   <div className="space-y-2">
-                    <button onClick={() => { const r=card.a; setM3Cash(c=>c+r.delta); setM3Result(r); (r.delta>0?playClip('m3-good'):r.delta<0?playClip('m3-bad'):null); }}
+                    <button onClick={() => { const r=card.a; setM3Cash(c=>c+r.delta); setM3Result(r); (r.tone==='invest'?playClip('m3-invest'):r.delta>0?playClip('m3-good'):r.delta<0?playClip('m3-bad'):null); }}
                       className="w-full py-3.5 rounded-2xl font-black text-white text-base shadow-md active:scale-95"
                       style={{ background:"linear-gradient(90deg,#f97316,#ea580c)" }}>
                       🅰️ {card.a.text}
                     </button>
-                    <button onClick={() => { const r=card.b; setM3Cash(c=>c+r.delta); setM3Result(r); (r.delta>0?playClip('m3-good'):r.delta<0?playClip('m3-bad'):null); }}
+                    <button onClick={() => { const r=card.b; setM3Cash(c=>c+r.delta); setM3Result(r); (r.tone==='invest'?playClip('m3-invest'):r.delta>0?playClip('m3-good'):r.delta<0?playClip('m3-bad'):null); }}
                       className="w-full py-3.5 rounded-2xl font-black text-white text-base shadow-md active:scale-95"
                       style={{ background:"linear-gradient(90deg,#6366f1,#4f46e5)" }}>
                       🅱️ {card.b.text}
