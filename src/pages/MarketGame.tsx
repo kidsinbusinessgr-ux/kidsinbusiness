@@ -631,7 +631,9 @@ export default function MarketGame() {
                   </div>
                   <button onClick={() => {
                     setM2Answer(null);
-                    setM2Step(s => s+1);
+                    const next = m2Step + 1;
+                    setM2Step(next);
+                    if (next >= M2.length) setTimeout(()=>playClip(m2Score >= 6 ? "m2-win" : "m2-lose"), 300);
                   }}
                     className="w-full py-3 rounded-2xl font-black text-white shadow-md"
                     style={{ background:"linear-gradient(90deg,#6366f1,#4f46e5)" }}>
