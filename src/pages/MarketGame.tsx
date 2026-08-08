@@ -70,12 +70,18 @@ const M3 = [
 
 // ── Module 4 Events ────────────────────────────────────────────────────────────
 const M4_EVENTS = [
-  { emoji:"🔥", title:"Χορηγία!",      a:{ text:"Δέχομαι",  delta:+400 }, b:{ text:"Αρνούμαι",  delta:+0   } },
-  { emoji:"⛈️", title:"Κακός Καιρός", a:{ text:"Κλείνω",   delta:-100 }, b:{ text:"Ανοιχτός",  delta:-280 } },
-  { emoji:"🏆", title:"Βραβείο!",      a:{ text:"Συμμετέχω",delta:+350 }, b:{ text:"Αρνούμαι",  delta:+0   } },
-  { emoji:"💡", title:"Νέα Ιδέα!",     a:{ text:"Επενδύω",  delta:+300 }, b:{ text:"Μένω",       delta:+0   } },
-  { emoji:"💰", title:"Επιδότηση!",    a:{ text:"Αποδέχομαι",delta:+300},b:{ text:"Αρνούμαι",  delta:+0   } },
-  { emoji:"🎉", title:"Γιορτές!",      a:{ text:"Εκπτώσεις",delta:-80  }, b:{ text:"Κανονικά",   delta:+200 } },
+  { emoji:"🔥", title:"Χορηγία!", story:"Μια μεγάλη εταιρεία θέλει να χρηματοδοτήσει την επιχείρησή σου! Θα δεχτείς τη συνεργασία ή θα διατηρήσεις την ανεξαρτησία σου;",
+    a:{ text:"Δέχομαι τη χορηγία 🤝", delta:+400 }, b:{ text:"Ευχαριστώ, αλλά όχι", delta:+0 } },
+  { emoji:"⛈️", title:"Κακός Καιρός!", story:"Φοβερή καταιγίδα σήμερα! Λίγοι πελάτες θα βγουν έξω. Κλείνεις νωρίς για να γλιτώσεις τα έξοδα ή μένεις ανοιχτός ελπίζοντας σε πελάτες;",
+    a:{ text:"Κλείνω νωρίς 🚪", delta:-100 }, b:{ text:"Μένω ανοιχτός 💪", delta:-280 } },
+  { emoji:"🏆", title:"Βραβείο Επιχείρησης!", story:"Σε ψήφισαν για το βραβείο 'Καλύτερη Νέα Επιχείρηση'! Χρειάζεται χρόνο και ενέργεια να συμμετέχεις — αξίζει τον κόπο;",
+    a:{ text:"Συμμετέχω! 🏆", delta:+350 }, b:{ text:"Δεν έχω χρόνο 😅", delta:+0 } },
+  { emoji:"💡", title:"Νέα Ιδέα!", story:"Σκέφτηκες ένα νέο προϊόν για την επιχείρησή σου! Χρειάζεται επένδυση χρόνου και χρήματος, αλλά μπορεί να φέρει πολλούς νέους πελάτες.",
+    a:{ text:"Επενδύω στην ιδέα! 🚀", delta:+300 }, b:{ text:"Μένω στο παλιό 😴", delta:+0 } },
+  { emoji:"💰", title:"Επιδότηση!", story:"Το κράτος δίνει χρήματα σε νέες επιχειρήσεις που κάνουν αίτηση. Η διαδικασία παίρνει χρόνο — αξίζει να προσπαθήσεις;",
+    a:{ text:"Κάνω αίτηση! 📋", delta:+300 }, b:{ text:"Δεν μπω στη διαδικασία", delta:+0 } },
+  { emoji:"🎉", title:"Εποχή Γιορτών!", story:"Έρχονται γιορτές και οι κόσμος ψωνίζει! Κάνεις εκπτώσεις για να φέρεις περισσότερους πελάτες ή κρατάς τις τιμές σου;",
+    a:{ text:"Κάνω εκπτώσεις 🎁", delta:-80 }, b:{ text:"Κανονικές τιμές 💰", delta:+200 } },
 ];
 
 
@@ -928,7 +934,9 @@ export default function MarketGame() {
                 <div className="p-4 text-center" style={{background:"linear-gradient(135deg,#7c3aed,#6d28d9)"}}>
                   <div className="text-5xl mb-2">{m4Event.emoji}</div>
                   <div className="font-black text-white text-xl">{m4Event.title}</div>
-                  <div className="text-white/70 text-xs mt-1">Πάρε την απόφασή σου!</div>
+                </div>
+                <div className="px-4 pt-3 pb-1">
+                  <p className="text-gray-700 text-sm font-semibold text-center bg-violet-50 rounded-2xl p-3">{m4Event.story}</p>
                 </div>
                 <div className="p-4 space-y-2">
                   <button onClick={() => pickEvent("a")}
