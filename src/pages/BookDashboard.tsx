@@ -26,7 +26,7 @@ export default function BookDashboard() {
   const [showIntro, setShowIntro] = useState(false);
 
   // Audio source — update path when file is ready
-  const AUTHOR_AUDIO_SRC = "/author-message.mp3";
+  const AUTHOR_AUDIO_SRC = "/audio/welcome.m4a";
 
   useEffect(() => {
     loadProgress();
