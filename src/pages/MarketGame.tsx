@@ -264,6 +264,7 @@ export default function MarketGame() {
   const [m4Round,  setM4Round]  = useState(1);
   const [m4Event,  setM4Event]  = useState<typeof M4_EVENTS[0]|null>(null);
   const [m4EvRes,  setM4EvRes]  = useState<{pDelta:number; bDelta:number}|null>(null);
+  const [m4EventOrder, setM4EventOrder] = useState<typeof M4_EVENTS>(() => shuffle(M4_EVENTS));
 
   // sync muted flag to module-level var for speak()
   useEffect(() => { _muted = muted; }, [muted]);
@@ -288,7 +289,7 @@ export default function MarketGame() {
     setM1Phase("goal"); setM1GoalIdx(0); setM1Savings(0); setM1Week(0); setM1Bought([]); setM1WeekLog([]);
     setM2Step(0); setM2Answer(null); setM2Score(0); setM2Order(shuffle(M2));
     setM3Step(0); setM3Cash(2000); setM3Result(null);
-    setM4Phase("char"); setM4Biz(null); setM4Player(3500); setM4Bot(3500); setM4Round(1); setM4Event(null); setM4EvRes(null);
+    setM4Phase("char"); setM4Biz(null); setM4Player(3500); setM4Bot(3500); setM4Round(1); setM4Event(null); setM4EvRes(null); setM4EventOrder(shuffle(M4_EVENTS));
     setM4BotBiz(BIZ[Math.floor(Math.random()*BIZ.length)]);
   };
 
@@ -790,7 +791,6 @@ export default function MarketGame() {
   if (screen === "m4") {
     const ROUNDS = 6;
     const char = CHARS[m4Char];
-    const randEvent = () => M4_EVENTS[Math.floor(Math.random()*M4_EVENTS.length)];
 
     const startRound = () => {
       if (!m4Biz) return;
@@ -798,7 +798,7 @@ export default function MarketGame() {
       const botNet    = net(m4BotBiz.profit, m4BotBiz.expense);
       setM4Player(p => p + playerNet);
       setM4Bot(b => b + botNet);
-      const ev = randEvent();
+      const ev = m4EventOrder[(m4Round-1) % m4EventOrder.length];
       setM4Event(ev);
       setM4Phase("event");
     };
@@ -1008,7 +1008,7 @@ export default function MarketGame() {
                 </div>
               </div>
               <div className="flex gap-2 w-full max-w-xs">
-                <button onClick={() => { setM4Phase("char"); setM4Player(3500); setM4Bot(3500); setM4Round(1); setM4Biz(null); setM4Event(null); setM4EvRes(null); setM4BotBiz(BIZ[Math.floor(Math.random()*BIZ.length)]); }}
+                <button onClick={() => { setM4Phase("char"); setM4Player(3500); setM4Bot(3500); setM4Round(1); setM4Biz(null); setM4Event(null); setM4EvRes(null); setM4BotBiz(BIZ[Math.floor(Math.random()*BIZ.length)]); setM4EventOrder(shuffle(M4_EVENTS)); }}
                   className="flex-1 py-3 rounded-2xl font-black text-violet-700 bg-white border-2 border-violet-300 text-sm">🔄 Ξανά</button>
                 <button onClick={goHub}
                   className="flex-1 py-3 rounded-2xl font-black text-white text-sm"
