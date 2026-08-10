@@ -330,7 +330,54 @@ export default function MarketGame() {
           ))}
         </div>
 
-        <div className="flex items-center gap-4 mt-8">
+        {/* CTA Banner */}
+        <div className="mx-4 mt-6 w-full max-w-sm rounded-2xl overflow-hidden" style={{background:"rgba(255,255,255,0.08)", border:"1px solid rgba(255,255,255,0.15)"}}>
+          <div className="px-4 py-3 text-center">
+            <p className="text-white font-bold text-sm leading-snug">📗 Έχεις το βιβλίο <span className="text-amber-300">Start-up Adventure</span>;</p>
+            <p className="text-white/70 text-xs mt-1">Αγόρασέ το με <span className="text-amber-300 font-bold">10% έκπτωση</span> — κωδικός:</p>
+            <div className="inline-block mt-1 px-3 py-1 rounded-full font-black text-sm tracking-widest text-indigo-900" style={{background:"#fbbf24"}}>
+              BOOK2026
+            </div>
+            <a href="https://kidsinbusiness.gr/shop/" target="_blank" rel="noopener noreferrer"
+              className="block mt-2 text-amber-300 text-xs font-semibold underline underline-offset-2">
+              🛒 kidsinbusiness.gr/shop
+            </a>
+          </div>
+          {/* Social icons */}
+          <div className="flex items-center justify-center gap-5 py-2 border-t" style={{borderColor:"rgba(255,255,255,0.1)"}}>
+            <a href="https://www.facebook.com/profile.php?id=61569572042350" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="24" height="24" rx="6" fill="#1877F2"/>
+                <path d="M16 8h-2a1 1 0 0 0-1 1v2h3l-.5 3H13v7h-3v-7H8v-3h2V9a4 4 0 0 1 4-4h2v3z" fill="white"/>
+              </svg>
+            </a>
+            <a href="https://www.instagram.com/kidsinbusiness.gr/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="24" height="24" rx="6" fill="url(#ig_grad)"/>
+                <defs>
+                  <linearGradient id="ig_grad" x1="0" y1="24" x2="24" y2="0" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stopColor="#f09433"/>
+                    <stop offset="25%" stopColor="#e6683c"/>
+                    <stop offset="50%" stopColor="#dc2743"/>
+                    <stop offset="75%" stopColor="#cc2366"/>
+                    <stop offset="100%" stopColor="#bc1888"/>
+                  </linearGradient>
+                </defs>
+                <rect x="7" y="7" width="10" height="10" rx="3" stroke="white" strokeWidth="1.5" fill="none"/>
+                <circle cx="12" cy="12" r="2.5" stroke="white" strokeWidth="1.5" fill="none"/>
+                <circle cx="16.5" cy="7.5" r="0.75" fill="white"/>
+              </svg>
+            </a>
+            <a href="https://www.tiktok.com/tag/kidsinbusiness" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="24" height="24" rx="6" fill="#010101"/>
+                <path d="M17 8.5a3.5 3.5 0 0 1-3.5-3.5h-2v9.5a1.5 1.5 0 1 1-2-1.415V10.9a4 4 0 1 0 4 3.6V10a5.5 5.5 0 0 0 3.5 1.26V8.5z" fill="white"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4 mt-5">
           <button onClick={() => navigate("/book")} className="text-white/40 text-xs hover:text-white/60">← Πίσω στο βιβλίο</button>
           <button onClick={() => setMuted(m => !m)}
             className="text-white/40 text-xs hover:text-white/60 border border-white/20 rounded-full px-3 py-1">
