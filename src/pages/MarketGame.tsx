@@ -29,7 +29,7 @@ const M2 = [
   { biz:"💪 Γυμναστήριο",      income:500, expense:200, fact:"Πολλά νέα μέλη εγγράφηκαν τον Ιανουάριο!" },
   { biz:"💈 Κομμωτήριο",       income:210, expense:240, fact:"Αγοράστηκαν νέα προϊόντα ομορφιάς." },
   { biz:"🧖 Spa Center",       income:380, expense:170, fact:"Οι πελάτες αγαπούν τα νέα θεραπευτικά πακέτα." },
-  { biz:"🎮 Μαγαζί με Παιχνίδια",   income:290, expense:290, fact:"Εσοδα και έξοδα ισοφαρίστηκαν αυτόν τον μήνα." },
+  { biz:"🎮 Μαγαζί με Παιχνίδια",   income:290, expense:290, fact:"Έσοδα και έξοδα ισοφαρίστηκαν αυτόν τον μήνα." },
   { biz:"🏪 Super Market",     income:600, expense:250, fact:"Σεζόν διακοπών — πολύ κόσμος!" },
   { biz:"🚙 Rent a Car",       income:420, expense:500, fact:"Επισκευές σε αυτοκίνητα ανέβασαν τα έξοδα." },
 ];
@@ -80,7 +80,7 @@ const M4_EVENTS = [
     a:{ text:"Επενδύω στην ιδέα! 🚀", delta:+300 }, b:{ text:"Μένω στο παλιό 😴", delta:+0 } },
   { emoji:"💰", title:"Επιδότηση!", story:"Το κράτος δίνει χρήματα σε νέες επιχειρήσεις που κάνουν αίτηση. Η διαδικασία παίρνει χρόνο — αξίζει να προσπαθήσεις;",
     a:{ text:"Κάνω αίτηση! 📋", delta:+300 }, b:{ text:"Δεν θα μπω στη διαδικασία", delta:+0 } },
-  { emoji:"🎉", title:"Εποχή Γιορτών!", story:"Έρχονται γιορτές και οι κόσμος ψωνίζει! Κάνεις εκπτώσεις για να φέρεις περισσότερους πελάτες ή κρατάς τις τιμές σου;",
+  { emoji:"🎉", title:"Εποχή Γιορτών!", story:"Έρχονται γιορτές και ο κόσμος ψωνίζει! Κάνεις εκπτώσεις για να φέρεις περισσότερους πελάτες ή κρατάς τις τιμές σου;",
     a:{ text:"Κάνω εκπτώσεις 🎁", delta:-80 }, b:{ text:"Κανονικές τιμές 💰", delta:+200 } },
 ];
 
@@ -854,7 +854,7 @@ export default function MarketGame() {
           {m4Phase === "char" && (
             <div className="flex-1 flex flex-col items-center justify-center gap-4">
               <div className="bg-white rounded-3xl p-5 shadow-lg max-w-sm w-full">
-                <h2 className="text-xl font-black text-center text-violet-700 mb-1">Επέλεξε το πιόνι σου!</h2>
+                <h2 className="text-xl font-black text-center text-violet-700 mb-1">Διάλεξε το πιόνι σου!</h2>
                 <p className="text-gray-500 text-xs text-center mb-3">Ξεκινάς με <strong>3.500€</strong> — ο αντίπαλός σου επίσης!</p>
                 <div className="grid grid-cols-3 gap-2" style={{background:"linear-gradient(135deg,#7c3aed,#6d28d9)",borderRadius:"1rem",padding:"0.75rem"}}>
                   {CHARS.map((c,i) => <CharCard key={i} char={c} selected={m4Char===i} onSelect={()=>setM4Char(i)} />)}
@@ -906,7 +906,7 @@ export default function MarketGame() {
               <div className="bg-white rounded-3xl p-5 shadow-lg max-w-xs w-full text-center">
                 <div className="text-4xl mb-2">📅</div>
                 <h2 className="text-2xl font-black text-violet-700">Μέρα {m4Round}</h2>
-                <p className="text-gray-500 text-sm mb-3">Μαζεύω κέρδη για τις επιχειρήσεις μου!</p>
+                <p className="text-gray-500 text-sm mb-3">Μαζεύω κέρδη για την επιχείρησή μου!</p>
                 <div className="space-y-2">
                   <div className="flex justify-between bg-violet-50 rounded-xl p-2.5">
                     <span className="font-semibold text-sm text-gray-600">{char.emoji} {char.trait} ({m4Biz.emoji})</span>
