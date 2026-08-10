@@ -333,8 +333,8 @@ export default function MarketGame() {
         {/* CTA Banner */}
         <div className="mx-4 mt-6 w-full max-w-sm rounded-2xl overflow-hidden" style={{background:"rgba(255,255,255,0.08)", border:"1px solid rgba(255,255,255,0.15)"}}>
           <div className="px-4 py-3 text-center">
-            <p className="text-white font-bold text-sm leading-snug">📗 Έχεις το βιβλίο <span className="text-amber-300">Start-up Adventure</span>;</p>
-            <p className="text-white/70 text-xs mt-1">Αγόρασέ το με <span className="text-amber-300 font-bold">10% έκπτωση</span> — κωδικός:</p>
+            <p className="text-white font-bold text-sm leading-snug">🎲 Ανακάλυψε τα <span className="text-amber-300">εκπαιδευτικά παιχνίδια</span> μας!</p>
+            <p className="text-white/70 text-xs mt-1">Κάρτες, επιτραπέζια & άλλα — με <span className="text-amber-300 font-bold">20% έκπτωση</span>:</p>
             <div className="inline-block mt-1 px-3 py-1 rounded-full font-black text-sm tracking-widest text-indigo-900" style={{background:"#fbbf24"}}>
               BOOK2026
             </div>
