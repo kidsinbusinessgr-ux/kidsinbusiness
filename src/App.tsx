@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import LandingPage from "@/pages/LandingPage";
 import Dashboard from "@/pages/Dashboard";
 import Chapters from "@/pages/Chapters";
 import ChapterDetail from "@/pages/ChapterDetail";
@@ -24,12 +25,6 @@ import StudentWorkbook from "@/pages/StudentWorkbook";
 import ProgramDetail from "@/pages/ProgramDetail";
 import GameLanding from "@/pages/GameLanding";
 import GameSession from "@/pages/GameSession";
-import BookDashboard from "@/pages/BookDashboard";
-import BookChapter from "@/pages/BookChapter";
-import MarketGame from "@/pages/MarketGame";
-import BookAuth from "@/pages/BookAuth";
-import BookActivate from "@/pages/BookActivate";
-import BookFounderDashboard from "@/pages/BookFounderDashboard";
 
 const queryClient = new QueryClient();
 
@@ -40,7 +35,8 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/student" element={<StudentWorkspace />} />
           <Route path="/workbook" element={<StudentWorkbook />} />
           <Route path="/wallet" element={<StudentWallet />} />
@@ -60,13 +56,6 @@ const App = () => (
           <Route path="/teachers" element={<Teachers />} />
           <Route path="/community" element={<Community />} />
           <Route path="/auth" element={<Auth />} />
-          {/* Book platform */}
-          <Route path="/book" element={<BookDashboard />} />
-          <Route path="/book/:id" element={<BookChapter />} />
-          <Route path="/book-login" element={<BookAuth />} />
-          <Route path="/activate" element={<BookActivate />} />
-          <Route path="/book-admin" element={<BookFounderDashboard />} />
-          <Route path="/market-game" element={<MarketGame />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
