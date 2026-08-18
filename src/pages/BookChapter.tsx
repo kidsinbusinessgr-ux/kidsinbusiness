@@ -37,6 +37,7 @@ const BookChapter = () => {
   const [activityChoice, setActivityChoice] = useState<string | null>(null);
   const [sortAssignments, setSortAssignments] = useState<Record<string, string>>({});
   const [sortChecked, setSortChecked] = useState(false);
+  const [draggingItem, setDraggingItem] = useState<string | null>(null);
   const [mathAnswers, setMathAnswers] = useState<string[]>([]);
   const [mathChecked, setMathChecked] = useState(false);
   const [alreadyDone, setAlreadyDone] = useState(false);
@@ -252,19 +253,29 @@ const BookChapter = () => {
               {ch.activity.type === "sort" && allItems.length > 0 && (
                 <>
                   {/* Pool of unassigned items */}
-                  {allItems.some(it => !sortAssignments[it.label]) && (
-                    <div style={{ marginBottom: 16 }}>
-                      <div style={{ fontSize: 12, fontWeight: 700, color: "#765F8F", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Κάνε κλικ σε κάθε κάρτα για να την τοποθετήσεις →</div>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                        {allItems.filter(it => !sortAssignments[it.label]).map((it, i) => (
-                          <button key={i} onClick={() => cycleItem(it.label)}
-                            style={{ padding: "8px 16px", borderRadius: 99, fontSize: 13, fontWeight: 600, cursor: "pointer", background: "#f0e8ff", color: "#270F57", border: "2px solid #d8b4fe", transition: "all 0.15s" }}>
-                            {it.label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                  <div style={{ marginBottom: 16, minHeight: 52, background: "#f9f5ff", borderRadius: 12, border: "2px dashed #d8b4fe", padding: "10px 12px" }}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={(e) => { e.preventDefault(); if (draggingItem && !sortChecked) { setSortAssignments(prev => { const next = {...prev}; delete next[draggingItem]; return next; }); setDraggingItem(null); } }}>
+                    {allItems.some(it => !sortAssignments[it.label]) ? (
+                      <>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: "#765F8F", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Σύρε κάθε κάρτα στη σωστή στήλη →</div>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                          {allItems.filter(it => !sortAssignments[it.label]).map((it, i) => (
+                            <button key={i}
+                              draggable={!sortChecked}
+                              onDragStart={() => setDraggingItem(it.label)}
+                              onDragEnd={() => setDraggingItem(null)}
+                              onClick={() => cycleItem(it.label)}
+                              style={{ padding: "8px 16px", borderRadius: 99, fontSize: 13, fontWeight: 600, cursor: "grab", background: draggingItem === it.label ? "#e9d5ff" : "#f0e8ff", color: "#270F57", border: "2px solid #d8b4fe", transition: "all 0.15s" }}>
+                              {it.label}
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    ) : (
+                      <div style={{ color: "#c4b5fd", fontSize: 12, fontWeight: 600, textAlign: "center", paddingTop: 4 }}>✓ Όλες οι κάρτες τοποθετήθηκαν — σύρε εδώ για να τις επιστρέψεις</div>
+                    )}
+                  </div>
 
                   {/* Two columns */}
                   <div style={{ display: "flex", gap: 12 }}>
@@ -278,15 +289,21 @@ const BookChapter = () => {
                       return (
                         <div key={cat} style={{ flex: 1 }}>
                           <div style={{ background: col.headBg, color: "#fff", fontWeight: 800, fontSize: 13, padding: "8px 12px", borderRadius: "12px 12px 0 0", textAlign: "center" }}>{cat}</div>
-                          <div style={{ background: col.bg, borderRadius: "0 0 12px 12px", border: `2px solid ${col.border}`, borderTop: "none", padding: 10, minHeight: 100 }}>
+                          <div style={{ background: col.bg, borderRadius: "0 0 12px 12px", border: `2px solid ${col.border}`, borderTop: "none", padding: 10, minHeight: 100 }}
+                            onDragOver={(e) => e.preventDefault()}
+                            onDrop={(e) => { e.preventDefault(); if (draggingItem && !sortChecked) { setSortAssignments(prev => ({...prev, [draggingItem]: cat})); setDraggingItem(null); } }}>
                             {catItems.length === 0 && (
                               <div style={{ color: col.text, opacity: 0.4, fontSize: 12, textAlign: "center", marginTop: 16 }}>Άδειο</div>
                             )}
                             {catItems.map((it, i) => {
                               const itemStyle = getSortItemStyle(it.label, it.category);
                               return (
-                                <button key={i} onClick={() => cycleItem(it.label)}
-                                  style={{ ...itemStyle, display: "block", width: "100%", padding: "7px 12px", borderRadius: 10, marginBottom: 6, fontSize: 12, fontWeight: 600, cursor: sortChecked ? "default" : "pointer", textAlign: "left" as const, transition: "all 0.15s" }}>
+                                <button key={i}
+                                  draggable={!sortChecked}
+                                  onDragStart={() => setDraggingItem(it.label)}
+                                  onDragEnd={() => setDraggingItem(null)}
+                                  onClick={() => cycleItem(it.label)}
+                                  style={{ ...itemStyle, display: "block", width: "100%", padding: "7px 12px", borderRadius: 10, marginBottom: 6, fontSize: 12, fontWeight: 600, cursor: sortChecked ? "default" : "grab", textAlign: "left" as const, transition: "all 0.15s" }}>
                                   {it.label}
                                   {sortChecked && (sortAssignments[it.label] === it.category ? " ✓" : " ✗")}
                                 </button>
