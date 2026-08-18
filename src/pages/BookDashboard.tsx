@@ -79,13 +79,42 @@ export default function BookDashboard() {
         setTotalCoins((data as BookProgress[]).reduce((s, p) => s + (p.coins_earned || 0), 0));
       }
     } else {
-      setIsLoggedIn(false);
-      // Guest: load from localStorage, only free chapters tracked
-      const stored = localStorage.getItem("book_progress");
-      if (stored) {
-        const parsed: BookProgress[] = JSON.parse(stored);
-        setProgress(parsed);
-        setTotalCoins(parsed.reduce((s, p) => s + (p.coins_earned || 0), 0));
+      // Check localStorage book access (from BookLogin registration flow)
+      const bookAccess = localStorage.getItem("kib_book_access_v1");
+      if (bookAccess === "1") {
+        setIsLoggedIn(true);
+        setHasCode(true);
+        const bookUser = localStorage.getItem("kib_book_user_v1");
+        if (bookUser) {
+          try {
+            const u = JSON.parse(bookUser);
+            setChildName(u.name || "Μικρός Επενδυτής");
+          } catch {}
+        }
+        // Load progress from BookChapter's key (format: {chapterId: true})
+        const kibProg = localStorage.getItem("kib_book_progress_v1");
+        if (kibProg) {
+          try {
+            const raw: Record<string, boolean> = JSON.parse(kibProg);
+            const parsed: BookProgress[] = Object.entries(raw)
+              .filter(([, v]) => v)
+              .map(([id]) => {
+                const ch = BOOK_CHAPTERS.find(c => c.id === Number(id));
+                return { chapter_id: Number(id), completed: true, quiz_score: 0, coins_earned: ch?.coins || 0 };
+              });
+            setProgress(parsed);
+            setTotalCoins(parsed.reduce((s, p) => s + (p.coins_earned || 0), 0));
+          } catch {}
+        }
+      } else {
+        setIsLoggedIn(false);
+        // Guest: load from localStorage, only free chapters tracked
+        const stored = localStorage.getItem("book_progress");
+        if (stored) {
+          const parsed: BookProgress[] = JSON.parse(stored);
+          setProgress(parsed);
+          setTotalCoins(parsed.reduce((s, p) => s + (p.coins_earned || 0), 0));
+        }
       }
     }
     setAuthLoading(false);
