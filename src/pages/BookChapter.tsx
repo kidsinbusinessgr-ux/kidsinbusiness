@@ -40,6 +40,7 @@ const BookChapter = () => {
   const [mathAnswers, setMathAnswers] = useState<string[]>([]);
   const [mathChecked, setMathChecked] = useState(false);
   const [alreadyDone, setAlreadyDone] = useState(false);
+  const [unlockedPhases, setUnlockedPhases] = useState<Set<Phase>>(new Set(["learn"] as Phase[]));
 
   useEffect(() => {
     if (!ch) return;
@@ -79,6 +80,11 @@ const BookChapter = () => {
       localStorage.setItem(PROGRESS_KEY, JSON.stringify(prog));
     } catch {}
     setPhase("done");
+  };
+
+  const goToPhase = (p: Phase) => {
+    setUnlockedPhases(prev => new Set([...prev, p]));
+    setPhase(p);
   };
 
   // Sort activity helpers
@@ -169,7 +175,7 @@ const BookChapter = () => {
       {phase !== "done" && (
         <div style={{ display: "flex", gap: 8, padding: "16px 16px 0", maxWidth: 680, margin: "0 auto" }}>
           {phaseConfig.map((p) => (
-            <button key={p.key} style={s.phaseTab(phase === p.key)} onClick={() => setPhase(p.key)}>
+            <button key={p.key} style={{...s.phaseTab(phase === p.key), opacity: unlockedPhases.has(p.key) ? 1 : 0.35, cursor: unlockedPhases.has(p.key) ? "pointer" : "default"}} onClick={() => { if (unlockedPhases.has(p.key)) setPhase(p.key); }}>
               <span style={{ fontSize: 18 }}>{p.emoji}</span>
               <span style={{ fontSize: 11 }}>{p.label}</span>
             </button>
@@ -194,7 +200,7 @@ const BookChapter = () => {
                 <div key={i} style={s.keyItem}><div style={s.bullet} /><span>{k}</span></div>
               ))}
             </div>
-            <button style={s.primaryBtn} onClick={() => setPhase("quiz")}>Ξεκίνα το Quiz →</button>
+            <button style={s.primaryBtn} onClick={() => goToPhase("quiz")}>Ξεκίνα το Quiz →</button>
           </>
         )}
 
@@ -225,7 +231,12 @@ const BookChapter = () => {
             ))}
             {!quizSubmitted
               ? <button style={{ ...s.primaryBtn, opacity: quizAnswers.includes(null) ? 0.5 : 1 }} disabled={quizAnswers.includes(null)} onClick={() => setQuizSubmitted(true)}>Υποβολή Quiz</button>
-              : <button style={s.primaryBtn} onClick={() => setPhase("activity")}>Δραστηριότητα →</button>
+              : quizScore >= 60
+                ? <button style={s.primaryBtn} onClick={() => goToPhase("activity")}>Δραστηριότητα →</button>
+                : <div>
+                    <div style={{ textAlign: "center", fontSize: 13, color: "#765F8F", marginBottom: 12 }}>Χρειάζεσαι τουλάχιστον 60% για να συνεχίσεις. Δοκίμασε ξανά!</div>
+                    <button style={{ ...s.primaryBtn, background: "#765F8F" }} onClick={() => { setQuizSubmitted(false); setQuizAnswers(new Array(ch.quiz.length).fill(null)); }}>🔄 Ξαναπροσπάθησε!</button>
+                  </div>
             }
           </>
         )}
@@ -298,7 +309,7 @@ const BookChapter = () => {
                         {sortScore}/{allItems.length} σωστά {sortScore === allItems.length ? "🏆" : sortScore >= Math.ceil(allItems.length / 2) ? "⭐" : "💪"}
                       </div>
                       {sortScore >= Math.ceil(allItems.length / 2)
-                        ? <button style={s.primaryBtn} onClick={() => setPhase("math")}>Μαθηματική Πρόκληση →</button>
+                        ? <button style={s.primaryBtn} onClick={() => goToPhase("math")}>Μαθηματική Πρόκληση →</button>
                         : <div>
                             <div style={{ textAlign: "center", fontSize: 13, color: "#765F8F", marginBottom: 12 }}>Χρειάζεσαι τουλάχιστον {Math.ceil(allItems.length / 2)} σωστά για να συνεχίσεις!</div>
                             <button style={{ ...s.primaryBtn, background: "#765F8F" }} onClick={() => { setSortChecked(false); setSortAssignments({}); }}>🔄 Ξαναπροσπάθησε!</button>
@@ -325,7 +336,10 @@ const BookChapter = () => {
 
             {/* Continue button for non-sort */}
             {ch.activity.type !== "sort" && (
-              <button style={s.primaryBtn} onClick={() => setPhase("math")}>Μαθηματική Πρόκληση →</button>
+              <button
+                style={{ ...s.primaryBtn, opacity: (ch.activity.type === "choice" || ch.activity.type === "budget") && !activityChoice ? 0.5 : 1 }}
+                disabled={(ch.activity.type === "choice" || ch.activity.type === "budget") && !activityChoice}
+                onClick={() => goToPhase("math")}>Μαθηματική Πρόκληση →</button>
             )}
           </>
         )}
@@ -354,7 +368,13 @@ const BookChapter = () => {
               ? <button style={{ ...s.primaryBtn, opacity: mathAnswers.some(a => !a.trim()) ? 0.5 : 1 }} disabled={mathAnswers.some(a => !a.trim())} onClick={() => setMathChecked(true)}>Έλεγχος</button>
               : <div>
                   <div style={{ textAlign: "center", fontWeight: 900, fontSize: 18, color: "#270F57", marginBottom: 16 }}>{mathCorrect}/{ch.mathChallenge.length} σωστά {mathCorrect === ch.mathChallenge.length ? "🏆" : "💪"}</div>
-                  <button style={s.primaryBtn} onClick={completeCh}>🎉 Ολοκλήρωση Κεφαλαίου → +{ch.coins} coins</button>
+                  {mathCorrect >= Math.ceil(ch.mathChallenge.length / 2)
+                    ? <button style={s.primaryBtn} onClick={completeCh}>🎉 Ολοκλήρωση Κεφαλαίου → +{ch.coins} coins</button>
+                    : <div>
+                        <div style={{ textAlign: "center", fontSize: 13, color: "#765F8F", marginBottom: 12 }}>Χρειάζεσαι τουλάχιστον {Math.ceil(ch.mathChallenge.length / 2)} σωστά για να συνεχίσεις!</div>
+                        <button style={{ ...s.primaryBtn, background: "#765F8F" }} onClick={() => { setMathChecked(false); setMathAnswers(new Array(ch.mathChallenge.length).fill("")); }}>🔄 Ξαναπροσπάθησε!</button>
+                      </div>
+                  }
                 </div>
             }
           </div>
