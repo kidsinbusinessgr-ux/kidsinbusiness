@@ -30,6 +30,8 @@ import ClubTeacher from "@/pages/ClubTeacher";
 import ClubStudent from "@/pages/ClubStudent";
 import BookDashboard from "@/pages/BookDashboard";
 import BookChapter from "@/pages/BookChapter";
+import BookLogin from "@/pages/BookLogin";
+import MarketGame from "@/pages/MarketGame";
 
 const queryClient = new QueryClient();
 
@@ -61,8 +63,10 @@ const App = () => (
           <Route path="/teachers" element={<Teachers />} />
           <Route path="/community" element={<Community />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/book-login" element={<BookLogin />} />
           <Route path="/book" element={<BookDashboard />} />
           <Route path="/book/:id" element={<BookChapter />} />
+          <Route path="/market-game" element={<MarketGame />} />
           <Route path="/club" element={<ClubLogin />} />
           <Route path="/club/teacher" element={<ClubTeacher />} />
           <Route path="/club/student" element={<ClubStudent />} />
