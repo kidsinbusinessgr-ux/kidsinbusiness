@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -15,11 +15,20 @@ const BookLogin = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Αν έχει ήδη κάνει login, πήγαινε κατευθείαν στο /book
+  useEffect(() => {
+    try {
+      if (localStorage.getItem(ACCESS_KEY) === "1") {
+        navigate("/book", { replace: true });
+      }
+    } catch {}
+  }, [navigate]);
+
   const handleSubmit = async () => {
     if (!name.trim()) { setError("Γράψε το όνομά σου!"); return; }
     if (!age.trim()) { setError("Γράψε την ηλικία σου!"); return; }
     if (!parentEmail.trim() || !parentEmail.includes("@")) { setError("Γράψε σωστό email γονέα!"); return; }
-    if (code.trim().toLowerCase() !== BOOK_CODE) { setError("Λάθος κωδικός βιβλίου!"); return; }
+    if (code.trim().toLowerCase() !== BOOK_CODE) { setError("Λάθος κωδικός βιβλίου. Δοκίμασε ξανά!"); return; }
 
     setLoading(true);
     try {
@@ -31,20 +40,25 @@ const BookLogin = () => {
       });
     } catch {}
 
-    const userData = { name: name.trim(), age: Number(age), parentEmail: parentEmail.trim().toLowerCase(), registeredAt: new Date().toISOString() };
     try {
       localStorage.setItem(ACCESS_KEY, "1");
-      localStorage.setItem(USER_KEY, JSON.stringify(userData));
+      localStorage.setItem(USER_KEY, JSON.stringify({
+        name: name.trim(),
+        age: Number(age),
+        parentEmail: parentEmail.trim().toLowerCase(),
+        registeredAt: new Date().toISOString(),
+      }));
     } catch {}
+
     setLoading(false);
     navigate("/book");
   };
 
-  const inputStyle = (hasError: boolean): React.CSSProperties => ({
+  const inp = (extraStyle?: React.CSSProperties): React.CSSProperties => ({
     width: "100%",
     padding: "13px 18px",
     borderRadius: 14,
-    border: hasError ? "2px solid #f87171" : "2px solid #e0d4f5",
+    border: "2px solid #e0d4f5",
     fontSize: 15,
     fontWeight: 600,
     color: "#270F57",
@@ -52,6 +66,7 @@ const BookLogin = () => {
     boxSizing: "border-box",
     background: "#faf7ff",
     marginBottom: 10,
+    ...extraStyle,
   });
 
   return (
@@ -59,29 +74,31 @@ const BookLogin = () => {
       <div style={{ background: "#fff", borderRadius: 24, padding: "40px 32px", maxWidth: 420, width: "100%", textAlign: "center", boxShadow: "0 20px 60px rgba(39,15,87,0.3)" }}>
         <div style={{ fontSize: 56, marginBottom: 12 }}>📚</div>
         <div style={{ fontSize: 22, fontWeight: 900, color: "#270F57", marginBottom: 4 }}>Μικροί Επενδυτές</div>
-        <div style={{ fontSize: 14, color: "#765F8F", marginBottom: 28, lineHeight: 1.5 }}>Μεγάλο Μέλλον — Εισήγαγε τα στοιχεία σου για να ξεκινήσεις!</div>
+        <div style={{ fontSize: 14, color: "#765F8F", marginBottom: 28, lineHeight: 1.5 }}>
+          Μεγάλο Μέλλον<br />Συμπλήρωσε τα στοιχεία σου για να ξεκινήσεις!
+        </div>
 
-        <input style={inputStyle(false)} type="text" placeholder="Όνομα παιδιού..." value={name} onChange={e => { setName(e.target.value); setError(""); }} />
-        <input style={inputStyle(false)} type="number" placeholder="Ηλικία..." value={age} onChange={e => { setAge(e.target.value); setError(""); }} min="6" max="18" />
-        <input style={inputStyle(false)} type="email" placeholder="Email γονέα..." value={parentEmail} onChange={e => { setParentEmail(e.target.value); setError(""); }} />
-        <input style={{ ...inputStyle(false), letterSpacing: "0.08em", textAlign: "center", marginBottom: 16 }} type="text" placeholder="Κωδικός βιβλίου..." value={code}
-          onChange={e => { setCode(e.target.value); setError(""); }}
+        <input style={inp()} type="text" placeholder="Όνομα παιδιού..." value={name} onChange={e => { setName(e.target.value); setError(""); }} />
+        <input style={inp()} type="number" placeholder="Ηλικία..." value={age} min="6" max="18" onChange={e => { setAge(e.target.value); setError(""); }} />
+        <input style={inp()} type="email" placeholder="Email γονέα..." value={parentEmail} onChange={e => { setParentEmail(e.target.value); setError(""); }} />
+        <input style={inp({ letterSpacing: "0.08em", textAlign: "center" })} type="text" placeholder="Κωδικός βιβλίου..."
+          value={code} onChange={e => { setCode(e.target.value); setError(""); }}
           onKeyDown={e => e.key === "Enter" && handleSubmit()} />
 
         {error && (
-          <div style={{ fontSize: 13, color: "#ef4444", fontWeight: 600, marginBottom: 12, padding: "8px 12px", background: "#fff5f5", borderRadius: 10 }}>
+          <div style={{ fontSize: 13, color: "#ef4444", fontWeight: 600, marginBottom: 12, padding: "8px 14px", background: "#fff5f5", borderRadius: 10 }}>
             ❌ {error}
           </div>
         )}
 
         <button
           style={{ width: "100%", padding: "14px", borderRadius: 14, background: loading ? "#aaa" : "linear-gradient(135deg, #270F57, #765F8F)", color: "#fff", fontWeight: 800, fontSize: 16, border: "none", cursor: loading ? "default" : "pointer", marginBottom: 16 }}
-          onClick={handleSubmit}
-          disabled={loading}
+          onClick={handleSubmit} disabled={loading}
         >
           {loading ? "Φόρτωση..." : "Είσοδος 🚀"}
         </button>
-        <div style={{ fontSize: 12, color: "#aaa", lineHeight: 1.5 }}>
+
+        <div style={{ fontSize: 12, color: "#aaa" }}>
           Ο κωδικός βρίσκεται στο εξώφυλλο του βιβλίου σου
         </div>
       </div>
