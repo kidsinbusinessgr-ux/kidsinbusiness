@@ -318,7 +318,7 @@ const BookChapter = () => {
         {phase === "activity" && (
           <>
             <div style={s.card}>
-    À0        <div style={s.cardTitle}>ð¯ {ch.activity.title}</div>
+              <div style={s.cardTitle}>ð¯ {ch.activity.title}</div>
               <div style={{ fontSize: 14, color: "#555", marginBottom: 16, lineHeight: 1.6 }}>{ch.activity.instruction}</div>
 
               {/* SORT */}
@@ -342,7 +342,7 @@ const BookChapter = () => {
 
               {/* CHOICE or BUDGET */}
               {(ch.activity.type === "choice" || ch.activity.type === "budget") && ch.activity.options?.map((opt, i) => (
-    À0          <button key={i} style={s.activityOption(activityChoice === opt)} onClick={() => setActivityChoice(opt)}>
+                <button key={i} style={s.activityOption(activityChoice === opt)} onClick={() => setActivityChoice(opt)}>
                   {opt}
                 </button>
               ))}
