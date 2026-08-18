@@ -1,128 +1,91 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 const BOOK_CODE = "ependitis2026";
 const ACCESS_KEY = "kib_book_access_v1";
+const USER_KEY = "kib_book_user_v1";
 
 const BookLogin = () => {
   const navigate = useNavigate();
-  const [value, setValue] = useState("");
-  const [error, setError] = useState(false);
-  const [shake, setShake] = useState(false);
+  const [code, setCode] = useState("");
+  const [name, setName] = useState("");
+  const [age, setAge] = useState("");
+  const [parentEmail, setParentEmail] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = () => {
-    if (value.trim().toLowerCase() === BOOK_CODE) {
-      try { localStorage.setItem(ACCESS_KEY, "1"); } catch {}
-      navigate("/book");
-    } else {
-      setError(true);
-      setShake(true);
-      setTimeout(() => setShake(false), 600);
-    }
+  const handleSubmit = async () => {
+    if (!name.trim()) { setError("Γράψε το όνομά σου!"); return; }
+    if (!age.trim()) { setError("Γράψε την ηλικία σου!"); return; }
+    if (!parentEmail.trim() || !parentEmail.includes("@")) { setError("Γράψε σωστό email γονέα!"); return; }
+    if (code.trim().toLowerCase() !== BOOK_CODE) { setError("Λάθος κωδικός βιβλίου!"); return; }
+
+    setLoading(true);
+    try {
+      await supabase.from("book_registrations").insert({
+        child_name: name.trim(),
+        child_age: Number(age),
+        parent_email: parentEmail.trim().toLowerCase(),
+        registered_at: new Date().toISOString(),
+      });
+    } catch {}
+
+    const userData = { name: name.trim(), age: Number(age), parentEmail: parentEmail.trim().toLowerCase(), registeredAt: new Date().toISOString() };
+    try {
+      localStorage.setItem(ACCESS_KEY, "1");
+      localStorage.setItem(USER_KEY, JSON.stringify(userData));
+    } catch {}
+    setLoading(false);
+    navigate("/book");
   };
 
-  const s = {
-    page: {
-      minHeight: "100vh",
-      background: "linear-gradient(135deg, #270F57, #765F8F)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      fontFamily: "'Inter', sans-serif",
-      padding: "20px",
-    } as React.CSSProperties,
-    card: {
-      background: "#fff",
-      borderRadius: 24,
-      padding: "40px 32px",
-      maxWidth: 400,
-      width: "100%",
-      textAlign: "center" as const,
-      boxShadow: "0 20px 60px rgba(39,15,87,0.3)",
-    } as React.CSSProperties,
-    logo: { fontSize: 56, marginBottom: 16 },
-    title: { fontSize: 22, fontWeight: 900, color: "#270F57", marginBottom: 6 },
-    subtitle: { fontSize: 14, color: "#765F8F", marginBottom: 28, lineHeight: 1.5 },
-    inputWrap: {
-      position: "relative" as const,
-      marginBottom: 12,
-      animation: shake ? "shake 0.5s" : "none",
-    },
-    input: {
-      width: "100%",
-      padding: "14px 18px",
-      borderRadius: 14,
-      border: error ? "2px solid #f87171" : "2px solid #e0d4f5",
-      fontSize: 16,
-      fontWeight: 700,
-      color: "#270F57",
-      outline: "none",
-      boxSizing: "border-box" as const,
-      textAlign: "center" as const,
-      letterSpacing: "0.08em",
-      background: error ? "#fff5f5" : "#faf7ff",
-      transition: "border 0.2s",
-    } as React.CSSProperties,
-    errorMsg: {
-      fontSize: 13,
-      color: "#ef4444",
-      fontWeight: 600,
-      marginBottom: 16,
-      display: error ? "block" : "none",
-    } as React.CSSProperties,
-    btn: {
-      width: "100%",
-      padding: "14px",
-      borderRadius: 14,
-      background: "linear-gradient(135deg, #270F57, #765F8F)",
-      color: "#fff",
-      fontWeight: 800,
-      fontSize: 16,
-      border: "none",
-      cursor: "pointer",
-      marginBottom: 16,
-    } as React.CSSProperties,
-    hint: { fontSize: 12, color: "#aaa", lineHeight: 1.5 },
-  };
+  const inputStyle = (hasError: boolean): React.CSSProperties => ({
+    width: "100%",
+    padding: "13px 18px",
+    borderRadius: 14,
+    border: hasError ? "2px solid #f87171" : "2px solid #e0d4f5",
+    fontSize: 15,
+    fontWeight: 600,
+    color: "#270F57",
+    outline: "none",
+    boxSizing: "border-box",
+    background: "#faf7ff",
+    marginBottom: 10,
+  });
 
   return (
-    <>
-      <style>{
-        `@keyframes shake {
-          0%, 100% { transform: translateX(0); }
-          20%, 60% { transform: translateX(-8px); }
-          40%, 80% { transform: translateX(8px); }
-        }`
-      }</style>
-      <div style={s.page}>
-        <div style={s.card}>
-          <div style={s.logo}>📚</div>
-          <div style={s.title}>Μικροί Επενδυτές</div>
-          <div style={s.subtitle}>
-            Μεγάλο Μέλλον<br />
-            Εισήγαγε τον κωδικό του βιβλίου για να αποκτήσεις πρόσβαση
+    <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #270F57, #765F8F)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter', sans-serif", padding: "20px" }}>
+      <div style={{ background: "#fff", borderRadius: 24, padding: "40px 32px", maxWidth: 420, width: "100%", textAlign: "center", boxShadow: "0 20px 60px rgba(39,15,87,0.3)" }}>
+        <div style={{ fontSize: 56, marginBottom: 12 }}>📚</div>
+        <div style={{ fontSize: 22, fontWeight: 900, color: "#270F57", marginBottom: 4 }}>Μικροί Επενδυτές</div>
+        <div style={{ fontSize: 14, color: "#765F8F", marginBottom: 28, lineHeight: 1.5 }}>Μεγάλο Μέλλον — Εισήγαγε τα στοιχεία σου για να ξεκινήσεις!</div>
+
+        <input style={inputStyle(false)} type="text" placeholder="Όνομα παιδιού..." value={name} onChange={e => { setName(e.target.value); setError(""); }} />
+        <input style={inputStyle(false)} type="number" placeholder="Ηλικία..." value={age} onChange={e => { setAge(e.target.value); setError(""); }} min="6" max="18" />
+        <input style={inputStyle(false)} type="email" placeholder="Email γονέα..." value={parentEmail} onChange={e => { setParentEmail(e.target.value); setError(""); }} />
+        <input style={{ ...inputStyle(false), letterSpacing: "0.08em", textAlign: "center", marginBottom: 16 }} type="text" placeholder="Κωδικός βιβλίου..." value={code}
+          onChange={e => { setCode(e.target.value); setError(""); }}
+          onKeyDown={e => e.key === "Enter" && handleSubmit()} />
+
+        {error && (
+          <div style={{ fontSize: 13, color: "#ef4444", fontWeight: 600, marginBottom: 12, padding: "8px 12px", background: "#fff5f5", borderRadius: 10 }}>
+            ❌ {error}
           </div>
-          <div style={s.inputWrap}>
-            <input
-              style={s.input}
-              type="text"
-              placeholder="Κωδικός βιβλίου..."
-              value={value}
-              onChange={(e) => { setValue(e.target.value); setError(false); }}
-              onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-              autoFocus
-            />
-          </div>
-          <div style={s.errorMsg}>❌ Λάθος κωδικός. Δοκίμασε ξανά!</div>
-          <button style={s.btn} onClick={handleSubmit}>
-            Είσοδος 🚀
-          </button>
-          <div style={s.hint}>
-            Ο κωδικός βρίσκεται στο εξώφυλλο του βιβλίου σου
-          </div>
+        )}
+
+        <button
+          style={{ width: "100%", padding: "14px", borderRadius: 14, background: loading ? "#aaa" : "linear-gradient(135deg, #270F57, #765F8F)", color: "#fff", fontWeight: 800, fontSize: 16, border: "none", cursor: loading ? "default" : "pointer", marginBottom: 16 }}
+          onClick={handleSubmit}
+          disabled={loading}
+        >
+          {loading ? "Φόρτωση..." : "Είσοδος 🚀"}
+        </button>
+        <div style={{ fontSize: 12, color: "#aaa", lineHeight: 1.5 }}>
+          Ο κωδικός βρίσκεται στο εξώφυλλο του βιβλίου σου
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
