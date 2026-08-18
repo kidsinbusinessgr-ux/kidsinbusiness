@@ -33,6 +33,10 @@ export default function BookDashboard() {
     if (!localStorage.getItem("intro_seen")) {
       setShowIntro(true);
     }
+    // Reload progress when user returns from a chapter page
+    const onVisible = () => { if (document.visibilityState === "visible") loadProgress(); };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
   }, []);
 
   const loadProgress = async () => {
@@ -332,7 +336,9 @@ export default function BookDashboard() {
                   const prog = getChapterProgress(chapter.id);
                   const isCompleted = !!prog?.completed;
                   const globalIdx = islandIdx * 4 + chIdx;
-                  const isUnlocked = globalIdx === 0 || getChapterProgress(BOOK_CHAPTERS[globalIdx - 1].id)?.completed;
+                  const prevId = globalIdx > 0 ? BOOK_CHAPTERS[globalIdx - 1].id : null;
+                  const localDone = prevId ? (() => { try { return !!JSON.parse(localStorage.getItem("kib_book_progress_v1") || "{}")[prevId]; } catch { return false; } })() : false;
+                  const isUnlocked = globalIdx === 0 || getChapterProgress(prevId!)?.completed || localDone;
 
                   // Code-locked: chapters 4+ need code
                   const needsCode = chapter.id > FREE_CHAPTERS && (!isLoggedIn || !hasCode);
