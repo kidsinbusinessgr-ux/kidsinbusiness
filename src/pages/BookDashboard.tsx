@@ -339,7 +339,7 @@ export default function BookDashboard() {
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {island.chapters.map((chapter, chIdx) => {
                   const prog = getChapterProgress(chapter.id);
-                  const isCompleted = !!prog?.completed;
+                  const isCompleted = !!prog?.completed || !!(()=>{try{return JSON.parse(localStorage.getItem("kib_book_progress_v1")||"{}")[chapter.id]}catch{return false}})();
                   const globalIdx = islandIdx * 4 + chIdx;
                   const prevId = globalIdx > 0 ? BOOK_CHAPTERS[globalIdx - 1].id : null;
                   const localDone = prevId ? (() => { try { return !!JSON.parse(localStorage.getItem("kib_book_progress_v1") || "{}")[prevId]; } catch { return false; } })() : false;
