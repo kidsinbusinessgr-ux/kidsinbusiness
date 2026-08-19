@@ -100,14 +100,23 @@ export default function BookFounderDashboard() {
       .map(row => row.map(cell => `"${cell}"`).join(","))
       .join("\n");
 
-    const blob = new Blob(["﻿" + csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `mikroi-ependytes-xristes-${new Date().toISOString().slice(0,10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
+        const doExport = (XLSX: any) => {
+      const data = rows.map(row => {
+        const obj: Record<string, any> = {};
+        headers.forEach((h, i) => { obj[h] = row[i]; });
+        return obj;
+      });
+      const ws = XLSX.utils.json_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Users');
+      XLSX.writeFile(wb, `mikroi-ependytes-${new Date().toISOString().slice(0,10)}.xlsx`);
+    };
+    if ((window as any).XLSX) { doExport((window as any).XLSX); return; }
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    s.onload = () => doExport((window as any).XLSX);
+    document.head.appendChild(s);
+  };;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
