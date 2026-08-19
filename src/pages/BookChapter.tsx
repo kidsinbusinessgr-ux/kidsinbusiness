@@ -55,6 +55,10 @@ const BookChapter = () => {
     setMathAnswers(new Array(ch.mathChallenge.length).fill(""));
     setSortAssignments({});
     setSortChecked(false);
+    setPhase("learn");
+    setQuizSubmitted(false);
+    setActivityChoice(null);
+    setMathChecked(false);
     try {
       const prog = JSON.parse(localStorage.getItem(PROGRESS_KEY) || "{}");
       if (prog[ch.id]) {
