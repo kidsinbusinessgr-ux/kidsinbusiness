@@ -84,7 +84,7 @@ const BookChapter = () => {
   const correctQuiz = quizAnswers.filter((a, i) => a === ch.quiz[i].correct).length;
   const quizScore = quizSubmitted ? Math.round((correctQuiz / ch.quiz.length) * 100) : 0;
   const mathCorrect = mathAnswers.filter((a, i) =>
-    a.trim().replace(",", ".") === ch.mathChallenge[i].answer.replace(",", ".")
+    parseFloat(a.trim().replace(",", ".")) === parseFloat(ch.mathChallenge[i].answer.replace(",", "."))
   ).length;
 
   const completeCh = () => {
@@ -380,7 +380,7 @@ const BookChapter = () => {
             <div style={s.cardTitle}>🔢 Μαθηματική Πρόκληση</div>
             {ch.mathChallenge.map((q, i) => {
               const val = mathAnswers[i];
-              const correct = mathChecked ? val.trim().replace(",", ".") === q.answer.replace(",", ".") : null;
+              const correct = mathChecked ? parseFloat(val.trim().replace(",", ".")) === parseFloat(q.answer.replace(",", ".")) : null;
               return (
                 <div key={i} style={{ marginBottom: 20 }}>
                   <div style={{ fontSize: 14, fontWeight: 700, color: "#270F57", marginBottom: 8, lineHeight: 1.5 }}>{i + 1}. {q.question}</div>
