@@ -41,7 +41,13 @@ const BookChapter = () => {
   const [mathAnswers, setMathAnswers] = useState<string[]>([]);
   const [mathChecked, setMathChecked] = useState(false);
   const [alreadyDone, setAlreadyDone] = useState(false);
-  const [unlockedPhases, setUnlockedPhases] = useState<Set<Phase>>(new Set(["learn"] as Phase[]));
+  const [unlockedPhases, setUnlockedPhases] = useState<Set<Phase>>(() => {
+    try {
+      const prog = JSON.parse(localStorage.getItem(PROGRESS_KEY) || "{}");
+      if (prog[Number(id)]) return new Set(["learn", "quiz", "activity", "math"] as Phase[]);
+    } catch {}
+    return new Set(["learn"] as Phase[]);
+  });
 
   useEffect(() => {
     if (!ch) return;
@@ -51,7 +57,10 @@ const BookChapter = () => {
     setSortChecked(false);
     try {
       const prog = JSON.parse(localStorage.getItem(PROGRESS_KEY) || "{}");
-      if (prog[ch.id]) setAlreadyDone(true);
+      if (prog[ch.id]) {
+        setAlreadyDone(true);
+        setUnlockedPhases(new Set(["learn", "quiz", "activity", "math"] as Phase[]));
+      }
     } catch {}
   }, [ch]);
 
