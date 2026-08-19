@@ -223,7 +223,12 @@ export default function BookDashboard() {
                   <span className="text-xs text-yellow-600">/ {TOTAL_COINS}</span>
                 </div>
                 <button
-                  onClick={async () => { await supabase.auth.signOut(); loadProgress(); }}
+                  onClick={async () => {
+                    await supabase.auth.signOut();
+                    localStorage.removeItem("kib_book_access_v1");
+                    localStorage.removeItem("kib_book_user_v1");
+                    navigate("/book-login");
+                  }}
                   className="text-xs text-gray-400 hover:text-gray-600"
                 >
                   Έξοδος
