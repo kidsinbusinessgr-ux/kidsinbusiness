@@ -16,7 +16,7 @@ const LandingPage = () => {
         </div>
       </nav>
       <section style={{ maxWidth: 1100, margin: "0 auto", padding: "60px 40px 20px", textAlign: "center" }}>
-        <div style={{ display: "inline-block", background: "#f4eaff", color: "#765F8F", fontWeight: 700, fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", padding: "6px 16px", borderRadius: 20, marginBottom: 28 }}>Από την ιδέα στην πράξη</div>
+        <div style={{ display: "inline-block", background: "#f4eaff", color: "#765F8F", fontWeight: 700, fontSize: 11, letterSpacing: "0.12em", padding: "6px 16px", borderRadius: 20, marginBottom: 28 }}>ΑΠΟ ΤΗΝ ΙΔΕΑ ΣΤΗΝ ΠΡΑΞΗ</div>
         <h1 style={{ fontSize: "clamp(40px, 7vw, 76px)", fontWeight: 800, lineHeight: 1.05, color: "#270F57", margin: "0 auto 24px", maxWidth: 820, letterSpacing: "-0.02em" }}>Χτίσε το Επιχειρηματικό Πλάνο. Μαζί.</h1>
         <p style={{ fontSize: 18, color: "#5a4070", lineHeight: 1.6, maxWidth: 580, margin: "0 auto 40px" }}>Συνεργάσου με την ομάδα σου, μάθε Lean Canvas, και παρουσίασε την ιδέα σας με τρόπο που κάνει τους άλλους να θέλουν να ακούσουν.</p>
         <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
@@ -87,7 +87,7 @@ const LandingPage = () => {
       <section style={{ maxWidth: 1100, margin: "72px auto 0", padding: "0 40px 80px" }}>
         <div style={{ background: "#270F57", borderRadius: 24, padding: "48px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 24 }}>
           <div>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: "#c4a8e0", textTransform: "uppercase", marginBottom: 12 }}>Για εκπαιδευτικούς</div>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: "#c4a8e0", marginBottom: 12 }}>ΓΙΑ ΕΚΠΑΙΔΕΥΤΙΚΟΥΣ</div>
             <h2 style={{ fontSize: 28, fontWeight: 800, color: "#fff9e9", marginBottom: 12 }}>Είσαι εκπαιδευτικός;</h2>
             <p style={{ fontSize: 16, color: "#c4a8e0", maxWidth: 400, lineHeight: 1.5 }}>Δώσε στις ομάδες σου χώρο για πραγματική συνεργασία.</p>
           </div>
