@@ -51,6 +51,7 @@ const BookLogin = () => {
     } catch {}
 
     setLoading(false);
+    localStorage.removeItem("kib_book_progress_v1");
     navigate("/book");
   };
 
