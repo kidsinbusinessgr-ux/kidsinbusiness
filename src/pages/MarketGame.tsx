@@ -279,7 +279,8 @@ export default function MarketGame() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) navigate("/book-login");
+      const localAccess = localStorage.getItem("kib_book_access_v1") === "1";
+      if (!session && !localAccess) navigate("/book-login");
     });
   }, [navigate]);
 
