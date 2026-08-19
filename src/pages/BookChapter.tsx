@@ -172,7 +172,7 @@ const BookChapter = () => {
       {/* HEADER */}
       <div style={s.header}>
         <button style={s.backBtn} onClick={() => navigate("/book")}>← Όλα τα κεφάλαια</button>
-        <div style={{ color: "rgba(255,255,255,0.75)", fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 4 }}>Κεφάλαιο {ch.id} · {ch.emoji}</div>
+        <div style={{ color: "rgba(255,255,255,0.75)", fontSize: 12, fontWeight: 600, letterSpacing: "0.06em", marginBottom: 4 }}>ΚΕΦΑΛΑΙΟ {ch.id} · {ch.emoji}</div>
         <div style={{ color: "#fff", fontSize: 24, fontWeight: 900, lineHeight: 1.2, marginBottom: 4 }}>{ch.titleEl}</div>
         <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 14 }}>{ch.subtitleEl}</div>
         <div style={{ marginTop: 16, display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,0.2)", borderRadius: 99, padding: "6px 16px", color: "#fff", fontWeight: 700, fontSize: 13 }}>
@@ -267,7 +267,7 @@ const BookChapter = () => {
                     onDrop={(e) => { e.preventDefault(); if (draggingItem && !sortChecked) { setSortAssignments(prev => { const next = {...prev}; delete next[draggingItem]; return next; }); setDraggingItem(null); } }}>
                     {allItems.some(it => !sortAssignments[it.label]) ? (
                       <>
-                        <div style={{ fontSize: 12, fontWeight: 700, color: "#765F8F", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Σύρε κάθε κάρτα στη σωστή στήλη →</div>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: "#765F8F", letterSpacing: "0.05em", marginBottom: 8 }}>ΣΥΡΕ ΚΑΘΕ ΚΑΡΤΑ ΣΤΗ ΣΩΣΤΗ ΣΤΗΛΗ →</div>
                         <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                           {allItems.filter(it => !sortAssignments[it.label]).map((it, i) => (
                             <button key={i}
