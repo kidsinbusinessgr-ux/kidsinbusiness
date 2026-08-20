@@ -99,12 +99,13 @@ export default function BookDashboard() {
         const kibProg = localStorage.getItem("kib_book_progress_v1");
         if (kibProg) {
           try {
-            const raw: Record<string, boolean> = JSON.parse(kibProg);
+            const raw: Record<string, any> = JSON.parse(kibProg);
             const parsed: BookProgress[] = Object.entries(raw)
               .filter(([, v]) => v)
-              .map(([id]) => {
+              .map(([id, v]) => {
                 const ch = BOOK_CHAPTERS.find(c => c.id === Number(id));
-                return { chapter_id: Number(id), completed: true, quiz_score: 0, coins_earned: ch?.coins || 0 };
+                const data = typeof v === 'object' && v !== null ? v : {};
+                return { chapter_id: Number(id), completed: true, quiz_score: data.quiz_score || 0, coins_earned: data.coins || ch?.coins || 0 };
               });
             setProgress(parsed);
             setTotalCoins(parsed.reduce((s, p) => s + (p.coins_earned || 0), 0));
