@@ -11,7 +11,8 @@ interface UserRow {
   activated_at: string | null;
   created_at: string;
   chapters_completed?: number;
-  total_coins?: number;
+  total_coins?: number
+  avg_quiz_score?: number;;
 }
 
 export default function BookFounderDashboard() {
@@ -51,7 +52,7 @@ export default function BookFounderDashboard() {
 
     const { data: progressData } = await supabase
       .from("book_progress" as any)
-      .select("user_id, completed, coins_earned");
+      .select("user_id, chapter_id, completed, coins_earned, quiz_score");
 
     const enriched = (profiles || []).map((p: any) => {
       const userProgress = (progressData || []).filter((pr: any) => pr.user_id === p.id);
@@ -59,7 +60,8 @@ export default function BookFounderDashboard() {
         ...p,
         chapters_completed: userProgress.filter((pr: any) => pr.completed).length,
         total_coins: userProgress.reduce((s: number, pr: any) => s + (pr.coins_earned || 0), 0),
-      };
+      
+        avg_quiz_score: userProgress.length ? Math.round(userProgress.reduce((s: number, pr: any) => s + (pr.quiz_score || 0), 0) / userProgress.length) : 0,};
     });
 
     setUsers(enriched);
@@ -190,6 +192,7 @@ export default function BookFounderDashboard() {
                       <th className="text-left px-4 py-2 text-gray-600 font-medium">Κωδικός</th>
                       <th className="text-right px-4 py-2 text-gray-600 font-medium">Κεφάλαια</th>
                       <th className="text-right px-4 py-2 text-gray-600 font-medium">Νομίσματα</th>
+                      <th className="text-right px-4 py-2 text-gray-600 font-medium">Avg Quiz</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -211,7 +214,8 @@ export default function BookFounderDashboard() {
                           <span className="text-gray-400"> / 16</span>
                         </td>
                         <td className="px-4 py-3 text-right font-semibold text-yellow-600">🪙 {u.total_coins}</td>
-                      </tr>
+                      
+                      <td className="px-4 py-3 text-right font-semibold text-blue-600">{u.avg_quiz_score !== undefined ? u.avg_quiz_score + "%" : "-"}</td></tr>
                     ))}
                   </tbody>
                 </table>
