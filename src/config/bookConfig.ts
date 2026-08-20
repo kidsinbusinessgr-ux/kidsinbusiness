@@ -210,7 +210,7 @@ export const BOOK_CHAPTERS: BookChapter[] = [
     ],
     activity: {
       type: 'choice',
-      title: "Το Βάζο μου Προσφοράς",
+      title: "Το Βάζο της Προσφοράς μου",
       instruction: "Αν είχες 10€ να προσφέρεις, τι θα έκανες;",
       options: [
         "Θα αγόραζα φαγητό για οικογένεια που έχει ανάγκη",
