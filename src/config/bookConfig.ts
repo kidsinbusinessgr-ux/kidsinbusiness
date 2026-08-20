@@ -333,7 +333,7 @@ export const BOOK_CHAPTERS: BookChapter[] = [
     color: "from-blue-500 to-indigo-500",
     coins: 65,
     badge: "🏛️",
-    badgeName: "Τραπεζικός Ειδικός",
+    badgeName: "Ειδικός Τραπεζικών Συναλλαγών",
     keyLearning: [
       "Η τράπεζα φυλάει τα χρήματα με ασφάλεια",
       "Δίνει τόκο για τις αποταμιεύσεις",
@@ -437,7 +437,7 @@ export const BOOK_CHAPTERS: BookChapter[] = [
     color: "from-gray-500 to-slate-600",
     coins: 70,
     badge: "🔍",
-    badgeName: "Κυνηγός Πληθωρισμού",
+    badgeName: "Εξερευνητής Πληθωρισμού",
     keyLearning: [
       "Πληθωρισμός = αύξηση τιμών με την πάροδο του χρόνου",
       "Αδειάζει τον κουμπαρά αν δεν επενδύεις",
@@ -515,7 +515,7 @@ export const BOOK_CHAPTERS: BookChapter[] = [
     color: "from-red-500 to-pink-500",
     coins: 70,
     badge: "⚖️",
-    badgeName: "Υπεύθυνος Δανειστής",
+    badgeName: "Έξυπνος Δανειολήπτης",
     keyLearning: [
       "Δάνειο = χρήματα που επιστρέφεις + τόκο",
       "Χρέος = αυτό που οφείλεις",
@@ -591,7 +591,7 @@ export const BOOK_CHAPTERS: BookChapter[] = [
     color: "from-purple-500 to-indigo-500",
     coins: 100,
     badge: "🏆",
-    badgeName: "Μικρός Επενδυτής — Πλήρης!",
+    badgeName: "Μικρός Επενδυτής, Μεγάλο Μέλλον!",
     quote: { text: "Οι πλούσιοι δεν εργάζονται για χρήματα. Τα χρήματα εργάζονται για αυτούς.", author: "Robert Kiyosaki" },
     keyLearning: [
       "3 βάζα: Ξόδεμα / Αποταμίευση / Προσφορά",
