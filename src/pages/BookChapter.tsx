@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, useParams } from "react-router-dom";
 import { BOOK_CHAPTERS } from "@/config/bookConfig";
 
@@ -49,13 +50,15 @@ const BookChapter = () => {
     return new Set(["learn"] as Phase[]);
   });
 
+  const startTimeRef = useRef<number>(Date.now());
   useEffect(() => {
     if (!ch) return;
     setQuizAnswers(new Array(ch.quiz.length).fill(null));
     setMathAnswers(new Array(ch.mathChallenge.length).fill(""));
     setSortAssignments({});
     setSortChecked(false);
-    setPhase("learn");
+    setPhase("lear
+    startTimeRef.current = Date.now();n");
     setQuizSubmitted(false);
     setActivityChoice(null);
     setMathChecked(false);
@@ -87,11 +90,24 @@ const BookChapter = () => {
     parseFloat(a.trim().replace(",", ".")) === parseFloat(ch.mathChallenge[i].answer.replace(",", "."))
   ).length;
 
-  const completeCh = () => {
+  const completeCh = async () => {
+    const timeSpent = Math.round((Date.now() - startTimeRef.current) / 1000);
     try {
       const prog = JSON.parse(localStorage.getItem(PROGRESS_KEY) || "{}");
-      prog[ch.id] = true;
+      prog[ch.id] = { completed: true, quiz_score: correctQuiz, math_score: mathCorrect, time_spent: timeSpent, coins: ch.coins };
       localStorage.setItem(PROGRESS_KEY, JSON.stringify(prog));
+    } catch {}
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase.from("book_progress" as any).upsert({
+          user_id: user.id,
+          chapter_id: ch.id,
+          completed: true,
+          quiz_score: correctQuiz,
+          coins_earned: ch.coins,
+        }, { onConflict: "user_id,chapter_id" });
+      }
     } catch {}
     setPhase("done");
   };
