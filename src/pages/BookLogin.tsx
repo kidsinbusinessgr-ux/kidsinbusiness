@@ -41,6 +41,20 @@ const BookLogin = () => {
     } catch {}
 
     try {
+      const { data: codeRow } = await supabase
+        .from("book_codes" as any)
+        .select("use_count")
+        .eq("code", BOOK_CODE)
+        .single();
+      if (codeRow) {
+        await supabase
+          .from("book_codes" as any)
+          .update({ use_count: (codeRow.use_count || 0) + 1 })
+          .eq("code", BOOK_CODE);
+      }
+    } catch {}
+
+    try {
       localStorage.setItem(ACCESS_KEY, "1");
       localStorage.setItem(USER_KEY, JSON.stringify({
         name: name.trim(),
