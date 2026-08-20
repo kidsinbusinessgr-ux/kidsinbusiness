@@ -384,7 +384,7 @@ const BookChapter = () => {
               return (
                 <div key={i} style={{ marginBottom: 20 }}>
                   <div style={{ fontSize: 14, fontWeight: 700, color: "#270F57", marginBottom: 8, lineHeight: 1.5 }}>{i + 1}. {q.question}</div>
-                  <input style={s.mathInput(correct)} type="text" inputMode="numeric" placeholder="Απάντηση..." value={val}
+                  <input style={s.mathInput(correct)} type="text" inputMode="decimal" placeholder="Απάντηση..." value={val}
                     onChange={(e) => { const a = [...mathAnswers]; a[i] = e.target.value; setMathAnswers(a); setMathChecked(false); }} />
                   {mathChecked && (
                     <div style={{ fontSize: 12, marginTop: 4, fontWeight: 600, color: correct ? "#15803d" : "#b91c1c" }}>
