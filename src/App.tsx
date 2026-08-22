@@ -31,6 +31,7 @@ import ClubStudent from "@/pages/ClubStudent";
 import BookDashboard from "@/pages/BookDashboard";
 import BookChapter from "@/pages/BookChapter";
 import BookLogin from "@/pages/BookLogin";
+import PrivacyPolicy from "@/pages/PrivacyPolicy";
 import BookFounderDashboard from "@/pages/BookFounderDashboard";
 import MarketGame from "@/pages/MarketGame";
 
@@ -72,6 +73,7 @@ const App = () => (
           <Route path="/club" element={<ClubLogin />} />
           <Route path="/club/teacher" element={<ClubTeacher />} />
           <Route path="/club/student" element={<ClubStudent />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
