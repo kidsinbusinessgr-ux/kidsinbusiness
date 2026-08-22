@@ -110,7 +110,10 @@ const BookLogin = () => {
 
         <div style={{ fontSize: 12, color: "#aaa" }}>
           Ο κωδικός βρίσκεται στο εξώφυλλο του βιβλίου σου
-        </div>
+        
+        <div style={{ marginTop: 12, fontSize: 11, color: "#bbb" }}>
+          <a href="/privacy" style={{ color: "#765F8F", textDecoration: "underline" }}>Πολιτική Απορρήτου & Όροι Χρήσης</a>
+        </div></div>
       </div>
     </div>
   );
