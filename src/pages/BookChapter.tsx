@@ -57,8 +57,7 @@ const BookChapter = () => {
     setMathAnswers(new Array(ch.mathChallenge.length).fill(""));
     setSortAssignments({});
     setSortChecked(false);
-    setPhase("lear
-    startTimeRef.current = Date.now();n");
+    setPhase("learn")    startTimeRef.current = Date.now();n");
     setQuizSubmitted(false);
     setActivityChoice(null);
     setMathChecked(false);
