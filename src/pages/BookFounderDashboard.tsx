@@ -12,7 +12,7 @@ interface UserRow {
   created_at: string;
   chapters_completed?: number;
   total_coins?: number
-  avg_quiz_score?: number;;
+  avg_quiz_score?: number;
 }
 
 export default function BookFounderDashboard() {
