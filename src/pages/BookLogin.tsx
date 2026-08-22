@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
-const BOOK_CODE = "ependitis2026";
 const ACCESS_KEY = "kib_book_access_v1";
 const USER_KEY = "kib_book_user_v1";
 
@@ -28,9 +27,17 @@ const BookLogin = () => {
     if (!name.trim()) { setError("Γράψε το όνομά σου!"); return; }
     if (!age.trim()) { setError("Γράψε την ηλικία σου!"); return; }
     if (!parentEmail.trim() || !parentEmail.includes("@")) { setError("Γράψε σωστό email γονέα!"); return; }
-    if (code.trim().toLowerCase() !== BOOK_CODE) { setError("Λάθος κωδικός βιβλίου. Δοκίμασε ξανά!"); return; }
+    if (!code.trim()) { setError("Γράψε τον κωδικό βιβλίου!"); return; }
 
     setLoading(true);
+
+    let codeValid = false;
+    try {
+      const { data } = await supabase.rpc("validate_and_use_book_code" as any, { input_code: code.trim().toLowerCase() });
+      codeValid = !!data;
+    } catch {}
+    if (!codeValid) { setError("Λάθος κωδικός βιβλίου. Δοκίμασε ξανά!"); setLoading(false); return; }
+
     try {
       await supabase.from("book_registrations").insert({
         child_name: name.trim(),
@@ -38,20 +45,6 @@ const BookLogin = () => {
         parent_email: parentEmail.trim().toLowerCase(),
         registered_at: new Date().toISOString(),
       });
-    } catch {}
-
-    try {
-      const { data: codeRow } = await supabase
-        .from("book_codes" as any)
-        .select("use_count")
-        .eq("code", BOOK_CODE)
-        .single();
-      if (codeRow) {
-        await supabase
-          .from("book_codes" as any)
-          .update({ use_count: (codeRow.use_count || 0) + 1 })
-          .eq("code", BOOK_CODE);
-      }
     } catch {}
 
     try {
