@@ -27,6 +27,8 @@ const BookLogin = () => {
     if (!name.trim()) { setError("Γράψε το όνομά σου!"); return; }
     if (!age.trim()) { setError("Γράψε την ηλικία σου!"); return; }
     if (!parentEmail.trim() || !parentEmail.includes("@")) { setError("Γράψε σωστό email γονέα!"); return; }
+    if (name.trim().length > 50) { setError("Το όνομα είναι πολύ μακρύ!"); return; }
+    if (parentEmail.trim().length > 100) { setError("Το email είναι πολύ μακρύ!"); return; }
     if (!code.trim()) { setError("Γράψε τον κωδικό βιβλίου!"); return; }
 
     setLoading(true);
@@ -86,12 +88,12 @@ const BookLogin = () => {
           Μεγάλο Μέλλον<br />Συμπλήρωσε τα στοιχεία σου για να ξεκινήσεις!
         </div>
 
-        <input style={inp()} type="text" placeholder="Όνομα παιδιού..." value={name} onChange={e => { setName(e.target.value); setError(""); }} />
+        <input style={inp()} type="text" placeholder="Όνομα παιδιού..." value={name} onChange={e => { setName(e.target.value); setError(""); }}  maxLength={50}/>
         <input style={inp()} type="number" placeholder="Ηλικία..." value={age} min="6" max="18" onChange={e => { setAge(e.target.value); setError(""); }} />
-        <input style={inp()} type="email" placeholder="Email γονέα..." value={parentEmail} onChange={e => { setParentEmail(e.target.value); setError(""); }} />
+        <input style={inp()} type="email" placeholder="Email γονέα..." value={parentEmail} onChange={e => { setParentEmail(e.target.value); setError(""); }}  maxLength={100}/>
         <input style={inp({ letterSpacing: "0.08em", textAlign: "center" })} type="text" placeholder="Κωδικός βιβλίου..."
           value={code} onChange={e => { setCode(e.target.value); setError(""); }}
-          onKeyDown={e => e.key === "Enter" && handleSubmit()} />
+          onKeyDown={e => e.key === "Enter" && handleSubmit()}  maxLength={30}/>
 
         {error && (
           <div style={{ fontSize: 13, color: "#ef4444", fontWeight: 600, marginBottom: 12, padding: "8px 14px", background: "#fff5f5", borderRadius: 10 }}>
