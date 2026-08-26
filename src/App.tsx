@@ -68,6 +68,7 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/book-login" element={<BookLogin />} />
           <Route path="/book-founder" element={<BookFounderDashboard />} />
+          <Route path="/book-admin" element={<BookFounderDashboard />} />
           <Route path="/book" element={<BookDashboard />} />
           <Route path="/book/:id" element={<BookChapter />} />
           <Route path="/market-game" element={<MarketGame />} />
