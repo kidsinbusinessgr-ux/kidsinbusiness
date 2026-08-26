@@ -191,7 +191,10 @@ const BookChapter = () => {
     <div style={s.page}>
       {/* HEADER */}
       <div style={s.header}>
-        <button style={s.backBtn} onClick={() => navigate("/book")}>← Όλα τα κεφάλαια</button>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+          <button style={s.backBtn} onClick={() => navigate("/book")}>← Όλα τα κεφάλαια</button>
+          <img src="/logo.png" alt="Kids in Business" style={{ height: 32, width: "auto", opacity: 0.9 }} />
+        </div>
         <div style={{ color: "rgba(255,255,255,0.75)", fontSize: 12, fontWeight: 600, letterSpacing: "0.06em", marginBottom: 4 }}>ΚΕΦΑΛΑΙΟ {ch.id} · {ch.emoji}</div>
         <div style={{ color: "#fff", fontSize: 24, fontWeight: 900, lineHeight: 1.2, marginBottom: 4 }}>{ch.titleEl}</div>
         <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 14 }}>{ch.subtitleEl}</div>

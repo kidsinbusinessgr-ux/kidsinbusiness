@@ -198,8 +198,9 @@ export default function BookDashboard() {
       <div className="bg-white/80 backdrop-blur border-b sticky top-0 z-10 px-4 py-3">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
+            <img src="/logo.png" alt="Kids in Business" className="h-10 w-auto" />
             <div>
-              <h1 className="font-bold text-lg text-gray-800">📚 Μικροί Επενδυτές, Μεγάλο Μέλλον</h1>
+              <h1 className="font-bold text-lg text-gray-800">Μικροί Επενδυτές, Μεγάλο Μέλλον</h1>
               {isLoggedIn && childName ? (
                 <p className="text-xs text-gray-500">Γεια σου, {childName}!</p>
               ) : (

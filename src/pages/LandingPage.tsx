@@ -5,10 +5,7 @@ const LandingPage = () => {
     <div style={{ backgroundColor: "#fff9e9", color: "#270F57", fontFamily: "'Inter', 'Helvetica Neue', sans-serif", minHeight: "100vh" }}>
       <nav style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 40px", maxWidth: 1100, margin: "0 auto" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 36, height: 36, borderRadius: 10, background: "linear-gradient(135deg, #270F57 0%, #765F8F 100%)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span style={{ color: "#fff", fontWeight: 700, fontSize: 16 }}>K</span>
-          </div>
-          <span style={{ fontWeight: 700, fontSize: 18, color: "#270F57" }}>kidsinbusiness<span style={{ color: "#765F8F" }}>.app</span></span>
+          <img src="/logo.png" alt="Kids in Business" style={{ height: 44, width: "auto" }} />
         </div>
         <div style={{ display: "flex", gap: 12 }}>
           <Link to="/auth" style={{ padding: "10px 22px", borderRadius: 14, border: "1.5px solid #270F57", color: "#270F57", fontWeight: 600, fontSize: 14, textDecoration: "none", background: "transparent" }}>Είσοδος</Link>

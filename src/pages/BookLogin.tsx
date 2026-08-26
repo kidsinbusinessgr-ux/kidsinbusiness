@@ -82,7 +82,7 @@ const BookLogin = () => {
   return (
     <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #270F57, #765F8F)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter', sans-serif", padding: "20px" }}>
       <div style={{ background: "#fff", borderRadius: 24, padding: "40px 32px", maxWidth: 420, width: "100%", textAlign: "center", boxShadow: "0 20px 60px rgba(39,15,87,0.3)" }}>
-        <div style={{ fontSize: 56, marginBottom: 12 }}>📚</div>
+        <img src="/logo.png" alt="Kids in Business" style={{ height: 70, width: "auto", margin: "0 auto 16px" }} />
         <div style={{ fontSize: 22, fontWeight: 900, color: "#270F57", marginBottom: 4 }}>Μικροί Επενδυτές</div>
         <div style={{ fontSize: 14, color: "#765F8F", marginBottom: 28, lineHeight: 1.5 }}>
           Μεγάλο Μέλλον<br />Συμπλήρωσε τα στοιχεία σου για να ξεκινήσεις!
