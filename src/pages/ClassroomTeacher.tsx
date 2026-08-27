@@ -30,7 +30,7 @@ interface Team {
 const SCENARIOS: Scenario[] = [
   {
     id: "cafe",
-    title: "Καφετέρια στο σχολείο",
+    title: "Online Shop Χειροποίητων",
     desc: "Τιμολόγηση, κόστος και ζήτηση. Ιδανικό για πρώτη επαφή με την αγορά.",
     ageRange: "12–15 ετών",
     icon: "🥤",
@@ -344,7 +344,7 @@ function StepLive({ onFinish }: { onFinish: () => void }) {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
         <div>
           <div style={s.h1}>Γύρος {currentRound} / {totalRounds}</div>
-          <div style={s.sub}>Καφετέρια στο σχολείο · Live παρακολούθηση</div>
+          <div style={s.sub}>Online Shop Χειροποίητων · Live παρακολούθηση</div>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
           <div style={s.metricCard}>
@@ -451,7 +451,7 @@ function StepResults({ onRestart }: { onRestart: () => void }) {
   return (
     <>
       <div style={s.h1}>Τελικά αποτελέσματα</div>
-      <div style={s.sub}>Καφετέρια στο σχολείο · Τέλος session</div>
+      <div style={s.sub}>Online Shop Χειροποίητων · Τέλος session</div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 16 }}>
         <div style={s.metricCard}>

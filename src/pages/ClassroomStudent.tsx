@@ -21,13 +21,13 @@ interface CanvasAnswer {
   q6: string;
 }
 
-// ─── Δεδομένα σεναρίου (MVP: καφετέρια) ─────────────────────────────────────
+// ─── Δεδομένα σεναρίου (MVP: online shop χειροποίητα) ────────────────────────
 
 const DECISIONS: Decision[] = [
-  { id: "budget", label: "1.00€", desc: "Χαμηλή τιμή, μεγάλος όγκος", icon: "💸" },
-  { id: "balanced", label: "1.50€", desc: "Ισορροπία τιμής-ζήτησης", icon: "☕" },
-  { id: "premium", label: "2.00€", desc: "Premium, λιγότεροι πελάτες", icon: "⭐" },
-  { id: "promo", label: "Προσφορά -20%", desc: "Διπλάσια ζήτηση, μικρότερο περιθώριο", icon: "🎯" },
+  { id: "budget", label: "5€", desc: "Χαμηλή τιμή, μεγάλος αριθμός πωλήσεων", icon: "💸" },
+  { id: "balanced", label: "12€", desc: "Ισορροπία τιμής και ζήτησης", icon: "🛍️" },
+  { id: "premium", label: "20€", desc: "Premium ποιότητα, λιγότεροι αγοραστές", icon: "⭐" },
+  { id: "promo", label: "Bundle 3+1 δώρο", desc: "Αυξάνει τεμάχια, μικρότερο περιθώριο", icon: "🎯" },
 ];
 
 const CANVAS_QUESTIONS = [
@@ -36,42 +36,42 @@ const CANVAS_QUESTIONS = [
     num: "01",
     question: "Ποιο πρόβλημα λύνεις;",
     hint: "Κάτι που ενοχλεί κόσμο σήμερα — μην είσαι γενικός",
-    placeholder: "π.χ. Δεν υπάρχει πλυντήριο αυτοκινήτων κοντά στα σπίτια",
+    placeholder: "π.χ. Τα χειροποίητα δώρα στα μαγαζιά κοστίζουν πολύ και δεν είναι προσωπικά",
   },
   {
     key: "q2" as keyof CanvasAnswer,
     num: "02",
     question: "Ποιος είναι ο πελάτης σου;",
     hint: "Όχι «όλοι» — πες μία συγκεκριμένη ομάδα ανθρώπων",
-    placeholder: "π.χ. Γονείς 35-50 που δουλεύουν πολύ και δεν έχουν χρόνο",
+    placeholder: "π.χ. Νέοι 15-30 ετών που ψάχνουν μοναδικά δώρα για φίλους online",
   },
   {
     key: "q3" as keyof CanvasAnswer,
     num: "03",
     question: "Πώς το λύνει τώρα ο πελάτης σου;",
-    hint: "Ψάξε την υπάρχουσα λύση — πόσο χρόνο ή χρήμα χάνει;",
-    placeholder: "π.χ. Πάει σε πλυντήριο — 12€ + 20 λεπτά οδήγηση",
+    hint: "Ψάξε πώς το κάνουν τώρα — τι τους ενοχλεί σε αυτή τη λύση;",
+    placeholder: "π.χ. Ψωνίζουν από μεγάλα e-shops — πληρώνουν παραπάνω για μαζική παραγωγή",
   },
   {
     key: "q4" as keyof CanvasAnswer,
     num: "04",
     question: "Πώς βγάζεις χρήματα;",
-    hint: "Τιμή × πελάτες = έσοδα. Μπορείς να το υπολογίσεις;",
-    placeholder: "π.χ. 8€/αυτοκίνητο × 10 αυτοκίνητα = 80€/ημέρα",
+    hint: "Τιμή × πελάτες = έσοδα. Αφαίρεσε το κόστος υλικών.",
+    placeholder: "π.χ. 12€/τεμάχιο × 20 τεμάχια = 240€ — υλικά 3€ = κέρδος 180€/μήνα",
   },
   {
     key: "q5" as keyof CanvasAnswer,
     num: "05",
     question: "Τι χρειάζεσαι για να ξεκινήσεις;",
-    hint: "Υλικά, ανθρώπους, χρήματα — κράτα το μικρό",
-    placeholder: "π.χ. Σφουγγάρια, σαπούνι, λάστιχο νερού — 30€",
+    hint: "Υλικά, εργαλεία, χρήματα — κράτα το μικρό",
+    placeholder: "π.χ. Υλικά 50€, Instagram account, καλό φως για φωτογραφίες",
   },
   {
     key: "q6" as keyof CanvasAnswer,
     num: "06",
     question: "Γιατί εσύ και όχι κάποιος άλλος;",
     hint: "Το πλεονέκτημά σου — μπορεί να είναι απλό",
-    placeholder: "π.χ. Πάμε εμείς στον πελάτη, δεν περιμένει ουρά",
+    placeholder: "π.χ. Φτιάχνω κάθε προϊόν στα χέρια μου με προσωπικό μήνυμα για τον αγοραστή",
   },
 ];
 
@@ -269,7 +269,7 @@ function StepSimulation({
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
         <div>
           <div style={s.h1}>Γύρος 3 / 5</div>
-          <div style={s.sub}>Καφετέρια στο σχολείο · Ομάδα {teamCode}</div>
+          <div style={s.sub}>Online Shop Χειροποίητων · Ομάδα {teamCode}</div>
         </div>
         <div style={{ textAlign: "right" }}>
           <div style={{ fontSize: 11, color: "#765F8F", marginBottom: 2 }}>Ταμείο</div>
@@ -278,7 +278,7 @@ function StepSimulation({
       </div>
 
       <div style={{ fontSize: 13, fontWeight: 700, color: "#270F57", marginBottom: 10 }}>
-        Απόφαση: Τιμή καφέ για τον επόμενο γύρο
+        Απόφαση: Στρατηγική τιμολόγησης για τον επόμενο γύρο
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 20 }}>
@@ -307,7 +307,7 @@ function StepSimulation({
       </div>
 
       {(["marketing", "materials", "staff"] as const).map((key) => {
-        const labels = { marketing: "Marketing", materials: "Πρώτες ύλες", staff: "Εργαζόμενοι" };
+        const labels = { marketing: "Διαφήμιση (social)", materials: "Υλικά κατασκευής", staff: "Συσκευασία & αποστολή" };
         const colors = { marketing: "#765F8F", materials: "#1D9E75", staff: "#EF9F27" };
         return (
           <div key={key} style={{ marginBottom: 12 }}>
@@ -369,7 +369,7 @@ function StepLeaderboard({ teamCode, onNext }: { teamCode: string; onNext: () =>
   return (
     <>
       <div style={s.h1}>Αποτελέσματα</div>
-      <div style={s.sub}>Τέλος γύρων · Καφετέρια στο σχολείο</div>
+      <div style={s.sub}>Τέλος γύρων · Online Shop Χειροποίητων</div>
 
       {MOCK_TEAMS.map((team, i) => {
         const barWidth = team.profit > 0 ? Math.round((team.profit / maxProfit) * 100) : 0;
@@ -407,9 +407,9 @@ function StepLeaderboard({ teamCode, onNext }: { teamCode: string; onNext: () =>
       <div style={{ background: "#f4eaff", borderRadius: 14, padding: "14px", marginTop: 16, marginBottom: 8 }}>
         <div style={{ fontSize: 12, fontWeight: 700, color: "#765F8F", marginBottom: 6 }}>Τι έμαθες σήμερα</div>
         <div style={{ fontSize: 12, color: "#270F57", lineHeight: 1.7 }}>
-          📈 Η τιμή επηρεάζει τη ζήτηση — αλλά όχι γραμμικά<br />
-          💼 Ο έλεγχος κόστους είναι πιο σημαντικός από τα έσοδα<br />
-          🤝 Οι ομαδικές αποφάσεις χρειάζονται επικοινωνία
+          📈 Η τιμή επηρεάζει τη ζήτηση — αλλά όχι πάντα γραμμικά<br />
+          💼 Τα κόστη υλικών και αποστολής κόβουν το κέρδος<br />
+          📱 Η διαφήμιση σε social media αυξάνει τις πωλήσεις
         </div>
       </div>
 
