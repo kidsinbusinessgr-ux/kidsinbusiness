@@ -29,7 +29,6 @@ const SubscriptionLanding = () => {
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#fff9e9", fontFamily: "'Segoe UI', Arial, sans-serif", margin: 0, padding: 0 }}>
-
       {/* Header */}
       <header style={{ backgroundColor: "#270F57", padding: "16px 32px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <img src="/logo.png" alt="Kids in Business" style={{ height: 44 }} />
@@ -59,7 +58,6 @@ const SubscriptionLanding = () => {
 
       {/* 3 CTA Cards */}
       <section style={{ display: "flex", flexWrap: "wrap", gap: 24, justifyContent: "center", padding: "0 24px 56px", marginTop: -56 }}>
-
         {/* Card 1 — Book Code */}
         <div style={{ ...cardBase, backgroundColor: "#fff", boxShadow: "0 8px 32px rgba(39,15,87,0.13)" }}>
           <div style={{ fontSize: 46, marginBottom: 12 }}>📚</div>
@@ -68,10 +66,8 @@ const SubscriptionLanding = () => {
             Αγόρασες το βιβλίο; Εισάγαγε τον κωδικό σου και απόκτησε <strong>δωρεάν</strong> πρόσβαση στην πλατφόρμα.
           </p>
           {!showCodeInput ? (
-            <button
-              onClick={() => setShowCodeInput(true)}
-              style={{ backgroundColor: "#270F57", color: "#fff9e9", border: "none", borderRadius: 10, padding: "12px 20px", fontSize: 15, fontWeight: 700, cursor: "pointer", width: "100%" }}
-            >
+            <button onClick={() => setShowCodeInput(true)}
+              style={{ backgroundColor: "#270F57", color: "#fff9e9", border: "none", borderRadius: 10, padding: "12px 20px", fontSize: 15, fontWeight: 700, cursor: "pointer", width: "100%" }}>
               Εισαγωγή Κωδικού →
             </button>
           ) : (
@@ -85,10 +81,8 @@ const SubscriptionLanding = () => {
                 autoFocus
                 style={{ width: "100%", padding: "10px 14px", borderRadius: 8, border: "2px solid #270F57", fontSize: 14, marginBottom: 8, boxSizing: "border-box", outline: "none" }}
               />
-              <button
-                onClick={handleCodeSubmit}
-                style={{ backgroundColor: "#270F57", color: "#fff9e9", border: "none", borderRadius: 10, padding: "11px 20px", fontSize: 14, fontWeight: 700, cursor: "pointer", width: "100%" }}
-              >
+              <button onClick={handleCodeSubmit}
+                style={{ backgroundColor: "#270F57", color: "#fff9e9", border: "none", borderRadius: 10, padding: "11px 20px", fontSize: 14, fontWeight: 700, cursor: "pointer", width: "100%" }}>
                 Ενεργοποίηση
               </button>
             </div>
@@ -112,9 +106,8 @@ const SubscriptionLanding = () => {
             Πλήρης πρόσβαση χωρίς αγορά βιβλίου. Ψηφιακά κεφάλαια, κουίζ, παιχνίδια.
           </p>
           <button
-            onClick={() => { window.location.href = "mailto:kidsinbusinessgr@gmail.com?subject=Συνδρομή Kids in Business"; }}
-            style={{ backgroundColor: "#fff9e9", color: "#270F57", border: "none", borderRadius: 10, padding: "13px 20px", fontSize: 15, fontWeight: 900, cursor: "pointer", width: "100%" }}
-          >
+            onClick={() => navigate("/subscribe")}
+            style={{ backgroundColor: "#fff9e9", color: "#270F57", border: "none", borderRadius: 10, padding: "13px 20px", fontSize: 15, fontWeight: 900, cursor: "pointer", width: "100%" }}>
             Εγγραφή Συνδρομής →
           </button>
           <p style={{ fontSize: 12, color: "#f4eaff", margin: "12px 0 0", opacity: 0.6 }}>Ακύρωση οποτεδήποτε</p>
@@ -129,9 +122,8 @@ const SubscriptionLanding = () => {
           </p>
           <div style={{ color: "#270F57", fontSize: 18, fontWeight: 900, margin: "0 0 16px" }}>Βιβλίο + Πλατφόρμα</div>
           <button
-            onClick={() => { window.location.href = "mailto:kidsinbusinessgr@gmail.com?subject=Bundle Kids in Business"; }}
-            style={{ backgroundColor: "#5a4070", color: "#fff9e9", border: "none", borderRadius: 10, padding: "12px 20px", fontSize: 15, fontWeight: 700, cursor: "pointer", width: "100%" }}
-          >
+            onClick={() => navigate("/bundle")}
+            style={{ backgroundColor: "#5a4070", color: "#fff9e9", border: "none", borderRadius: 10, padding: "12px 20px", fontSize: 15, fontWeight: 700, cursor: "pointer", width: "100%" }}>
             Αγορά Bundle →
           </button>
           <p style={{ fontSize: 12, color: "#5a4070", margin: "12px 0 0" }}>📦 Αποστολή σε όλη την Ελλάδα</p>
