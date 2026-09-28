@@ -81,7 +81,7 @@ const SubscriptionLanding = () => {
                 value={bookCode}
                 onChange={(e) => setBookCode(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleCodeSubmit()}
-                placeholder="π.χ. ependitis2026"
+                placeholder="Κωδικός βιβλίου"
                 autoFocus
                 style={{ width: "100%", padding: "10px 14px", borderRadius: 8, border: "2px solid #270F57", fontSize: 14, marginBottom: 8, boxSizing: "border-box", outline: "none" }}
               />
