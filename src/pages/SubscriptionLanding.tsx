@@ -112,7 +112,7 @@ const SubscriptionLanding = () => {
             Πλήρης πρόσβαση χωρίς αγορά βιβλίου. Ψηφιακά κεφάλαια, κουίζ, παιχνίδια.
           </p>
           <button
-            onClick={() => { window.location.href = "mailto:info@kidsinbusiness.gr?subject=Συνδρομή Kids in Business"; }}
+            onClick={() => { window.location.href = "mailto:kidsinbusinessgr@gmail.com?subject=Συνδρομή Kids in Business"; }}
             style={{ backgroundColor: "#fff9e9", color: "#270F57", border: "none", borderRadius: 10, padding: "13px 20px", fontSize: 15, fontWeight: 900, cursor: "pointer", width: "100%" }}
           >
             Εγγραφή Συνδρομής →
@@ -129,7 +129,7 @@ const SubscriptionLanding = () => {
           </p>
           <div style={{ color: "#270F57", fontSize: 18, fontWeight: 900, margin: "0 0 16px" }}>Βιβλίο + Πλατφόρμα</div>
           <button
-            onClick={() => { window.location.href = "mailto:info@kidsinbusiness.gr?subject=Bundle Kids in Business"; }}
+            onClick={() => { window.location.href = "mailto:kidsinbusinessgr@gmail.com?subject=Bundle Kids in Business"; }}
             style={{ backgroundColor: "#5a4070", color: "#fff9e9", border: "none", borderRadius: 10, padding: "12px 20px", fontSize: 15, fontWeight: 700, cursor: "pointer", width: "100%" }}
           >
             Αγορά Bundle →
