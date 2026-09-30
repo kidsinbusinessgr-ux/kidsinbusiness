@@ -27,6 +27,12 @@ const SubscriptionLanding = () => {
     { icon: "👨‍👩‍👧", title: "Γονικό Dashboard", desc: "Παρακολούθηση προόδου" },
   ];
 
+  const parentBenefits = [
+    "Παρακολουθήστε την πρόοδο του παιδιού σας με μια ματιά",
+    "Θέστε ευέλικτες παραμέτρους μάθησης",
+    "Γιορτάστε τις υγιείς οικονομικές συνήθειες",
+  ];
+
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#fff9e9", fontFamily: "'Segoe UI', Arial, sans-serif", margin: 0, padding: 0 }}>
       {/* Header */}
@@ -40,19 +46,35 @@ const SubscriptionLanding = () => {
 
       {/* Hero */}
       <section style={{ backgroundColor: "#270F57", color: "#fff9e9", textAlign: "center", padding: "60px 24px 100px" }}>
-        <p style={{ fontSize: 12, letterSpacing: 2, textTransform: "uppercase", opacity: 0.65, marginBottom: 18 }}>
-          Η πρώτη ελληνική ψηφιακή πλατφόρμα χρηματοοικονομικής παιδείας
-        </p>
+        {/* Ηλικία label */}
+        <div style={{ display: "inline-block", backgroundColor: "rgba(255,249,233,0.12)", borderRadius: 20, padding: "5px 18px", marginBottom: 16 }}>
+          <p style={{ fontSize: 11, letterSpacing: 2.5, textTransform: "uppercase", opacity: 0.9, margin: 0, fontWeight: 700 }}>
+            Για παιδιά 8–14 ετών
+          </p>
+        </div>
+
         <h1 style={{ fontSize: "clamp(28px, 5vw, 52px)", fontWeight: 900, lineHeight: 1.15, margin: "0 auto 22px", maxWidth: 680 }}>
           Μικροί Επενδυτές,<br />Μεγάλο Μέλλον
         </h1>
-        <p style={{ fontSize: "clamp(15px, 2.5vw, 18px)", opacity: 0.82, maxWidth: 560, margin: "0 auto 32px", lineHeight: 1.7 }}>
+        <p style={{ fontSize: "clamp(15px, 2.5vw, 18px)", opacity: 0.82, maxWidth: 560, margin: "0 auto 28px", lineHeight: 1.7 }}>
           Μάθε για χρήματα, αποταμίευση, επενδύσεις και επιχειρηματικότητα — μέσα από κεφάλαια, κουίζ και παιχνίδια.
         </p>
-        <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+
+        {/* Feature badges */}
+        <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap", marginBottom: 28 }}>
           {["📚 16 Κεφάλαια", "🎮 Παιχνίδι Αγοράς", "✅ Κουίζ"].map((t) => (
             <span key={t} style={{ backgroundColor: "rgba(255,249,233,0.14)", borderRadius: 20, padding: "6px 16px", fontSize: 13 }}>{t}</span>
           ))}
+        </div>
+
+        {/* Social proof */}
+        <div style={{ display: "flex", gap: 20, justifyContent: "center", flexWrap: "wrap" }}>
+          <span style={{ fontSize: 13, opacity: 0.75, display: "flex", alignItems: "center", gap: 6 }}>
+            🏆 Βραβευμένο από το JA Greece
+          </span>
+          <span style={{ fontSize: 13, opacity: 0.75, display: "flex", alignItems: "center", gap: 6 }}>
+            📰 Όπως αναφέρθηκε στο WIRED Greece
+          </span>
         </div>
       </section>
 
@@ -143,6 +165,24 @@ const SubscriptionLanding = () => {
             </div>
           ))}
         </div>
+      </section>
+
+      {/* Parent Section */}
+      <section style={{ backgroundColor: "#fff9e9", padding: "64px 24px", textAlign: "center" }}>
+        <p style={{ fontSize: 11, letterSpacing: 2.5, textTransform: "uppercase", color: "#5a4070", fontWeight: 700, marginBottom: 12 }}>
+          Φτιαγμένο για γονείς
+        </p>
+        <h2 style={{ fontSize: "clamp(22px, 3.5vw, 32px)", fontWeight: 900, color: "#270F57", margin: "0 auto 36px", maxWidth: 560, lineHeight: 1.3 }}>
+          Περισσότερη αυτοπεποίθηση στα παιδιά σας, κάθε μέρα.
+        </h2>
+        <ul style={{ listStyle: "none", padding: 0, maxWidth: 460, margin: "0 auto", textAlign: "left" }}>
+          {parentBenefits.map((item) => (
+            <li key={item} style={{ display: "flex", alignItems: "flex-start", gap: 14, fontSize: 16, color: "#270F57", marginBottom: 18, lineHeight: 1.5 }}>
+              <span style={{ color: "#5a4070", fontWeight: 900, fontSize: 18, flexShrink: 0, marginTop: 1 }}>✓</span>
+              {item}
+            </li>
+          ))}
+        </ul>
       </section>
 
       {/* Footer */}
