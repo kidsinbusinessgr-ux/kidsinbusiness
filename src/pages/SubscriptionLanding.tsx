@@ -12,7 +12,7 @@ const SubscriptionLanding = () => {
     }
   };
 
-  const cardBase: React.CSSProperties = {
+  const cardBase = {
     borderRadius: 20,
     padding: 32,
     maxWidth: 300,
@@ -101,7 +101,7 @@ const SubscriptionLanding = () => {
                 onKeyDown={(e) => e.key === "Enter" && handleCodeSubmit()}
                 placeholder="Κωδικός βιβλίου"
                 autoFocus
-                style={{ width: "100%", padding: "10px 14px", borderRadius: 8, border: "2px solid #270F57", fontSize: 14, marginBottom: 8, boxSizing: "border-box", outline: "none" }}
+                style={{ width: "100%", padding: "10px 14px", borderRadius: 8, border: "2px solid #270F57", fontSize: 14, marginBottom: 8, boxSizing: "border-box" as const, outline: "none" }}
               />
               <button onClick={handleCodeSubmit}
                 style={{ backgroundColor: "#270F57", color: "#fff9e9", border: "none", borderRadius: 10, padding: "11px 20px", fontSize: 14, fontWeight: 700, cursor: "pointer", width: "100%" }}>
@@ -114,7 +114,7 @@ const SubscriptionLanding = () => {
 
         {/* Card 2 — Subscription (highlighted) */}
         <div style={{ ...cardBase, backgroundColor: "#270F57", boxShadow: "0 8px 40px rgba(39,15,87,0.32)", position: "relative", overflow: "hidden" }}>
-          <div style={{ position: "absolute", top: 14, right: 14, backgroundColor: "#f4b400", color: "#1a0a3d", fontSize: 10, fontWeight: 900, padding: "4px 12px", borderRadius: 20, letterSpacing: 1, textTransform: "uppercase" }}>
+          <div style={{ position: "absolute", top: 14, right: 14, backgroundColor: "#f4b400", color: "#1a0a3d", fontSize: 10, fontWeight: 900, padding: "4px 12px", borderRadius: 20, letterSpacing: 1, textTransform: "uppercase" as const }}>
             Δημοφιλές
           </div>
           <div style={{ fontSize: 46, marginBottom: 12 }}>🚀</div>
@@ -169,13 +169,13 @@ const SubscriptionLanding = () => {
 
       {/* Parent Section */}
       <section style={{ backgroundColor: "#fff9e9", padding: "64px 24px", textAlign: "center" }}>
-        <p style={{ fontSize: 11, letterSpacing: 2.5, textTransform: "uppercase", color: "#5a4070", fontWeight: 700, marginBottom: 12 }}>
+        <p style={{ fontSize: 11, letterSpacing: 2.5, textTransform: "uppercase" as const, color: "#5a4070", fontWeight: 700, marginBottom: 12 }}>
           Φτιαγμένο για γονείς
         </p>
         <h2 style={{ fontSize: "clamp(22px, 3.5vw, 32px)", fontWeight: 900, color: "#270F57", margin: "0 auto 36px", maxWidth: 560, lineHeight: 1.3 }}>
           Περισσότερη αυτοπεποίθηση στα παιδιά σας, κάθε μέρα.
         </h2>
-        <ul style={{ listStyle: "none", padding: 0, maxWidth: 460, margin: "0 auto", textAlign: "left" }}>
+        <ul style={{ listStyle: "none", padding: 0, maxWidth: 460, margin: "0 auto", textAlign: "left" as const }}>
           {parentBenefits.map((item) => (
             <li key={item} style={{ display: "flex", alignItems: "flex-start", gap: 14, fontSize: 16, color: "#270F57", marginBottom: 18, lineHeight: 1.5 }}>
               <span style={{ color: "#5a4070", fontWeight: 900, fontSize: 18, flexShrink: 0, marginTop: 1 }}>✓</span>
