@@ -16,6 +16,7 @@ import Teachers from "@/pages/Teachers";
 import Community from "@/pages/Community";
 import Auth from "@/pages/Auth";
 import NotFound from "@/pages/NotFound";
+import Learn from "@/pages/Learn";
 import FounderDashboard from "@/pages/FounderDashboard";
 import VentureBuilder from "@/pages/VentureBuilder";
 import Marketplace from "@/pages/Marketplace";
@@ -88,7 +89,8 @@ const App = () => (
           <Route path="/classroom/student" element={<ClassroomStudent />} />
           <Route path="/classroom/teacher" element={<ClassroomTeacher />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
-          <Route path="*" element={<NotFound />} />
+          <Route path="/learn" element={<Learn />} />
+              <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
