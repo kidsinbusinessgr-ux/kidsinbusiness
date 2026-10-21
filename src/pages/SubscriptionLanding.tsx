@@ -76,6 +76,15 @@ const SubscriptionLanding = () => {
             📰 Όπως αναφέρθηκε στο WIRED Greece
           </span>
         </div>
+
+        {/* Badge image */}
+        <div style={{ marginTop: 32, display: "flex", justifyContent: "center" }}>
+          <img
+            src="/badge-mikroi-ependytes.png"
+            alt="Μικροί Επενδυτές, Μεγάλο Μέλλον"
+            style={{ width: 200, height: 200, objectFit: "contain", filter: "drop-shadow(0 8px 24px rgba(0,0,0,0.3))" }}
+          />
+        </div>
       </section>
 
       {/* 3 CTA Cards */}
