@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { BOOK_CHAPTERS, TOTAL_COINS } from "@/config/bookConfig";
 import { supabase } from "@/integrations/supabase/client";
 import { Progress } from "@/components/ui/progress";
+import { checkBookAccess, clearBookAccess, hadOldAccess, BOOK_USER_KEY } from "@/lib/bookAccess";
 
 interface BookProgress {
   chapter_id: number;
@@ -58,20 +59,9 @@ export default function BookDashboard() {
         console.error("Profile load error:", profileError);
       }
 
-      if (profile) {
-        setChildName((profile as any).full_name || user.email?.split("@")[0] || "Μικρός Επενδυτής");
-        setHasCode(!!(profile as any).book_code);
-      } else {
-        setChildName(user.email?.split("@")[0] || "Μικρός Επενδυτής");
-        // Fallback: check directly if user has activated a code
-        const { data: rows } = await supabase
-          .from("user_profiles" as any)
-          .select("book_code")
-          .eq("id", user.id);
-        if (rows && rows.length > 0 && (rows[0] as any).book_code) {
-          setHasCode(true);
-        }
-      }
+      setChildName((profile as any)?.full_name || user.email?.split("@")[0] || "Μικρός Επενδυτής");
+      // Ο server ελέγχει ότι ο κωδικός του προφίλ (ή το κλειδί της συσκευής) είναι αληθινός
+      setHasCode(await checkBookAccess());
 
       // Load progress
       const { data } = await supabase
@@ -84,11 +74,16 @@ export default function BookDashboard() {
       }
     } else {
       // Check localStorage book access (from BookLogin registration flow)
-      const bookAccess = localStorage.getItem("kib_book_access_v1");
-      if (bookAccess === "1") {
+      const bookAccess = await checkBookAccess();
+      if (!bookAccess && hadOldAccess()) {
+        // Είχε μπει πριν από την αλλαγή: ζήτα τον κωδικό μία φορά (η πρόοδος μένει)
+        navigate("/book-login", { replace: true });
+        return;
+      }
+      if (bookAccess) {
         setIsLoggedIn(true);
         setHasCode(true);
-        const bookUser = localStorage.getItem("kib_book_user_v1");
+        const bookUser = localStorage.getItem(BOOK_USER_KEY);
         if (bookUser) {
           try {
             const u = JSON.parse(bookUser);
@@ -229,8 +224,7 @@ export default function BookDashboard() {
                 <button
                   onClick={async () => {
                     await supabase.auth.signOut();
-                    localStorage.removeItem("kib_book_access_v1");
-                    localStorage.removeItem("kib_book_user_v1");
+                    clearBookAccess();
                     navigate("/book-login");
                   }}
                   className="text-xs text-gray-400 hover:text-gray-600"

@@ -2,8 +2,11 @@ import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, useParams } from "react-router-dom";
 import { BOOK_CHAPTERS } from "@/config/bookConfig";
+import { checkBookAccess } from "@/lib/bookAccess";
 
 const PROGRESS_KEY = "kib_book_progress_v1";
+// Τα κεφάλαια 1-3 είναι δωρεάν (όπως στο BookDashboard)
+const FREE_CHAPTERS = 3;
 
 const GRAD_MAP: Record<string, string> = {
   "from-yellow-400 to-orange-400": "#facc15, #fb923c",
@@ -31,6 +34,21 @@ const BookChapter = () => {
   const navigate = useNavigate();
   const chapterId = Number(id);
   const ch = BOOK_CHAPTERS.find((c) => c.id === chapterId);
+  const needsCode = chapterId > FREE_CHAPTERS;
+  const [allowed, setAllowed] = useState<boolean | null>(needsCode ? null : true);
+
+  // Τα κεφάλαια μετά το 3 ανοίγουν μόνο όταν το επιβεβαιώσει ο server
+  useEffect(() => {
+    if (!needsCode) { setAllowed(true); return; }
+    let alive = true;
+    setAllowed(null);
+    checkBookAccess().then(ok => {
+      if (!alive) return;
+      if (ok) setAllowed(true);
+      else navigate("/book-login", { replace: true });
+    });
+    return () => { alive = false; };
+  }, [needsCode, navigate]);
 
   const [phase, setPhase] = useState<Phase>("learn");
   const [quizAnswers, setQuizAnswers] = useState<(number | null)[]>([]);
@@ -70,6 +88,14 @@ const BookChapter = () => {
       }
     } catch {}
   }, [ch]);
+
+  if (allowed !== true) {
+    return (
+      <div style={{ minHeight: "100vh", background: "#fff9e9", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Inter, sans-serif", color: "#270F57", fontWeight: 700 }}>
+        Φόρτωση...
+      </div>
+    );
+  }
 
   if (!ch) {
     return (

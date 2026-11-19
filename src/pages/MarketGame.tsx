@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { checkBookAccess } from "@/lib/bookAccess";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 type Screen = "hub" | "m1" | "m2" | "m3" | "m4";
@@ -278,10 +278,8 @@ export default function MarketGame() {
   }, [screen]);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      const localAccess = localStorage.getItem("kib_book_access_v1") === "1";
-      if (!session && !localAccess) navigate("/book-login");
-    });
+    // Ο server ελέγχει την πρόσβαση στο βιβλίο
+    checkBookAccess().then(ok => { if (!ok) navigate("/book-login"); });
   }, [navigate]);
 
   const goHub = () => {

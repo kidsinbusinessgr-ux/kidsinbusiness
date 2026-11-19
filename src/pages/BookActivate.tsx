@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { checkBookAccess, redeemBookCode } from "@/lib/bookAccess";
 
 export default function BookActivate() {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ export default function BookActivate() {
       .single();
     if (profile) {
       setUserName((profile as any).full_name || "");
-      if ((profile as any).book_code) {
+      if ((profile as any).book_code && await checkBookAccess()) {
         navigate("/book");
       }
     }
@@ -42,29 +43,21 @@ export default function BookActivate() {
     setLoading(true);
     setError("");
 
-    // Check code exists
-    const { data: codeRows, error: codeError } = await supabase
-      .from("book_codes" as any)
-      .select("code, edition, max_uses, use_count")
-      .eq("code", trimmed);
-
-    if (codeError || !codeRows || codeRows.length === 0) {
-      setError("Ο κωδικός δεν βρέθηκε. Έλεγξε ότι τον έγραψες σωστά.");
-      setLoading(false);
-      return;
-    }
-
-    const codeData = codeRows[0] as any;
-
-    if (codeData.use_count >= codeData.max_uses) {
-      setError("Αυτός ο κωδικός έχει φτάσει τον μέγιστο αριθμό χρήσεων.");
-      setLoading(false);
-      return;
-    }
-
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       navigate("/book-login");
+      return;
+    }
+
+    // Ο server ελέγχει τον κωδικό (με όριο προσπαθειών) και μετρά τη χρήση
+    const result = await redeemBookCode(trimmed);
+    if (result !== "ok") {
+      setError(
+        result === "too_many" ? "Πολλές προσπάθειες. Περίμενε λίγα λεπτά και δοκίμασε ξανά."
+        : result === "error" ? "Κάτι πήγε στραβά με τη σύνδεση. Δοκίμασε ξανά."
+        : "Ο κωδικός δεν βρέθηκε. Έλεγξε ότι τον έγραψες σωστά."
+      );
+      setLoading(false);
       return;
     }
 
@@ -77,12 +70,6 @@ export default function BookActivate() {
         book_code: trimmed,
         activated_at: new Date().toISOString(),
       }, { onConflict: "id" });
-
-    // Increment use count
-    await supabase
-      .from("book_codes" as any)
-      .update({ use_count: codeData.use_count + 1 })
-      .eq("code", trimmed);
 
     setLoading(false);
     window.location.href = "/book";

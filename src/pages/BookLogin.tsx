@@ -1,26 +1,39 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { BOOK_USER_KEY, checkBookAccess, hadOldAccess, redeemBookCode } from "@/lib/bookAccess";
 
-const ACCESS_KEY = "kib_book_access_v1";
-const USER_KEY = "kib_book_user_v1";
+type SavedUser = { name?: string; age?: number; parentEmail?: string };
+
+const readSavedUser = (): SavedUser | null => {
+  try {
+    const raw = localStorage.getItem(BOOK_USER_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+};
 
 const BookLogin = () => {
   const navigate = useNavigate();
+  const [saved] = useState<SavedUser | null>(readSavedUser);
   const [code, setCode] = useState("");
-  const [name, setName] = useState("");
-  const [age, setAge] = useState("");
-  const [parentEmail, setParentEmail] = useState("");
+  const [name, setName] = useState(saved?.name || "");
+  const [age, setAge] = useState(saved?.age ? String(saved.age) : "");
+  const [parentEmail, setParentEmail] = useState(saved?.parentEmail || "");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [checking, setChecking] = useState(true);
+  // Παιδί που είχε μπει πριν από την αλλαγή: του ζητάμε τον κωδικό μία φορά.
+  const [returning] = useState(() => hadOldAccess() || !!saved);
 
-  // Αν έχει ήδη κάνει login, πήγαινε κατευθείαν στο /book
+  // Αν έχει ήδη πρόσβαση (ελέγχει ο server), πήγαινε κατευθείαν στο /book
   useEffect(() => {
-    try {
-      if (localStorage.getItem(ACCESS_KEY) === "1") {
-        navigate("/book", { replace: true });
-      }
-    } catch {}
+    let alive = true;
+    checkBookAccess().then(ok => {
+      if (!alive) return;
+      if (ok) navigate("/book", { replace: true });
+      else setChecking(false);
+    });
+    return () => { alive = false; };
   }, [navigate]);
 
   const handleSubmit = async () => {
@@ -33,34 +46,44 @@ const BookLogin = () => {
 
     setLoading(true);
 
-    let codeValid = false;
-    try {
-      const { data } = await supabase.rpc("validate_and_use_book_code" as any, { input_code: code.trim().toLowerCase() });
-      codeValid = !!data;
-    } catch {}
-    if (!codeValid) { setError("Λάθος κωδικός βιβλίου. Δοκίμασε ξανά!"); setLoading(false); return; }
+    const result = await redeemBookCode(code);
+    if (result !== "ok") {
+      setError(
+        result === "too_many" ? "Πολλές προσπάθειες. Περίμενε λίγα λεπτά και δοκίμασε ξανά!"
+        : result === "error" ? "Κάτι πήγε στραβά με τη σύνδεση. Δοκίμασε ξανά!"
+        : "Λάθος κωδικός βιβλίου. Δοκίμασε ξανά!"
+      );
+      setLoading(false);
+      return;
+    }
+
+    const cleanEmail = parentEmail.trim().toLowerCase();
+    const sameChild = !!saved && saved.name === name.trim() && saved.parentEmail === cleanEmail;
+
+    // Νέα εγγραφή μόνο για νέο παιδί (όχι για όποιον ξαναγράφει τον κωδικό του)
+    if (!sameChild) {
+      try {
+        await supabase.from("book_registrations").insert({
+          child_name: name.trim(),
+          child_age: Number(age),
+          parent_email: cleanEmail,
+          registered_at: new Date().toISOString(),
+        });
+      } catch {}
+    }
 
     try {
-      await supabase.from("book_registrations").insert({
-        child_name: name.trim(),
-        child_age: Number(age),
-        parent_email: parentEmail.trim().toLowerCase(),
-        registered_at: new Date().toISOString(),
-      });
-    } catch {}
-
-    try {
-      localStorage.setItem(ACCESS_KEY, "1");
-      localStorage.setItem(USER_KEY, JSON.stringify({
+      localStorage.setItem(BOOK_USER_KEY, JSON.stringify({
         name: name.trim(),
         age: Number(age),
-        parentEmail: parentEmail.trim().toLowerCase(),
+        parentEmail: cleanEmail,
         registeredAt: new Date().toISOString(),
       }));
+      // Η πρόοδος σβήνει μόνο όταν μπαίνει άλλο παιδί στην ίδια συσκευή
+      if (!sameChild) localStorage.removeItem("kib_book_progress_v1");
     } catch {}
 
     setLoading(false);
-    localStorage.removeItem("kib_book_progress_v1");
     navigate("/book");
   };
 
@@ -88,6 +111,12 @@ const BookLogin = () => {
           Μεγάλο Μέλλον<br />Συμπλήρωσε τα στοιχεία σου για να ξεκινήσεις!
         </div>
 
+        {returning && !checking && (
+          <div style={{ fontSize: 13, color: "#270F57", fontWeight: 600, marginBottom: 16, padding: "10px 14px", background: "#f3edff", borderRadius: 12, lineHeight: 1.5 }}>
+            👋 Καλώς ήρθες ξανά! Γράψε τον κωδικό του βιβλίου σου μία φορά ακόμα. Η πρόοδός σου μένει όπως ήταν.
+          </div>
+        )}
+
         <input style={inp()} type="text" placeholder="Όνομα παιδιού..." value={name} onChange={e => { setName(e.target.value); setError(""); }}  maxLength={50}/>
         <input style={inp()} type="number" placeholder="Ηλικία..." value={age} min="6" max="18" onChange={e => { setAge(e.target.value); setError(""); }} />
         <input style={inp()} type="email" placeholder="Email γονέα..." value={parentEmail} onChange={e => { setParentEmail(e.target.value); setError(""); }}  maxLength={100}/>
@@ -103,9 +132,9 @@ const BookLogin = () => {
 
         <button
           style={{ width: "100%", padding: "14px", borderRadius: 14, background: loading ? "#aaa" : "linear-gradient(135deg, #270F57, #765F8F)", color: "#fff", fontWeight: 800, fontSize: 16, border: "none", cursor: loading ? "default" : "pointer", marginBottom: 16 }}
-          onClick={handleSubmit} disabled={loading}
+          onClick={handleSubmit} disabled={loading || checking}
         >
-          {loading ? "Φόρτωση..." : "Είσοδος 🚀"}
+          {loading || checking ? "Φόρτωση..." : "Είσοδος 🚀"}
         </button>
 
         <div style={{ fontSize: 12, color: "#aaa" }}>
