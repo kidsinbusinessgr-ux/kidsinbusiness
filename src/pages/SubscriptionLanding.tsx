@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+// Finance Buddy app. Switch to https://buddy.kidsinbusiness.gr once that address works.
+const FINANCE_BUDDY_URL = "https://junior-finance-buddy.vercel.app";
+
 const SubscriptionLanding = () => {
   const [showCodeInput, setShowCodeInput] = useState(false);
   const [bookCode, setBookCode] = useState("");
@@ -158,6 +161,29 @@ const SubscriptionLanding = () => {
             Αγορά Bundle →
           </button>
           <p style={{ fontSize: 12, color: "#5a4070", margin: "12px 0 0" }}>📦 Αποστολή σε όλη την Ελλάδα</p>
+        </div>
+      </section>
+
+      {/* New app — Beta. ?from=book lets Finance Buddy count sign-ups that came from here. */}
+      <section style={{ padding: "0 24px 56px" }}>
+        <div style={{ maxWidth: 960, margin: "0 auto", background: "linear-gradient(135deg, #6d28d9, #a855f7)", color: "#fff", borderRadius: 20, padding: "24px 28px", display: "flex", flexWrap: "wrap", alignItems: "center", gap: 20, boxShadow: "0 8px 32px rgba(109,40,217,0.25)" }}>
+          <div style={{ fontSize: 44 }}>🤖</div>
+          <div style={{ flex: "1 1 320px", minWidth: 0 }}>
+            <span style={{ display: "inline-block", backgroundColor: "#f4b400", color: "#1a0a3d", fontSize: 11, fontWeight: 900, padding: "3px 10px", borderRadius: 20, letterSpacing: 1 }}>
+              ΝΕΟ · BETA
+            </span>
+            <h2 style={{ fontSize: 20, fontWeight: 800, margin: "8px 0 6px" }}>Kids in Business Finance Buddy</h2>
+            <p style={{ fontSize: 14, lineHeight: 1.6, margin: 0, opacity: 0.92 }}>
+              Η νέα μας εφαρμογή για παιδιά 12+: χαρτζιλίκι και στόχοι, εικονικές επενδύσεις σε πραγματικές
+              μετοχές και το δικό τους startup. Δωρεάν όσο διαρκεί η δοκιμαστική περίοδος. Την εγγραφή την κάνει ο γονιός.
+            </p>
+          </div>
+          <a
+            href={`${FINANCE_BUDDY_URL}/signup?from=book`}
+            style={{ backgroundColor: "#fff", color: "#5b21b6", borderRadius: 10, padding: "12px 20px", fontSize: 15, fontWeight: 900, textDecoration: "none", whiteSpace: "nowrap" }}
+          >
+            Δοκίμασέ τη δωρεάν →
+          </a>
         </div>
       </section>
 
