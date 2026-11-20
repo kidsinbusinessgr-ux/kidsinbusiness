@@ -90,7 +90,7 @@ const SubscriptionLanding = () => {
         </div>
       </section>
 
-      {/* 3 CTA Cards */}
+      {/* Book code card. Subscription and bundle cards removed until there is a company to sell them. */}
       <section style={{ display: "flex", flexWrap: "wrap", gap: 24, justifyContent: "center", padding: "0 24px 56px", marginTop: -56 }}>
         {/* Card 1 — Book Code */}
         <div style={{ ...cardBase, backgroundColor: "#fff", boxShadow: "0 8px 32px rgba(39,15,87,0.13)" }}>
@@ -123,50 +123,11 @@ const SubscriptionLanding = () => {
           )}
           <p style={{ fontSize: 12, color: "#888", margin: "12px 0 0" }}>🎁 Δωρεάν με κάθε αγορά βιβλίου</p>
         </div>
-
-        {/* Card 2 — Subscription (highlighted) */}
-        <div style={{ ...cardBase, backgroundColor: "#270F57", boxShadow: "0 8px 40px rgba(39,15,87,0.32)", position: "relative", overflow: "hidden" }}>
-          <div style={{ position: "absolute", top: 14, right: 14, backgroundColor: "#f4b400", color: "#1a0a3d", fontSize: 10, fontWeight: 900, padding: "4px 12px", borderRadius: 20, letterSpacing: 1, textTransform: "uppercase" as const }}>
-            Δημοφιλές
-          </div>
-          <div style={{ fontSize: 46, marginBottom: 12 }}>🚀</div>
-          <h2 style={{ color: "#fff9e9", fontSize: 20, fontWeight: 800, margin: "0 0 4px" }}>Ψηφιακή Συνδρομή</h2>
-          <div style={{ color: "#f4eaff", margin: "0 0 4px" }}>
-            <span style={{ fontSize: 36, fontWeight: 900 }}>€4,99</span>
-            <span style={{ fontSize: 14, opacity: 0.8 }}> /μήνα</span>
-          </div>
-          <p style={{ color: "#f4eaff", fontSize: 13, opacity: 0.72, margin: "0 0 14px" }}>ή €39/χρόνο — εξοικονόμηση 35%</p>
-          <p style={{ color: "#f4eaff", fontSize: 14, lineHeight: 1.7, opacity: 0.9, margin: "0 0 20px" }}>
-            Πλήρης πρόσβαση χωρίς αγορά βιβλίου. Ψηφιακά κεφάλαια, κουίζ, παιχνίδια.
-          </p>
-          <button
-            onClick={() => navigate("/subscribe")}
-            style={{ backgroundColor: "#fff9e9", color: "#270F57", border: "none", borderRadius: 10, padding: "13px 20px", fontSize: 15, fontWeight: 900, cursor: "pointer", width: "100%" }}>
-            Εγγραφή Συνδρομής →
-          </button>
-          <p style={{ fontSize: 12, color: "#f4eaff", margin: "12px 0 0", opacity: 0.6 }}>Ακύρωση οποτεδήποτε</p>
-        </div>
-
-        {/* Card 3 — Bundle */}
-        <div style={{ ...cardBase, backgroundColor: "#f4eaff", border: "2px solid #5a4070", boxShadow: "0 8px 28px rgba(39,15,87,0.10)" }}>
-          <div style={{ fontSize: 46, marginBottom: 12 }}>📦</div>
-          <h2 style={{ color: "#270F57", fontSize: 20, fontWeight: 800, margin: "0 0 8px" }}>Πακέτο Bundle</h2>
-          <p style={{ color: "#5a4070", fontSize: 14, lineHeight: 1.7, margin: "0 0 16px" }}>
-            Φυσικό βιβλίο + ψηφιακή πρόσβαση. Η πληρέστερη εμπειρία για το παιδί σου!
-          </p>
-          <div style={{ color: "#270F57", fontSize: 18, fontWeight: 900, margin: "0 0 16px" }}>Βιβλίο + Πλατφόρμα</div>
-          <button
-            onClick={() => navigate("/bundle")}
-            style={{ backgroundColor: "#5a4070", color: "#fff9e9", border: "none", borderRadius: 10, padding: "12px 20px", fontSize: 15, fontWeight: 700, cursor: "pointer", width: "100%" }}>
-            Αγορά Bundle →
-          </button>
-          <p style={{ fontSize: 12, color: "#5a4070", margin: "12px 0 0" }}>📦 Αποστολή σε όλη την Ελλάδα</p>
-        </div>
       </section>
 
       {/* New app — Beta. ?from=book lets Finance Buddy count sign-ups that came from here. */}
       <section style={{ padding: "0 24px 56px" }}>
-        <div style={{ maxWidth: 960, margin: "0 auto", background: "linear-gradient(135deg, #6d28d9, #a855f7)", color: "#fff", borderRadius: 20, padding: "24px 28px", display: "flex", flexWrap: "wrap", alignItems: "center", gap: 20, boxShadow: "0 8px 32px rgba(109,40,217,0.25)" }}>
+        <div style={{ maxWidth: 680, margin: "0 auto", background: "linear-gradient(135deg, #6d28d9, #a855f7)", color: "#fff", borderRadius: 20, padding: "24px 28px", display: "flex", flexWrap: "wrap", alignItems: "center", gap: 20, boxShadow: "0 8px 32px rgba(109,40,217,0.25)" }}>
           <div style={{ fontSize: 44 }}>🤖</div>
           <div style={{ flex: "1 1 320px", minWidth: 0 }}>
             <span style={{ display: "inline-block", backgroundColor: "#f4b400", color: "#1a0a3d", fontSize: 11, fontWeight: 900, padding: "3px 10px", borderRadius: 20, letterSpacing: 1 }}>

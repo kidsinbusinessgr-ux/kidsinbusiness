@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import SubscriptionLanding from "@/pages/SubscriptionLanding";
 import SubscribePage from "@/pages/SubscribePage";
 import BundlePage from "@/pages/BundlePage";
@@ -53,8 +53,9 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<SubscriptionLanding />} />
-          <Route path="/subscribe" element={<SubscribePage />} />
-          <Route path="/bundle" element={<BundlePage />} />
+          {/* Paid plans are hidden for now (no company yet); pages kept for later. */}
+          <Route path="/subscribe" element={<Navigate to="/" replace />} />
+          <Route path="/bundle" element={<Navigate to="/" replace />} />
           <Route path="/platform" element={<LandingPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/student" element={<StudentWorkspace />} />
