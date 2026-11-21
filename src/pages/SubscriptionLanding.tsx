@@ -49,12 +49,7 @@ const SubscriptionLanding = () => {
 
       {/* Hero */}
       <section style={{ backgroundColor: "#270F57", color: "#fff9e9", textAlign: "center", padding: "60px 24px 100px" }}>
-        {/* Ηλικία label */}
-        <div style={{ display: "inline-block", backgroundColor: "rgba(255,249,233,0.12)", borderRadius: 20, padding: "5px 18px", marginBottom: 16 }}>
-          <p style={{ fontSize: 11, letterSpacing: 2.5, textTransform: "uppercase", opacity: 0.9, margin: 0, fontWeight: 700 }}>
-            Για παιδιά 8–14 ετών
-          </p>
-        </div>
+        {/* No age here: the book and the app are for different ages (shown on each). */}
 
         <h1 style={{ fontSize: "clamp(28px, 5vw, 52px)", fontWeight: 900, lineHeight: 1.15, margin: "0 auto 22px", maxWidth: 680 }}>
           Μικροί Επενδυτές,<br />Μεγάλο Μέλλον
@@ -96,6 +91,7 @@ const SubscriptionLanding = () => {
         <div style={{ ...cardBase, backgroundColor: "#fff", boxShadow: "0 8px 32px rgba(39,15,87,0.13)" }}>
           <div style={{ fontSize: 46, marginBottom: 12 }}>📚</div>
           <h2 style={{ color: "#270F57", fontSize: 20, fontWeight: 800, margin: "0 0 8px" }}>Έχω το Βιβλίο</h2>
+          <p style={{ color: "#5a4070", fontSize: 12, fontWeight: 700, margin: "0 0 10px" }}>Για παιδιά 8–14 ετών</p>
           <p style={{ color: "#5a4070", fontSize: 14, lineHeight: 1.7, margin: "0 0 20px" }}>
             Αγόρασες το βιβλίο; Εισάγαγε τον κωδικό σου και απόκτησε <strong>δωρεάν</strong> πρόσβαση στην πλατφόρμα.
           </p>
