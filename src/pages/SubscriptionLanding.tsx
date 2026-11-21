@@ -91,7 +91,7 @@ const SubscriptionLanding = () => {
         <div style={{ ...cardBase, backgroundColor: "#fff", boxShadow: "0 8px 32px rgba(39,15,87,0.13)" }}>
           <div style={{ fontSize: 46, marginBottom: 12 }}>📚</div>
           <h2 style={{ color: "#270F57", fontSize: 20, fontWeight: 800, margin: "0 0 8px" }}>Έχω το Βιβλίο</h2>
-          <p style={{ color: "#5a4070", fontSize: 12, fontWeight: 700, margin: "0 0 10px" }}>Για παιδιά 8–14 ετών</p>
+          <p style={{ color: "#5a4070", fontSize: 12, fontWeight: 700, margin: "0 0 10px" }}>Για παιδιά 7–12 ετών</p>
           <p style={{ color: "#5a4070", fontSize: 14, lineHeight: 1.7, margin: "0 0 20px" }}>
             Αγόρασες το βιβλίο; Εισάγαγε τον κωδικό σου και απόκτησε <strong>δωρεάν</strong> πρόσβαση στην πλατφόρμα.
           </p>
